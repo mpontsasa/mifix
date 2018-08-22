@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.text.Font?>
+
+<GridPane prefHeight="72.0" prefWidth="473.0" style="-fx-border-color: black;" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ValueBarController">
+   <columnConstraints>
+      <ColumnConstraints hgrow="SOMETIMES" maxWidth="121.59998779296875" minWidth="10.0" prefWidth="121.59998779296875" />
+      <ColumnConstraints hgrow="SOMETIMES" maxWidth="116.39998779296873" minWidth="10.0" prefWidth="108.00001220703125" />
+      <ColumnConstraints hgrow="SOMETIMES" maxWidth="114.40000000000003" minWidth="10.0" prefWidth="111.99997558593753" />
+      <ColumnConstraints hgrow="SOMETIMES" maxWidth="109.79997558593749" minWidth="10.0" prefWidth="109.79997558593749" />
+      <ColumnConstraints hgrow="SOMETIMES" maxWidth="90.199951171875" minWidth="10.0" prefWidth="37.80002441406248" />
+   </columnConstraints>
+   <rowConstraints>
+      <RowConstraints maxHeight="96.79999771118165" minHeight="10.0" prefHeight="34.40001220703125" vgrow="SOMETIMES" />
+      <RowConstraints maxHeight="140.79998779296875" minHeight="10.0" prefHeight="35.99998779296875" vgrow="SOMETIMES" />
+   </rowConstraints>
+   <children>
+      <Label prefHeight="20.0" prefWidth="108.0" text="Valoare fara TVA:">
+         <font>
+            <Font size="14.0" />
+         </font>
+         <GridPane.margin>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </GridPane.margin>
+      </Label>
+      <TextField fx:id="valoareFaraTVATextField" onAction="#valoareFaraTVATextFieldAction" prefHeight="26.0" prefWidth="72.0" GridPane.columnIndex="1">
+         <GridPane.margin>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </GridPane.margin>
+      </TextField>
+      <Label prefHeight="20.0" prefWidth="80.0" text="Procent TVA" GridPane.columnIndex="2">
+         <font>
+            <Font size="14.0" />
+         </font>
+         <GridPane.margin>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </GridPane.margin>
+      </Label>
+      <Label prefHeight="20.0" prefWidth="81.0" text="Valoare TVA" GridPane.rowIndex="1">
+         <font>
+            <Font size="14.0" />
+         </font>
+         <GridPane.margin>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </GridPane.margin>
+      </Label>
+      <TextField fx:id="valoareTVATextField" editable="false" prefHeight="26.0" prefWidth="55.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+         <GridPane.margin>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </GridPane.margin>
+      </TextField>
+      <Label prefHeight="20.0" prefWidth="89.0" text="Diferenta TVA" GridPane.columnIndex="2" GridPane.rowIndex="1">
+         <font>
+            <Font size="14.0" />
+         </font>
+         <GridPane.margin>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </GridPane.margin>
+      </Label>
+      <TextField fx:id="diferentaTVATextField" onAction="#diferentaTVATextFieldAction" prefHeight="148.0" prefWidth="158.0" GridPane.columnIndex="3" GridPane.rowIndex="1">
+         <GridPane.margin>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </GridPane.margin>
+      </TextField>
+      <Button fx:id="removeButton" mnemonicParsing="false" prefHeight="30.0" prefWidth="31.0" text="-" GridPane.columnIndex="4" GridPane.rowIndex="1">
+         <font>
+            <Font size="14.0" />
+         </font>
+         <GridPane.margin>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </GridPane.margin>
+      </Button>
+      <HBox GridPane.columnIndex="3">
+         <GridPane.margin>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </GridPane.margin>
+         <children>
+            <ComboBox fx:id="procentTVAComboBox" onAction="#procentTVAComboBoxAction" prefHeight="26.0" prefWidth="60.0">
+               <HBox.margin>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </HBox.margin>
+            </ComboBox>
+            <Label text="\%">
+               <font>
+                  <Font size="18.0" />
+               </font>
+               <HBox.margin>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </HBox.margin>
+            </Label>
+         </children>
+      </HBox>
+   </children>
+</GridPane>

@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<ScrollPane fx:id="baseScrollPane" prefHeight="344.0" prefWidth="672.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ActionsController">
+   <content>
+      <BorderPane>
+         <top>
+            <VBox BorderPane.alignment="CENTER">
+               <children>
+                  <MenuBar>
+                    <menus>
+                      <Menu mnemonicParsing="false" text="File">
+                        <items>
+                          <MenuItem mnemonicParsing="false" text="Close" />
+                        </items>
+                      </Menu>
+                      <Menu mnemonicParsing="false" text="Edit">
+                        <items>
+                          <MenuItem mnemonicParsing="false" text="Delete" />
+                        </items>
+                      </Menu>
+                      <Menu mnemonicParsing="false" text="Help">
+                        <items>
+                          <MenuItem mnemonicParsing="false" text="About" />
+                        </items>
+                      </Menu>
+                    </menus>
+                  </MenuBar>
+                  <HBox>
+                     <children>
+                        <Button mnemonicParsing="false" text="Vizualizare tabelar">
+                           <HBox.margin>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </HBox.margin>
+                        </Button>
+                        <Label prefHeight="20.0" prefWidth="123.0" text="Societate activa: ">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                           <HBox.margin>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </HBox.margin>
+                        </Label>
+                        <Label fx:id="societateActivaLabel" prefHeight="20.0" prefWidth="249.0">
+                           <font>
+                              <Font name="System Bold" size="14.0" />
+                           </font>
+                           <HBox.margin>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </HBox.margin>
+                        </Label>
+                        <Button fx:id="schimbareSocietateButton" mnemonicParsing="false" onMouseClicked="#schimbareSocietateButtonClicked" prefHeight="26.0" prefWidth="145.0" text="Schimbare">
+                           <HBox.margin>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </HBox.margin>
+                        </Button>
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
+         </top>
+         <left>
+            <VBox fx:id="vizualizareTabelarVBox" prefHeight="182.0" prefWidth="125.0" style="-fx-border-color: grey;" BorderPane.alignment="CENTER">
+               <children>
+                  <CheckBox fx:id="vizualiareTabelClsificariCheckBox" mnemonicParsing="false" onAction="#vizualiareTabelClsificariCheckBoxAction" text="Clasificari">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                     <VBox.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </VBox.margin>
+                  </CheckBox>
+                  <CheckBox fx:id="vizualizareMijlocFixCheckBox" mnemonicParsing="false" onAction="#vizualizareMijlocFixCheckBoxAction" text="Mijloc fix">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                     <padding>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </padding>
+                  </CheckBox>
+                  <AnchorPane prefHeight="191.0" prefWidth="124.0">
+                     <children>
+                        <Label layoutX="9.0" layoutY="77.0" prefHeight="18.0" prefWidth="56.0" text="Intre:">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                        </Label>
+                        <DatePicker fx:id="vizualizareOperatiiStartDatePicker" layoutX="14.0" layoutY="97.0" prefHeight="26.0" prefWidth="98.0" />
+                        <DatePicker fx:id="vizualizareOperatiiEndDatePicker" layoutX="14.0" layoutY="127.0" prefHeight="26.0" prefWidth="98.0" />
+                        <Label layoutX="10.0" layoutY="33.0" prefHeight="20.0" prefWidth="94.0" text="Nr. inventar:">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                        </Label>
+                        <TextField fx:id="selectedNrInventarTextBox" layoutX="15.0" layoutY="52.0" prefHeight="26.0" prefWidth="97.0" />
+                        <Label layoutX="5.0" layoutY="12.0" text="Operatiuni:">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                        </Label>
+                        <Button fx:id="vizualizareOperatiuniButton" layoutX="39.0" layoutY="158.0" mnemonicParsing="false" onAction="#vizualizareOperatiuniButtonAction" text="Vizualizare &#10;operatiuni" />
+                        <Label layoutX="115.0" layoutY="102.0" prefHeight="18.0" prefWidth="6.0" text="-" />
+                     </children>
+                  </AnchorPane>
+                  <Region prefHeight="46.0" prefWidth="124.0" />
+               </children>
+            </VBox>
+         </left>
+         <right>
+            <VBox fx:id="optionContentVBox" prefHeight="332.0" prefWidth="544.0" style="-fx-border-color: grey;" BorderPane.alignment="CENTER">
+               <children>
+                  <HBox>
+                     <VBox.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </VBox.margin>
+                     <children>
+                        <ComboBox fx:id="selectareOperatieComboBox" onAction="#selectareOperatieComboBoxAction" prefWidth="150.0" />
+                        <ComboBox fx:id="selectareActionComboBox" onAction="#selectareActionComboBoxAction" prefWidth="150.0">
+                           <HBox.margin>
+                              <Insets left="5.0" />
+                           </HBox.margin>
+                        </ComboBox>
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
+         </right>
+      </BorderPane>
+   </content>
+</ScrollPane>
