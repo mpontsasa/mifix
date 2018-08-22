@@ -13,10 +13,10 @@ import java.sql.Statement;
 import java.util.ArrayList;
 
 public class OperatiuniTableInitializer {
-    /*private static ArrayList<TableDisplayer<operatieData>> tds = new ArrayList<>();
+    private static ArrayList<TableDisplayer<operatieData>> tds = new ArrayList<>();
     private static ListenerCallbeck lc = null;
 
-    public static void initializeTable() throws SQLExceptionc
+    public static void initializeTable() throws SQLException
     {
 
         TableDisplayer<operatieData> td = new TableDisplayer<>();
@@ -190,29 +190,6 @@ public class OperatiuniTableInitializer {
         return td;
     }
 
-    public static boolean show() throws SQLException
-    {
-        if (td == null)
-        {
-            initializeTable();
-            td.show();
-            return true;
-        }
-        else
-        {
-
-            td.show();
-            return false;
-        }
-
-    }
-
-    public static void hide()
-    {
-        if (td != null)
-            td.hide();
-    }
-
     public static ListenerCallbeck getLc() {
         return lc;
     }
@@ -228,6 +205,6 @@ public class OperatiuniTableInitializer {
             td.getData().clear();
             setData();
         }
-    }*/
+    }
 
 }
