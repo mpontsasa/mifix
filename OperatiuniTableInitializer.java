@@ -1,93 +1,130 @@
-import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleFloatProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
-import javafx.scene.control.Tooltip;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.util.Callback;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 public class OperatiuniTableInitializer {
-    private static ArrayList<TableDisplayer<operatieData>> tds = new ArrayList<>();
-    private static ListenerCallbeck lc = null;
+    private static ArrayList<OperatiuniTableDisplayer<operatieData>> tds = new ArrayList<>();
 
-    public static void initializeTable() throws SQLException
+    public static TableDisplayer initializeTable(String nrInv, LocalDate start, LocalDate end) throws SQLException
     {
 
-        TableDisplayer<operatieData> td = new TableDisplayer<>();
+        OperatiuniTableDisplayer<operatieData> td = new OperatiuniTableDisplayer<>();
         tds.add(td);
 
-        td.getStage().setOnCloseRequest(event -> {
-            if (lc != null)
-            {
-                lc.action();
-            }
-        });
+        setData(td, nrInv, start, end);
 
-        setData();
-
-        td.getStage().setWidth(1400);
+        td.getStage().setWidth(700);
         td.getStage().setHeight(700);
         td.getTable().setPrefHeight(600);
-        td.getTable().setPrefWidth(1350);
-        td.getLabel().setText("Operatiuni");
+        td.getTable().setPrefWidth(650);
 
-        TableColumn nrInventar = new TableColumn("Nr. Inventar");
-        nrInventar.setMinWidth(100);
-        nrInventar.setCellValueFactory(
-                new PropertyValueFactory<MijlocFixTableInitializer.MijlocFixData, String>("nrInventar"));
+        if (start!= null && end != null)
+        {
+            td.getLabel().setText("Operatiuni " + nrInv + " intre " + start.toString() + "  -  " + end.toString());
+        }
+        else if (start != null)
+        {
+            td.getLabel().setText("Operatiuni " + nrInv + " dupa " + start.toString());
+        }
+        else if (end != null)
+        {
+            td.getLabel().setText("Operatiuni " + nrInv + " inainte de " + end.toString());
+        }
+        else
+        {
+            td.getLabel().setText("Operatiuni " + nrInv);
+        }
+
+        td.getStage().setOnCloseRequest(event -> {
+            tds.remove(td);
+        });
+
+        /*TableColumn felOperatiei = new TableColumn("Nr. Inventar");
+        felOperatiei.setMinWidth(100);
+        felOperatiei.setCellValueFactory(
+                new PropertyValueFactory<MijlocFixTableInitializer.MijlocFixData, String>("felOperatiei"));*/
+
+        TableColumn felOperatie = new TableColumn("Fel operatie");
+        felOperatie.setMinWidth(32);
+        felOperatie.setCellValueFactory(
+                new PropertyValueFactory<operatieData, String>("felOperatiei"));
+
 
         TableColumn nrReceptie = new TableColumn("Nr. receptie");
-        nrReceptie.setMinWidth(500);
+        nrReceptie.setMinWidth(32);
         nrReceptie.setCellValueFactory(
-                new PropertyValueFactory<MijlocFixTableInitializer.MijlocFixData, String>("nrReceptie"));
+                new PropertyValueFactory<operatieData, String>("nrReceptie"));
 
         TableColumn felDocument = new TableColumn("Fel document");
-        felDocument.setMinWidth(20);
+        felDocument.setMinWidth(10);
         felDocument.setCellValueFactory(
                 new PropertyValueFactory<MijlocFixTableInitializer.MijlocFixData, String>("felDocument"));
 
 
         TableColumn nrDocument = new TableColumn("Nr. document");
-        nrDocument.setMinWidth(20);
+        nrDocument.setMinWidth(32);
         nrDocument.setCellValueFactory(
-                new PropertyValueFactory<MijlocFixTableInitializer.MijlocFixData, Integer>("nrDocument"));
+                new PropertyValueFactory<operatieData, Integer>("nrDocument"));
 
 
         TableColumn dataOperatiei = new TableColumn("Regim de amortizare");
         dataOperatiei.setMinWidth(70);
         dataOperatiei.setCellValueFactory(
-                new PropertyValueFactory<MijlocFixTableInitializer.MijlocFixData, String>("dataOperatiei"));
+                new PropertyValueFactory<operatieData, String>("dataOperatiei"));
 
         TableColumn valoareFaraTVA = new TableColumn("Valoare fara TVA");
-        valoareFaraTVA.setMinWidth(50);
+        valoareFaraTVA.setMinWidth(15);
         valoareFaraTVA.setCellValueFactory(
-                new PropertyValueFactory<MijlocFixTableInitializer.MijlocFixData, String>("valoareFaraTVA"));
+                new PropertyValueFactory<operatieData, String>("valoareFaraTVA"));
 
-        td.getTable().getColumns().addAll(nrInventar, nrReceptie, felDocument, nrDocument, dataOperatiei, valoareFaraTVA);
+        td.getTable().getColumns().addAll(felOperatie, nrReceptie, felDocument, nrDocument, dataOperatiei, valoareFaraTVA);
+
+        td.show();
+
+        return td;
     }
 
-    public static void setData() throws SQLException
+    public static void setData(TableDisplayer td, String nrInventar, LocalDate start, LocalDate end) throws SQLException
     {
         Connection c = MySQLJDBCUtil.getConnection(Main.getSocietateActuala());    //get the connection
         Statement st = c.createStatement();                                         //make a statement
-        ResultSet rs = st.executeQuery(Finals.SELECT_FROM_MIJLOC_FIX_SQL);         //get the clasificari
+
+        String sqlQuery = "select operatiebase.operatieID, commonDataDB.feluriOperatiei.denumire as felOperatieidenumire , nrReceptie, felDocument, nrDocument, dataOperatiei, sum(valoareFaraTVA) as valoareFaraTVASum from mijlocFix, operatiebase, operatievalori, commonDataDB.feluriOperatiei\n" +
+                "where mijlocFix.mifixID = operatiebase.mifixID and operatiebase.operatieID = operatieValori.operatieID and commonDataDB.feluriOperatiei.felOperatieiID = operatiebase.felOperatiei " +
+                "and nrInventar = '" + nrInventar + "' ";
+        if (start != null)
+        {
+            sqlQuery += "and dataOperatiei >= '" + start.toString() + "' ";
+        }
+
+        if (end != null)
+        {
+            sqlQuery += "and dataOperatiei <= '" + end.toString() + "' ";
+        }
+
+        sqlQuery += "group by operatiebase.operatieID;";
+
+        System.out.println(sqlQuery);
+        ResultSet rs = st.executeQuery(sqlQuery);
 
         while(rs.next())
         {
-            td.getData().add(new MijlocFixTableInitializer.MijlocFixData( rs.getString("nrInventar"),
-                    rs.getString("mifixSiCaracteristiceTechnice"),
-                    rs.getString("clasificare"),
-                    rs.getInt("durataAmortizarii"),
-                    rs.getString("regimDeAmortizare"),
-                    rs.getString("termenDeGarantie"),
-                    rs.getString("contDebitor"),
-                    rs.getString("contCreditor")));
+            td.getData().add(new OperatiuniTableInitializer.operatieData(
+                    rs.getString("felOperatieidenumire"),
+                    rs.getString("nrReceptie"),
+                    rs.getString("felDocument"),
+                    rs.getString("nrDocument"),
+                    rs.getString("dataOperatiei"),
+                    rs.getFloat("valoareFaraTVASum"))
+            );
         }
 
         rs.close();
@@ -96,33 +133,33 @@ public class OperatiuniTableInitializer {
     }
 
     public static class operatieData {
-        private final SimpleStringProperty nrInventar;
+        private final SimpleStringProperty felOperatiei;
         private final SimpleStringProperty nrReceptie;
         private final SimpleStringProperty felDocument;
         private final SimpleStringProperty nrDocument;
         private final SimpleStringProperty dataOperatiei;
-        private final SimpleIntegerProperty valoareFaraTVA;
+        private final SimpleFloatProperty valoareFaraTVA;
 
-        operatieData(String nrInventar, String nrReceptie, String felDocument, String nrDocument, String dataOperatiei, Integer valoareFaraTVA)
+        operatieData(String felOperatiei, String nrReceptie, String felDocument, String nrDocument, String dataOperatiei, Float valoareFaraTVA)
         {
-            this.nrInventar = new SimpleStringProperty(nrInventar);
+            this.felOperatiei = new SimpleStringProperty(felOperatiei);
             this.nrReceptie = new SimpleStringProperty(nrReceptie);
             this.felDocument = new SimpleStringProperty(felDocument);
             this.nrDocument = new SimpleStringProperty(nrDocument);
             this.dataOperatiei = new SimpleStringProperty(dataOperatiei);
-            this.valoareFaraTVA = new SimpleIntegerProperty(valoareFaraTVA);
+            this.valoareFaraTVA = new SimpleFloatProperty(valoareFaraTVA);
         }
 
-        public String getNrInventar() {
-            return nrInventar.get();
+        public String getFelOperatiei() {
+            return felOperatiei.get();
         }
 
-        public SimpleStringProperty nrInventarProperty() {
-            return nrInventar;
+        public SimpleStringProperty felOperatieiProperty() {
+            return felOperatiei;
         }
 
-        public void setNrInventar(String nrInventar) {
-            this.nrInventar.set(nrInventar);
+        public void setFelOperatiei(String felOperatiei) {
+            this.felOperatiei.set(felOperatiei);
         }
 
         public String getNrReceptie() {
@@ -173,11 +210,11 @@ public class OperatiuniTableInitializer {
             this.dataOperatiei.set(dataOperatiei);
         }
 
-        public int getValoareFaraTVA() {
+        public float getValoareFaraTVA() {
             return valoareFaraTVA.get();
         }
 
-        public SimpleIntegerProperty valoareFaraTVAProperty() {
+        public SimpleFloatProperty valoareFaraTVAProperty() {
             return valoareFaraTVA;
         }
 
@@ -186,25 +223,9 @@ public class OperatiuniTableInitializer {
         }
     }
 
-    public static TableDisplayer<OperatiuniTableInitializer.MijlocFixData> getTd() {
-        return td;
-    }
-
-    public static ListenerCallbeck getLc() {
-        return lc;
-    }
-
-    public static void setLc(ListenerCallbeck lc_) {
-        lc = lc_;
-    }
-
     public static void reload() throws SQLException
     {
-        if (td != null)
-        {
-            td.getData().clear();
-            setData();
-        }
+        ///coming soon
     }
 
 }

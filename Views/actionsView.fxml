@@ -18,9 +18,9 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<ScrollPane fx:id="baseScrollPane" prefHeight="344.0" prefWidth="672.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ActionsController">
+<ScrollPane fx:id="baseScrollPane" prefHeight="366.0" prefWidth="885.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ActionsController">
    <content>
-      <BorderPane>
+      <BorderPane prefHeight="394.0" prefWidth="1031.0">
          <top>
             <VBox BorderPane.alignment="CENTER">
                <children>
@@ -124,7 +124,7 @@
             </VBox>
          </left>
          <right>
-            <VBox fx:id="optionContentVBox" prefHeight="332.0" prefWidth="544.0" style="-fx-border-color: grey;" BorderPane.alignment="CENTER">
+            <VBox fx:id="optionContentVBox" prefHeight="333.0" prefWidth="903.0" style="-fx-border-color: grey;" BorderPane.alignment="CENTER">
                <children>
                   <HBox>
                      <VBox.margin>

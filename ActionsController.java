@@ -102,7 +102,7 @@ public class ActionsController {
                 {
                     ClasificariTableInitializer.getTd().getTable().getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
                         if (newSelection != null) {
-                            clasificareSelected();
+                            clasificareSelectedFromTable();
                         }
                     });
                 }
@@ -128,7 +128,7 @@ public class ActionsController {
                 if (MijlocFixTableInitializer.show()) {
                     MijlocFixTableInitializer.getTd().getTable().getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
                         if (newSelection != null) {
-                            mifixSelected();
+                            mifixSelectedFromTable();
                         }
                     });
                 }
@@ -145,8 +145,31 @@ public class ActionsController {
         }
     }
 
+    @FXML
     public void vizualizareOperatiuniButtonAction()
     {
+        try
+        {
+            if(!MySQLJDBCUtil.recordExists(Main.getSocietateActuala(), "mijlocFix", "nrInventar", selectedNrInventarTextBox.getText()))
+            {
+                Alerts.errorAlert(Finals.INVALID_INPUT_TITLE_TEXT, Finals.NR_INVENTAR_DOSENT_EXISTS_HEADER_TEXT, Finals.INVALID_INPUT_CONTENT_TEXT);
+                return;
+            }
+            else
+            {
+                TableDisplayer td = OperatiuniTableInitializer.initializeTable(selectedNrInventarTextBox.getText(), vizualizareOperatiiStartDatePicker.getValue(), vizualizareOperatiiEndDatePicker.getValue());
+                td.getTable().getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+                    if (newSelection != null) {
+                        operatieSelectedFromTable();
+                    }
+                });
+
+            }
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
 
     }
 
@@ -285,32 +308,43 @@ public class ActionsController {
         }
     }
 
-    public void mifixSelected() //mifix selected from table view
+    public void mifixSelectedFromTable() //mifix selected from table view
     {
         //set up selected nrInventar
 
         selectedNrInventarTextBox.setText(MijlocFixTableInitializer.getTd().getTable().getSelectionModel().getSelectedItem().getNrInventar());
 
         //...............................................fill input with selected
-        if (selectareOperatieComboBox.getValue().toString().equals(Finals.MIFIX_OP) &&
-                !selectareActionComboBox.getValue().toString().equals(Finals.ADAUGARE_OP))    //mifix option selected but not adaugare action
+        if (selectareOperatieComboBox.getValue() != null)
         {
-            mijlocFixController.mijlocFixSelectedInTable();
-        }
-        else if(!selectareOperatieComboBox.getValue().toString().equals(Finals.MIFIX_OP) &&
-                selectareActionComboBox.getValue().toString().equals(Finals.ADAUGARE_OP))    //operatie option selected and adaugare action
-        {
-            operationController.mijlocFixSelectedInTable();
+            if (selectareOperatieComboBox.getValue().toString().equals(Finals.MIFIX_OP) &&
+                    !selectareActionComboBox.getValue().toString().equals(Finals.ADAUGARE_OP))    //mifix option selected but not adaugare action
+            {
+                mijlocFixController.mijlocFixSelectedInTable();
+            }
+            else if(!selectareOperatieComboBox.getValue().toString().equals(Finals.MIFIX_OP) &&
+                    selectareActionComboBox.getValue().toString().equals(Finals.ADAUGARE_OP))    //operatie option selected and adaugare action
+            {
+                operationController.mijlocFixSelectedInTable();
+            }
         }
     }
 
-    public void clasificareSelected() //clasificare selected from table view
+    public void clasificareSelectedFromTable() //clasificare selected from table view
     {
-        if (selectareOperatieComboBox.getValue().toString().equals(Finals.MIFIX_OP) &&
-                !selectareActionComboBox.getValue().toString().equals(Finals.STERGERE_OP))    //mifix option selected but not stergere action
+        if (selectareOperatieComboBox.getValue() != null)
         {
-            mijlocFixController.clasificareSelectedInTable();
+            if (selectareOperatieComboBox.getValue().toString().equals(Finals.MIFIX_OP) &&
+                    !selectareActionComboBox.getValue().toString().equals(Finals.STERGERE_OP))    //mifix option selected but not stergere action
+            {
+                mijlocFixController.clasificareSelectedInTable();
+            }
         }
+    }
+
+    public void operatieSelectedFromTable() //operatie selected from table view
+    {
+
     }
 
     /*    public void vanzareOptionSelected()
