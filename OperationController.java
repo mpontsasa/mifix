@@ -46,7 +46,6 @@ public class OperationController {
 
     public void adaugareInDatabase()
     {
-
         try
         {
             if (getOperationBaseController().validateInputForAdaugare())
@@ -58,7 +57,7 @@ public class OperationController {
 
                 //........inserting into operatiebase
 
-                String insSql = "insert into \"Freeform 2005\".operatiebase (mifixID, nrReceptie, felDocument, nrDocument, dataOperatiei, felOperatiei) VALUES \n" +
+                String insSql = "insert into \"Freeform 2005\".operatiebase (mifixID, nrReceptie, felDocument, nrDocument, dataOperatiei, felOperatieiID) VALUES \n" +
                         "((Select mifixID from mijlocFix where nrInventar='"+ getOperationBaseController().nrInventarTextField.getText() +"')"+ ", '" +
                         getOperationBaseController().nrReceptieTextField.getText() + "', '"+
                         getOperationBaseController().felDocumentTextField.getText() +"', '"+

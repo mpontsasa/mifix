@@ -256,7 +256,37 @@ public class MijlocFixController {
 
     public void modificareInDatabase()
     {
+        try
+        {
+            if(MySQLJDBCUtil.recordExists(Main.getSocietateActuala(), "mijlocFix", "nrInventar", numarInventarTextField.getText()) &&
+                    Alerts.confirmationAlert(Finals.MODIFICARE_HEADER_TEXT, Finals.MODIFICARE_MIJLOC_FIX_TITLE_TEXT, "Sunteti sigur ca modificati mijloc fix cu nr inventar: \n" + numarInventarTextField.getText() + "  ?"))
+            {
+                if (validateInputForModificare())
+                {
+                    MySQLJDBCUtil.updateMifix(numarInventarTextField.getText(),
+                            numarInventarTextField.getText(),
+                            mijlocFixSiCaracteristiciTextArea.getText(),
+                            codDeClasificareComboBox.getValue().toString(),
+                            Integer.parseInt(durataAmortizariiTextField.getText()),
+                            regimDeAmortizareComboBox.getValue().toString(),
+                            termenDeGarantieDatePicker.getValue(),
+                            contDebitorTextField.getText(),
+                            contCreditorTextField.getText());
 
+                    MijlocFixTableInitializer.reload();
+                    Alerts.informationAlert(Finals.SUCCESSFUL_OPERATION_TITLE_TEXT, Finals.SUCCESSFUL_OPERATION_HEADER_TEXT, Finals.SUCCESSFUL_OPERATION_CONTENT_TEXT);
+
+                }
+            }
+            else
+            {
+                //itt tartok
+            }
+        }
+        catch(SQLException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     private void stergereInDatabase()
@@ -379,6 +409,101 @@ public class MijlocFixController {
         if(MySQLJDBCUtil.recordExists(Main.getSocietateActuala(), "mijlocFix", "nrInventar", numarInventarTextField.getText()))
         {
             Alerts.errorAlert(Finals.INVALID_INPUT_TITLE_TEXT, Finals.NR_INVENTAR_EXISTS_HEADER_TEXT, Finals.INVALID_INPUT_CONTENT_TEXT);
+            return false;
+        }
+
+        //validare cod de clasificare
+        if (codDeClasificareComboBox.getValue() == null || codDeClasificareComboBox.getValue().toString().equals(""))
+        {
+            Alerts.errorAlert(Finals.INVALID_INPUT_TITLE_TEXT, Finals.COD_DE_CLASIFICARE_EMPTY_HEADER_TEXT, Finals.INVALID_INPUT_CONTENT_TEXT);
+            return false;
+        }
+
+        if (!codDeClasificareComboBox.getItems().contains(codDeClasificareComboBox.getValue()))
+        {
+            Alerts.errorAlert(Finals.INVALID_INPUT_TITLE_TEXT, Finals.COD_DE_CLASIFICARE_INCORECT_HEADER_TEXT, Finals.INVALID_INPUT_CONTENT_TEXT);
+            return false;
+        }
+
+        //validation of durata amortizarii
+
+        if (durataAmortizariiTextField.getText()== null || durataAmortizariiTextField.getText().equals(""))
+        {
+            Alerts.errorAlert(Finals.INVALID_INPUT_TITLE_TEXT, Finals.DURATA_AMORTIZARII_EMPTY_HEADER_TEXT, Finals.INVALID_INPUT_CONTENT_TEXT);
+            return false;
+        }
+
+        // validation of mifix si caracteristice technice
+        if (mijlocFixSiCaracteristiciTextArea.getText().equals(""))
+        {
+            Alerts.errorAlert(Finals.INVALID_INPUT_TITLE_TEXT, Finals.MI_FIX_SI_CAR_EMPTY_HEADER_TEXT, Finals.INVALID_INPUT_CONTENT_TEXT);
+            return false;
+        }
+
+        if (mijlocFixSiCaracteristiciTextArea.getText().length() > 500)
+        {
+            Alerts.errorAlert(Finals.INVALID_INPUT_TITLE_TEXT, Finals.MI_FIX_SI_CAR_TOO_LONG_HEADER_TEXT, Finals.INVALID_INPUT_CONTENT_TEXT);
+            return false;
+        }
+
+        // validation of cont creditor
+
+        /*if (contCreditorTextField.getText()== null || contCreditorTextField.getText().equals(""))
+        {
+            Alerts.errorAlert(Finals.INVALID_INPUT_TITLE_TEXT, Finals.CONT_CREDITOR_EMPTY_HEADER_TEXT, Finals.INVALID_INPUT_CONTENT_TEXT);
+            return false;
+        }*/
+
+        if (contCreditorTextField.getText()!= null && !contCreditorTextField.getText().equals(""))
+        {
+
+            String contDBVersion = DbfAccess.contExists(contCreditorTextField.getText());   // get the database version of the string if exists
+            if (contDBVersion == null)  //if it doesent exists
+            {
+                Alerts.errorAlert(Finals.INVALID_INPUT_TITLE_TEXT, Finals.INEXISTENT_CONT_CREDITOR_HEADER_TEXT, Finals.INVALID_INPUT_CONTENT_TEXT);
+                return false;
+            }
+            else
+            {
+                contCreditorTextField.setText(contDBVersion);   //lets use the database version
+            }
+        }
+
+        // validation of cont debitor
+
+        /*if (contDebitorTextField.getText()== null || contDebitorTextField.getText().equals(""))
+        {
+            Alerts.errorAlert(Finals.INVALID_INPUT_TITLE_TEXT, Finals.CONT_DEBITOR_EMPTY_HEADER_TEXT, Finals.INVALID_INPUT_CONTENT_TEXT);
+            return false;
+        }*/
+
+        if (contDebitorTextField.getText()!= null &&! contDebitorTextField.getText().equals(""))
+        {
+
+            String contDBVersion = DbfAccess.contExists(contDebitorTextField.getText());   // get the database version of the string if exists
+            if (contDBVersion == null)  //if it doesent exists
+            {
+                Alerts.errorAlert(Finals.INVALID_INPUT_TITLE_TEXT, Finals.INEXISTENT_CONT_DEBITOR_HEADER_TEXT, Finals.INVALID_INPUT_CONTENT_TEXT);
+                return false;
+            }
+            else
+            {
+                contDebitorTextField.setText(contDBVersion);   //lets use the database version
+            }
+
+        }
+        //..............
+
+        return true;
+    }
+
+    public boolean validateInputForModificare() throws SQLException
+    {
+        //validation of nrInventar
+
+        if (numarInventarTextField.getText() == null || numarInventarTextField.getText().equals(""))
+        {
+            Alerts.errorAlert(Finals.INVALID_INPUT_TITLE_TEXT, Finals.NR_INVENTAR_EMPTY_HEADER_TEXT, Finals.INVALID_INPUT_CONTENT_TEXT);
             return false;
         }
 

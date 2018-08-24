@@ -11,13 +11,13 @@ public class Finals {
 
 //...............................Operatii
     final static String MIFIX_OP = "Mijloc fix";
-    final static String ACHIZATIE_OP = "Achizatie";
-    final static String VANZARE_OP = "Vanzare";
-    final static String CASARE_OP = "Casare";
-    final static String REEVALUARE_OP = "Reevaluare";
-    final static String COMPLETARE_OP = "Completare";
-    final static String AMENAJARE_OP = "Amenajara";
-    final static String TRANSPORT_OP = "Transport";
+    final static String ACHIZATIE_OP = "achizitie";
+    final static String VANZARE_OP = "vanzare";
+    final static String CASARE_OP = "casare";
+    final static String REEVALUARE_OP = "reevaluare";
+    final static String COMPLETARE_OP = "completare";
+    final static String AMENAJARE_OP = "amenajare";
+    final static String TRANSPORT_OP = "transport";
 //...............................Actions
 
     final static String ADAUGARE_OP = "Adaugare";
@@ -70,10 +70,15 @@ public class Finals {
     final static String VALOARE_FARA_TVA_EMPTY_HEADER_TEXT = "Valoare fara TVA nu poate ramane gol!";
     final static String PROCENT_TVA_EMPTY_HEADER_TEXT = "Procent TVA nu poate ramane gol!";
 
+    //......modificare mijlocfix
+
+    final static String MODIFICARE_HEADER_TEXT = "Modificare!";
+    final static String MODIFICARE_MIJLOC_FIX_TITLE_TEXT = "Modificare mijloc fix!";
+
     //.........................basic operation
+    final static String NR_DOCUMENT_EMPTY_HEADER_TEXT = "Nr. document nu poate ramane gol!";
     final static String NR_RECEPTIE_EMPTY_HEADER_TEXT = "Nr. receptie nu poate ramane gol!";
     final static String FEL_DOCUMNENT_EMPTY_HEADER_TEXT = "Fel document nu poate ramane gol!";
-    final static String NR_DOCUMENT_EMPTY_HEADER_TEXT = "Nr. document nu poate ramane gol!";
 
 
 //.....................................SQL commands
@@ -85,6 +90,7 @@ public class Finals {
     final static String SET_QUOTES_SQL = "SET sql_mode='ANSI_QUOTES';";
     final static String SELECT_FROM_CLASIFICARI_SQL = "Select cod, description, minDur, maxDur from clasificari;";
     final static String SELECT_FROM_REGIMI_DE_AMORTIZARE_SQL = "Select denumire from regimiDeAmortizare;";
+    final static String SELECT_FELURI_DE_OPERATII_SQL = "Select denumire from commonDataDB.feluriOperatiei;";
 
     final static String SELECT_FROM_MIJLOC_FIX_SQL = "Select nrInventar, mifixSiCaracteristiceTechnice, clasificare, durataAmortizarii, regimDeAmortizare, termenDeGarantie, contDebitor, contCreditor from mijlocFix;";
 

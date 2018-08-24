@@ -1,6 +1,8 @@
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.*;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Properties;
 
 /**
@@ -76,6 +78,8 @@ public class MySQLJDBCUtil {
 
         String sqlQuery = "SELECT "+column+" from "+ table +" where " +column+" = '"+ value +"';";
 
+        System.out.println(sqlQuery);
+
         ResultSet rs = s.executeQuery(sqlQuery);
 
         rs.last();
@@ -118,24 +122,69 @@ public class MySQLJDBCUtil {
         }
     }
 
-    public static void deleteValuesOfOperatie(int operatieID) throws SQLException
+    public static void updateMifix(String nrInvOld, String  nrInv, String  mifixSiCharTech, String clasificare, int durataAmortizarii, String regimDeAmortizare, LocalDate termenDeGarantie, String contDebitor, String contCreditor) throws SQLException
     {
-        Connection c = getConnection();
+        Connection c = MySQLJDBCUtil.getConnection();
         Statement s = c.createStatement();
         s.executeUpdate(Finals.SET_QUOTES_SQL);
-        s.executeUpdate("use \"" + Main.getSocietateActuala() + "\";");
+        s.executeUpdate("use \"" + Main.getSocietateActuala() +"\";");
 
-        String sqlQuery = "DELETE from \"" + Main.getSocietateActuala() + "\".operatieValori where operatieID=" + operatieID + ";";
+        String updSql = "update mijlocFix set "+
+                " nrInventar = '"+ nrInv+"'," +
+                "mifixSiCaracteristiceTechnice = '"+mifixSiCharTech+"', " +
+                "clasificare = '"+clasificare+"', " +
+                "durataAmortizarii = "+durataAmortizarii+", " +
+                "regimDeAmortizare = '"+regimDeAmortizare+"', ";
 
-        s.executeUpdate(sqlQuery);
+        if (termenDeGarantie == null)
+        {
+            updSql += "termenDeGarantie = null, ";
+        }
+        else
+        {
+            updSql += "termenDeGarantie = '"+termenDeGarantie.toString()+"', ";
+        }
+
+        if (contDebitor == null || contDebitor.equals(""))
+        {
+            updSql += "contDebitor = null, ";
+        }
+        else
+        {
+            updSql += "contDebitor = '"+contDebitor+"', ";
+        }
+
+        if (contCreditor == null || contCreditor.equals(""))
+        {
+            updSql += "contCreditor = null ";
+        }
+        else
+        {
+            updSql += "contCreditor = '"+contCreditor+"'";
+        }
+
+        updSql += "where nrInventar = '"+nrInvOld+"';";
+
+        System.out.println(updSql);
+        s.executeUpdate(updSql);
 
         s.close();
         c.close();
-
     }
 
-    public static void deleteOperatie(int operatieId)
+    public static ArrayList<String> getfeluriOperati() throws SQLException
     {
+        Connection c = MySQLJDBCUtil.getConnection(Main.getSocietateActuala());    //get the connection
+        Statement st = c.createStatement();                                         //make a statement
 
+        ResultSet rs = st.executeQuery(Finals.SELECT_FELURI_DE_OPERATII_SQL);
+
+        ArrayList<String> result = new ArrayList<>();
+
+        while(rs.next())
+        {
+            result.add(rs.getString("denumire"));
+        }
+        return result;
     }
 }

@@ -97,9 +97,12 @@ public class OperatiuniTableInitializer {
         Connection c = MySQLJDBCUtil.getConnection(Main.getSocietateActuala());    //get the connection
         Statement st = c.createStatement();                                         //make a statement
 
-        String sqlQuery = "select operatiebase.operatieID, commonDataDB.feluriOperatiei.denumire as felOperatieidenumire , nrReceptie, felDocument, nrDocument, dataOperatiei, sum(valoareFaraTVA) as valoareFaraTVASum from mijlocFix, operatiebase, operatievalori, commonDataDB.feluriOperatiei\n" +
-                "where mijlocFix.mifixID = operatiebase.mifixID and operatiebase.operatieID = operatieValori.operatieID and commonDataDB.feluriOperatiei.felOperatieiID = operatiebase.felOperatiei " +
-                "and nrInventar = '" + nrInventar + "' ";
+        String sqlQuery = "select operatiebase.operatieID, commonDataDB.feluriOperatiei.denumire as felOperatieidenumire , nrReceptie, felDocument, nrDocument, dataOperatiei, sum(valoareFaraTVA) as valoareFaraTVASum " +
+                "from mijlocFix " +
+                "join operatiebase on mijlocFix.mifixID = operatiebase.mifixID " +
+                "Left Join operatievalori on operatiebase.operatieID = operatieValori.operatieID " +
+                "Join commonDataDB.feluriOperatiei on commonDataDB.feluriOperatiei.felOperatieiID = operatiebase.felOperatieiID " +
+                "where nrInventar = '" + nrInventar + "' ";
         if (start != null)
         {
             sqlQuery += "and dataOperatiei >= '" + start.toString() + "' ";
@@ -227,5 +230,4 @@ public class OperatiuniTableInitializer {
     {
         ///coming soon
     }
-
 }

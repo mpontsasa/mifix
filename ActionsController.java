@@ -1,3 +1,4 @@
+import com.mysql.cj.x.protobuf.MysqlxCrud;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
@@ -55,33 +56,40 @@ public class ActionsController {
     @FXML
     public void selectareOperatieComboBoxAction()
     {
-        switch (selectareOperatieComboBox.getValue().toString())
+
+        if (selectareOperatieComboBox.getValue().toString().equals(Finals.MIFIX_OP))
         {
-            case Finals.MIFIX_OP:
-                mifixOptionSelected();
-                break;
-            case Finals.VANZARE_OP:
-                generalOperatieOptionSelected("vanzare");
-                break;
-            case Finals.ACHIZATIE_OP:
-                generalOperatieOptionSelected("achizitie");
-                break;
-            case Finals.CASARE_OP:
-                generalOperatieOptionSelected("casare");
-                break;
-            case Finals.REEVALUARE_OP:
-                generalOperatieOptionSelected("reevaluare");
-                break;
-            case Finals.COMPLETARE_OP:
-                generalOperatieOptionSelected("completare");
-                break;
-            case Finals.AMENAJARE_OP:
-                generalOperatieOptionSelected("amenajare");
-                break;
-            case Finals.TRANSPORT_OP:
-                generalOperatieOptionSelected("transport");
-                break;
+            mifixOptionSelected();
         }
+        else if (selectareOperatieComboBox.getValue().toString().equals(Finals.VANZARE_OP))
+        {
+            generalOperatieOptionSelected(Finals.VANZARE_OP);
+        }
+        else if (selectareOperatieComboBox.getValue().toString().equals(Finals.CASARE_OP))
+        {
+            generalOperatieOptionSelected(Finals.CASARE_OP);
+        }
+        else if (selectareOperatieComboBox.getValue().toString().equals(Finals.REEVALUARE_OP))
+        {
+            generalOperatieOptionSelected(Finals.REEVALUARE_OP);
+        }
+        else if (selectareOperatieComboBox.getValue().toString().equals(Finals.COMPLETARE_OP))
+        {
+            generalOperatieOptionSelected(Finals.COMPLETARE_OP);
+        }
+        else if (selectareOperatieComboBox.getValue().toString().equals(Finals.AMENAJARE_OP))
+        {
+            generalOperatieOptionSelected(Finals.AMENAJARE_OP);
+        }
+        else if (selectareOperatieComboBox.getValue().toString().equals(Finals.TRANSPORT_OP))
+        {
+            generalOperatieOptionSelected(Finals.TRANSPORT_OP);
+        }
+        else if (selectareOperatieComboBox.getValue().toString().equals(Finals.ACHIZATIE_OP))
+        {
+            generalOperatieOptionSelected(Finals.ACHIZATIE_OP);
+        }
+
         placeAndSizeAllTables();
     }
 
@@ -174,7 +182,6 @@ public class ActionsController {
     }
 
     public void initialize(Main main) {
-        this.main = main;
 
         societateActivaLabel.setText(Main.getSocietateActuala());
 
@@ -216,7 +223,20 @@ public class ActionsController {
 
         //................................................................................set up operatiuni combo box
 
-         selectareOperatieComboBox.getItems().addAll(
+        selectareOperatieComboBox.getItems().add(Finals.MIFIX_OP);
+
+        try
+        {
+
+            selectareOperatieComboBox.getItems().addAll(MySQLJDBCUtil.getfeluriOperati());
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+
+
+         /*selectareOperatieComboBox.getItems().addAll(
                  Finals.MIFIX_OP,
                  Finals.ACHIZATIE_OP,
                  Finals.COMPLETARE_OP,
@@ -225,7 +245,7 @@ public class ActionsController {
                  Finals.TRANSPORT_OP,
                  Finals.CASARE_OP,
                  Finals.VANZARE_OP
-         );
+         );*/
         //................................................................................set up actions combo box
 
         selectareActionComboBox.getItems().addAll(
