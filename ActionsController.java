@@ -168,7 +168,14 @@ public class ActionsController {
                 TableDisplayer td = OperatiuniTableInitializer.initializeTable(selectedNrInventarTextBox.getText(), vizualizareOperatiiStartDatePicker.getValue(), vizualizareOperatiiEndDatePicker.getValue());
                 td.getTable().getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
                     if (newSelection != null) {
-                        operatieSelectedFromTable();
+                        for (OperatiuniTableDisplayer<OperatiuniTableInitializer.operatieData> otd : OperatiuniTableInitializer.getTds()) //we are looking for  the TableDisplayer
+                        {
+                            if (otd.getTable().getSelectionModel().getSelectedItem() == newSelection)   //If we found it
+                            {
+                                operatieSelectedFromTable(otd); //we use it to call the operatieselected function
+                                return; // thats all we need
+                            }
+                        }
                     }
                 });
 
@@ -362,9 +369,10 @@ public class ActionsController {
         }
     }
 
-    public void operatieSelectedFromTable() //operatie selected from table view
+    public void operatieSelectedFromTable(OperatiuniTableDisplayer<OperatiuniTableInitializer.operatieData> otd) //operatie selected from table view
     {
-
+        selectareOperatieComboBox.setValue(otd.getTable().getSelectionModel().getSelectedItem().getFelOperatiei());
+        operationController.operatieSelectedInTable(otd);
     }
 
     /*    public void vanzareOptionSelected()

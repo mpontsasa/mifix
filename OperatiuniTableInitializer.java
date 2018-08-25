@@ -16,7 +16,7 @@ public class OperatiuniTableInitializer {
     public static TableDisplayer initializeTable(String nrInv, LocalDate start, LocalDate end) throws SQLException
     {
 
-        OperatiuniTableDisplayer<operatieData> td = new OperatiuniTableDisplayer<>();
+        OperatiuniTableDisplayer<operatieData> td = new OperatiuniTableDisplayer<>(nrInv);
         tds.add(td);
 
         setData(td, nrInv, start, end);
@@ -66,7 +66,7 @@ public class OperatiuniTableInitializer {
         TableColumn felDocument = new TableColumn("Fel document");
         felDocument.setMinWidth(10);
         felDocument.setCellValueFactory(
-                new PropertyValueFactory<MijlocFixTableInitializer.MijlocFixData, String>("felDocument"));
+                new PropertyValueFactory<operatieData, String>("felDocument"));
 
 
         TableColumn nrDocument = new TableColumn("Nr. document");
@@ -97,7 +97,7 @@ public class OperatiuniTableInitializer {
         Connection c = MySQLJDBCUtil.getConnection(Main.getSocietateActuala());    //get the connection
         Statement st = c.createStatement();                                         //make a statement
 
-        String sqlQuery = "select operatiebase.operatieID, commonDataDB.feluriOperatiei.denumire as felOperatieidenumire , nrReceptie, felDocument, nrDocument, dataOperatiei, sum(valoareFaraTVA) as valoareFaraTVASum " +
+        String sqlQuery = "select operatiebase.operatieID as opID, commonDataDB.feluriOperatiei.denumire as felOperatieidenumire , nrReceptie, felDocument, nrDocument, dataOperatiei, sum(valoareFaraTVA) as valoareFaraTVASum " +
                 "from mijlocFix " +
                 "join operatiebase on mijlocFix.mifixID = operatiebase.mifixID " +
                 "Left Join operatievalori on operatiebase.operatieID = operatieValori.operatieID " +
@@ -121,6 +121,7 @@ public class OperatiuniTableInitializer {
         while(rs.next())
         {
             td.getData().add(new OperatiuniTableInitializer.operatieData(
+                    rs.getInt("opID"),
                     rs.getString("felOperatieidenumire"),
                     rs.getString("nrReceptie"),
                     rs.getString("felDocument"),
@@ -136,6 +137,7 @@ public class OperatiuniTableInitializer {
     }
 
     public static class operatieData {
+        private int operatieID;
         private final SimpleStringProperty felOperatiei;
         private final SimpleStringProperty nrReceptie;
         private final SimpleStringProperty felDocument;
@@ -143,14 +145,19 @@ public class OperatiuniTableInitializer {
         private final SimpleStringProperty dataOperatiei;
         private final SimpleFloatProperty valoareFaraTVA;
 
-        operatieData(String felOperatiei, String nrReceptie, String felDocument, String nrDocument, String dataOperatiei, Float valoareFaraTVA)
+        operatieData(int operatieID, String felOperatiei, String nrReceptie, String felDocument, String nrDocument, String dataOperatiei, Float valoareFaraTVA)
         {
+            this.operatieID = operatieID;
             this.felOperatiei = new SimpleStringProperty(felOperatiei);
             this.nrReceptie = new SimpleStringProperty(nrReceptie);
             this.felDocument = new SimpleStringProperty(felDocument);
             this.nrDocument = new SimpleStringProperty(nrDocument);
             this.dataOperatiei = new SimpleStringProperty(dataOperatiei);
             this.valoareFaraTVA = new SimpleFloatProperty(valoareFaraTVA);
+        }
+
+        public int getOperatieID() {
+            return operatieID;
         }
 
         public String getFelOperatiei() {
@@ -229,5 +236,9 @@ public class OperatiuniTableInitializer {
     public static void reload() throws SQLException
     {
         ///coming soon
+    }
+
+    public static ArrayList<OperatiuniTableDisplayer<operatieData>> getTds() {
+        return tds;
     }
 }

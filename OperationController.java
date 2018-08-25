@@ -1,9 +1,9 @@
 import javafx.fxml.FXMLLoader;
 import javafx.scene.layout.HBox;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
+import java.time.LocalDate;
+import java.util.ArrayList;
 
 public class OperationController {
 
@@ -42,6 +42,41 @@ public class OperationController {
     public void mijlocFixSelectedInTable()
     {
         operationBaseController.nrInventarTextField.setText(MijlocFixTableInitializer.getTd().getTable().getSelectionModel().getSelectedItem().getNrInventar());
+    }
+
+    public void operatieSelectedInTable(OperatiuniTableDisplayer<OperatiuniTableInitializer.operatieData> otd)
+    {
+        operationBaseController.nrInventarTextField.setText(otd.getNrInventar());
+        operationBaseController.nrReceptieTextField.setText(otd.getTable().getSelectionModel().getSelectedItem().getNrReceptie());
+        operationBaseController.felDocumentTextField.setText(otd.getTable().getSelectionModel().getSelectedItem().getFelDocument());
+        operationBaseController.nrDocumentTextField.setText(otd.getTable().getSelectionModel().getSelectedItem().getNrDocument());
+
+        if (otd.getTable().getSelectionModel().getSelectedItem().getDataOperatiei() != null)
+            operationBaseController.dataOperatieiDatePicker.setValue(LocalDate.parse(otd.getTable().getSelectionModel().getSelectedItem().getDataOperatiei()));
+
+        //..................................loading values
+
+        operationBaseController.removeAllValueBars();
+
+        try (Connection conn = MySQLJDBCUtil.getConnection(Main.getSocietateActuala());
+             PreparedStatement pstmt = conn.prepareStatement(Finals.SELECT_VALORI_FOROPERATION_SQL))
+        {
+
+            pstmt.setInt(1, otd.getTable().getSelectionModel().getSelectedItem().getOperatieID());
+
+            ResultSet rs = pstmt.executeQuery();
+
+            while(rs.next())
+            {
+                operationBaseController.addValueBar(rs.getFloat("valoareFaraTVA"),
+                                                    rs.getInt("procentTVAID"),
+                                                    rs.getInt("procentTVA"),
+                                                    rs.getFloat("diferentaTVA"));
+            }
+
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+        }
     }
 
     public void adaugareInDatabase()

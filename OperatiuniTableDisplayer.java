@@ -1,4 +1,9 @@
-public class OperatiuniTableDisplayer<T> extends TableDisplayer{
+public class OperatiuniTableDisplayer<T> extends TableDisplayer<T>{
+
+    public OperatiuniTableDisplayer(String nrInventar) {
+        super();
+        this.nrInventar = nrInventar;
+    }
 
     private String nrInventar;
 

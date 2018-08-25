@@ -1,4 +1,3 @@
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 
@@ -40,16 +39,14 @@ public class OperationBaseController {
     Button addNewValueBarButton;
 
     @FXML
-    public void addNewValueBarButtonAction()
-    {
-        addValueBar();
+    public void addNewValueBarButtonAction() {
+        addEmptyValueBar();
     }
 
-    public void initialize()
-    {
+    public void initialize() {
 
         //.......................initialize data operatiei
-            dataOperatieiDatePicker.setValue(LocalDate.now());
+        dataOperatieiDatePicker.setValue(LocalDate.now());
         //...........................................set up procentTVAs
 
         ArrayList<Integer> numericTVAs = DbfAccess.getTVAProcent();
@@ -62,51 +59,44 @@ public class OperationBaseController {
         procentTVAs.add(Finals.NEIMPOZABIL);
 
         //......................add first value bar
-        addValueBar();
+        addEmptyValueBar();
     }
 
-    public boolean validateInputForAdaugare() throws Exception
-    {
+    public boolean validateInputForAdaugare() throws Exception {
 
         //.......................validate nrInventar
 
-        if (nrInventarTextField.getText() == null || nrInventarTextField.getText().equals(""))
-        {
+        if (nrInventarTextField.getText() == null || nrInventarTextField.getText().equals("")) {
             Alerts.errorAlert(Finals.INVALID_INPUT_TITLE_TEXT, Finals.NR_INVENTAR_EMPTY_HEADER_TEXT, Finals.INVALID_INPUT_CONTENT_TEXT);
             return false;
         }
 
-        if(!MySQLJDBCUtil.recordExists(Main.getSocietateActuala(), "mijlocFix", "nrInventar", nrInventarTextField.getText()))
-        {
+        if (!MySQLJDBCUtil.recordExists(Main.getSocietateActuala(), "mijlocFix", "nrInventar", nrInventarTextField.getText())) {
             Alerts.errorAlert(Finals.INVALID_INPUT_TITLE_TEXT, Finals.NR_INVENTAR_NU_EXISTS_HEADER_TEXT, Finals.INVALID_INPUT_CONTENT_TEXT);
             return false;
         }
 
         //..............validate nr receptie
-        if (nrReceptieTextField.getText()==null || nrReceptieTextField.getText().equals(""))
-        {
+        if (nrReceptieTextField.getText() == null || nrReceptieTextField.getText().equals("")) {
             Alerts.errorAlert(Finals.INVALID_INPUT_TITLE_TEXT, Finals.NR_RECEPTIE_EMPTY_HEADER_TEXT, Finals.INVALID_INPUT_CONTENT_TEXT);
             return false;
         }
 
         //..............validate fel document
-        if (felDocumentTextField.getText() == null || felDocumentTextField.getText().equals(""))
-        {
+        if (felDocumentTextField.getText() == null || felDocumentTextField.getText().equals("")) {
             Alerts.errorAlert(Finals.INVALID_INPUT_TITLE_TEXT, Finals.FEL_DOCUMNENT_EMPTY_HEADER_TEXT, Finals.INVALID_INPUT_CONTENT_TEXT);
             return false;
         }
 
         //..............validate nr document
-        if (nrDocumentTextField.getText() == null || nrDocumentTextField.getText().equals(""))
-        {
+        if (nrDocumentTextField.getText() == null || nrDocumentTextField.getText().equals("")) {
             Alerts.errorAlert(Finals.INVALID_INPUT_TITLE_TEXT, Finals.NR_DOCUMENT_EMPTY_HEADER_TEXT, Finals.INVALID_INPUT_CONTENT_TEXT);
             return false;
         }
 
         //..............................validate values
 
-        for (ValueBarController vbc : valueBarControllers)
-        {
+        for (ValueBarController vbc : valueBarControllers) {
             if (!vbc.validateInput())
                 return false;
         }
@@ -119,21 +109,19 @@ public class OperationBaseController {
         return dirtyFlag;
     }
 
-    public boolean addValueBar()
-    {
-        if(valueBarControllers.size() == 6) // cant have more than 6
+    public boolean addEmptyValueBar() {
+        if (valueBarControllers.size() == 6) // cant have more than 6
         {
             return false;
         }
 
-        try
-        {
+        try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(Finals.VIEWS_PATH + "operationValoriView.fxml"));
             GridPane valueInputGridPane = loader.load();
 
             ValueBarController vbc = (ValueBarController) loader.getController();
             valueBarControllers.add(vbc);
-            valueInputVBox.getChildren().add(valueInputVBox.getChildren().size()-1, valueInputGridPane);
+            valueInputVBox.getChildren().add(valueInputGridPane);
 
             vbc.removeButton.setOnAction((event) -> {
                 // Button was clicked, do something...
@@ -142,15 +130,33 @@ public class OperationBaseController {
             });
 
             vbc.initializeProcentTVAComboBox(procentTVAs);
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
-
-
         return true;
+    }
+
+    public boolean addValueBar(float valoareFaraTVA, int TVAIndex, int TVA, float diferentaTVA)
+    {
+        boolean ret = addEmptyValueBar();
+        ValueBarController vbc = valueBarControllers.get(valueBarControllers.size() - 1);
+
+        vbc.getValoareFaraTVATextField().setText("" + valoareFaraTVA);
+
+        if (TVAIndex >= 4)
+            vbc.getProcentTVAComboBox().setValue(TVAIndex);
+        else
+            vbc.getProcentTVAComboBox().setValue("" + TVA);
+
+        vbc.getDiferentaTVATextField().setText("" + diferentaTVA);
+
+        return ret;
+    }
+
+    public void removeAllValueBars()
+    {
+        valueInputVBox.getChildren().clear();
     }
 
     public ArrayList<ValueBarController> getValueBarControllers() {

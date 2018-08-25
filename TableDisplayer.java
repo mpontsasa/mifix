@@ -21,7 +21,6 @@ public class TableDisplayer<T> {
     private Stage stage = new Stage();
     private Label label = new Label("");
 
-
     private ObservableList<T> data = FXCollections.observableArrayList();
 
     TableDisplayer() {
