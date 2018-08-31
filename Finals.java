@@ -18,6 +18,13 @@ public class Finals {
     final static String COMPLETARE_OP = "completare";
     final static String AMENAJARE_OP = "amenajare";
     final static String TRANSPORT_OP = "transport";
+    final static String SUSPENDARE_OP = "suspendare";
+
+//...............................VizualizareOptions
+
+    final static String OPERATIUNI_VIZ_OP = "Operatiuni";
+    final static String SUSPENDARI_VIZ_OP = "Suspendari";
+
 //...............................Actions
 
     final static String ADAUGARE_OP = "Adaugare";
@@ -57,7 +64,9 @@ public class Finals {
     //.......................creare mijloc fix
     final static String NR_INVENTAR_EXISTS_HEADER_TEXT = "Nr.inventar exista!";
     final static String NR_INVENTAR_DOSENT_EXISTS_HEADER_TEXT = "Nr.inventar nu exista!";
+    final static String SELECTED_NR_INVENTAR_DOSENT_EXISTS_HEADER_TEXT = "Nr.inventar seletata nu exista!";
     final static String NR_INVENTAR_EMPTY_HEADER_TEXT = "Nr.inventar nu poate ramane gol!";
+    final static String DATE_EMPTY_HEADER_TEXT = "Date nu pot raman gol!";
     final static String MI_FIX_SI_CAR_EMPTY_HEADER_TEXT = "Mijloc fix si caracteristice technice nu poate ramane gol!";
     final static String DURATA_AMORTIZARII_EMPTY_HEADER_TEXT = "Durata amortizarii nu poate ramane gol!";
     final static String MI_FIX_SI_CAR_TOO_LONG_HEADER_TEXT = "Mijloc fix si caracteristice technice cant be longer than 500 chars!";
@@ -69,6 +78,8 @@ public class Finals {
     final static String NR_INVENTAR_NU_EXISTS_HEADER_TEXT = "Nr.inventar nu exista!";
     final static String VALOARE_FARA_TVA_EMPTY_HEADER_TEXT = "Valoare fara TVA nu poate ramane gol!";
     final static String PROCENT_TVA_EMPTY_HEADER_TEXT = "Procent TVA nu poate ramane gol!";
+
+    final static String MIFIX_NOt_SELECtED_TEXT = "Mijloc fix nu a fost selectat!";
 
     //......modificare mijlocfix
 
@@ -91,7 +102,8 @@ public class Finals {
     final static String SELECT_FROM_CLASIFICARI_SQL = "Select cod, description, minDur, maxDur from clasificari;";
     final static String SELECT_FROM_REGIMI_DE_AMORTIZARE_SQL = "Select denumire from regimiDeAmortizare;";
     final static String SELECT_FELURI_DE_OPERATII_SQL = "Select denumire from commonDataDB.feluriOperatiei;";
-    final static String SELECT_VALORI_FOROPERATION_SQL = "Select procentTVAID, procentTVA, valoareFaraTVA, diferentaTVA from operatieValori where operatieID = ?;";
+    final static String SELECT_VALORI_FOR_OPERATION_SQL = "Select procentTVAID, procentTVA, valoareFaraTVA, diferentaTVA from operatieValori where operatieID = ?;";
+    final static String DELETE_OPERATION_SQL = "delete from operatieBase where operatieID = ?;";
 
     final static String SELECT_FROM_MIJLOC_FIX_SQL = "Select nrInventar, mifixSiCaracteristiceTechnice, clasificare, durataAmortizarii, regimDeAmortizare, termenDeGarantie, contDebitor, contCreditor from mijlocFix;";
 }

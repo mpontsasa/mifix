@@ -6,6 +6,7 @@ import javafx.scene.control.DatePicker;
 
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 import java.time.LocalDate;
@@ -37,6 +38,9 @@ public class OperationBaseController {
 
     @FXML
     Button addNewValueBarButton;
+
+    @FXML
+    HBox baseOperationLayerHBox;
 
     @FXML
     public void addNewValueBarButtonAction() {
@@ -156,10 +160,17 @@ public class OperationBaseController {
 
     public void removeAllValueBars()
     {
-        valueInputVBox.getChildren().clear();
+        for (int i = 1; i < valueInputVBox.getChildren().size(); i++)   // We must not remoove the + button at index 0
+            valueInputVBox.getChildren().remove(i);
+    }
+
+    public VBox getValueInputVBox() {
+        return valueInputVBox;
     }
 
     public ArrayList<ValueBarController> getValueBarControllers() {
         return valueBarControllers;
     }
+
+
 }

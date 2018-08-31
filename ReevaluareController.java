@@ -1,9 +1,9 @@
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 
-public class GeneralOperatieController extends OperationController {
+public class ReevaluareController extends OperationController {
 
     @FXML
     HBox sublayerHBox;
@@ -11,7 +11,10 @@ public class GeneralOperatieController extends OperationController {
     @FXML
     Button executeButton;
 
-    ActionsController actionsController;
+    @FXML
+    TextField valoareNouTextField;
+
+    private ActionsController actionsController;
 
     @FXML
     public void executeButtonAction()
@@ -31,14 +34,14 @@ public class GeneralOperatieController extends OperationController {
         }
     }
 
-    GeneralOperatieController(String felOperatioei, ActionsController actionsController)
+    ReevaluareController(ActionsController actionsController)
     {
         this.actionsController = actionsController;
-        setFelOperatiei(felOperatioei);
     }
 
     public void initialize()
     {
         initializeBase(sublayerHBox);
+        getOperationBaseController().baseOperationLayerHBox.getChildren().remove(getOperationBaseController().getValueInputVBox());
     }
 }

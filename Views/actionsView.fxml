@@ -95,28 +95,29 @@
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                      </padding>
                   </CheckBox>
-                  <AnchorPane prefHeight="191.0" prefWidth="124.0">
+                  <AnchorPane prefHeight="230.0" prefWidth="124.0">
                      <children>
-                        <Label layoutX="9.0" layoutY="77.0" prefHeight="18.0" prefWidth="56.0" text="Intre:">
+                        <Label layoutX="9.0" layoutY="112.0" prefHeight="18.0" prefWidth="56.0" text="Intre:">
                            <font>
                               <Font size="14.0" />
                            </font>
                         </Label>
-                        <DatePicker fx:id="vizualizareOperatiiStartDatePicker" layoutX="14.0" layoutY="97.0" prefHeight="26.0" prefWidth="98.0" />
-                        <DatePicker fx:id="vizualizareOperatiiEndDatePicker" layoutX="14.0" layoutY="127.0" prefHeight="26.0" prefWidth="98.0" />
-                        <Label layoutX="10.0" layoutY="33.0" prefHeight="20.0" prefWidth="94.0" text="Nr. inventar:">
+                        <DatePicker fx:id="vizualizareOperatiiStartDatePicker" layoutX="14.0" layoutY="132.0" prefHeight="26.0" prefWidth="98.0" />
+                        <DatePicker fx:id="vizualizareOperatiiEndDatePicker" layoutX="14.0" layoutY="162.0" prefHeight="26.0" prefWidth="98.0" />
+                        <Label layoutX="10.0" layoutY="68.0" prefHeight="20.0" prefWidth="94.0" text="Nr. inventar:">
                            <font>
                               <Font size="14.0" />
                            </font>
                         </Label>
-                        <TextField fx:id="selectedNrInventarTextBox" layoutX="15.0" layoutY="52.0" prefHeight="26.0" prefWidth="97.0" />
-                        <Label layoutX="5.0" layoutY="12.0" text="Operatiuni:">
+                        <TextField fx:id="selectedNrInventarTextBox" layoutX="15.0" layoutY="87.0" prefHeight="26.0" prefWidth="97.0" />
+                        <Label layoutX="5.0" layoutY="21.0" text="Vizualizare:">
                            <font>
                               <Font size="14.0" />
                            </font>
                         </Label>
-                        <Button fx:id="vizualizareOperatiuniButton" layoutX="39.0" layoutY="158.0" mnemonicParsing="false" onAction="#vizualizareOperatiuniButtonAction" text="Vizualizare &#10;operatiuni" />
+                        <Button fx:id="vizualizareOptionButton" layoutX="39.0" layoutY="193.0" mnemonicParsing="false" onAction="#vizualizareOperatiuniButtonAction" text="Vizualizare" />
                         <Label layoutX="115.0" layoutY="102.0" prefHeight="18.0" prefWidth="6.0" text="-" />
+                        <ComboBox fx:id="vizualizareOptionsComboBox" layoutX="12.0" layoutY="41.0" prefHeight="26.0" prefWidth="106.0" />
                      </children>
                   </AnchorPane>
                   <Region prefHeight="46.0" prefWidth="124.0" />

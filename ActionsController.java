@@ -1,4 +1,3 @@
-import com.mysql.cj.x.protobuf.MysqlxCrud;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
@@ -13,6 +12,7 @@ public class ActionsController {
 
     private MijlocFixController mijlocFixController = null; //controller of active mifix view
     private OperationController operationController = null; //controller of active operatie
+    private OperatiuniTableInitializer.OperatieData selectedOperatieData;
 
     @FXML
     Label societateActivaLabel;
@@ -48,6 +48,9 @@ public class ActionsController {
     DatePicker vizualizareOperatiiEndDatePicker;
 
     @FXML
+    ComboBox vizualizareOptionsComboBox;
+
+    @FXML
     public void schimbareSocietateButtonClicked()
     {
         main.changeToSelectSocietateView();
@@ -57,39 +60,35 @@ public class ActionsController {
     public void selectareOperatieComboBoxAction()
     {
 
-        if (selectareOperatieComboBox.getValue().toString().equals(Finals.MIFIX_OP))
-        {
-            mifixOptionSelected();
+        switch (selectareOperatieComboBox.getValue().toString()) {
+            case Finals.MIFIX_OP:
+                mifixOptionSelected();
+                break;
+            case Finals.VANZARE_OP:
+                generalOperatieOptionSelected(Finals.VANZARE_OP);
+                break;
+            case Finals.CASARE_OP:
+                generalOperatieOptionSelected(Finals.CASARE_OP);
+                break;
+            case Finals.REEVALUARE_OP:
+                reevaluareOperatieOptionSelected();
+                break;
+            case Finals.COMPLETARE_OP:
+                generalOperatieOptionSelected(Finals.COMPLETARE_OP);
+                break;
+            case Finals.AMENAJARE_OP:
+                generalOperatieOptionSelected(Finals.AMENAJARE_OP);
+                break;
+            case Finals.TRANSPORT_OP:
+                generalOperatieOptionSelected(Finals.TRANSPORT_OP);
+                break;
+            case Finals.ACHIZATIE_OP:
+                generalOperatieOptionSelected(Finals.ACHIZATIE_OP);
+                break;
+            case Finals.SUSPENDARE_OP:
+                suspendareOperatieOptionSelected();
+                break;
         }
-        else if (selectareOperatieComboBox.getValue().toString().equals(Finals.VANZARE_OP))
-        {
-            generalOperatieOptionSelected(Finals.VANZARE_OP);
-        }
-        else if (selectareOperatieComboBox.getValue().toString().equals(Finals.CASARE_OP))
-        {
-            generalOperatieOptionSelected(Finals.CASARE_OP);
-        }
-        else if (selectareOperatieComboBox.getValue().toString().equals(Finals.REEVALUARE_OP))
-        {
-            generalOperatieOptionSelected(Finals.REEVALUARE_OP);
-        }
-        else if (selectareOperatieComboBox.getValue().toString().equals(Finals.COMPLETARE_OP))
-        {
-            generalOperatieOptionSelected(Finals.COMPLETARE_OP);
-        }
-        else if (selectareOperatieComboBox.getValue().toString().equals(Finals.AMENAJARE_OP))
-        {
-            generalOperatieOptionSelected(Finals.AMENAJARE_OP);
-        }
-        else if (selectareOperatieComboBox.getValue().toString().equals(Finals.TRANSPORT_OP))
-        {
-            generalOperatieOptionSelected(Finals.TRANSPORT_OP);
-        }
-        else if (selectareOperatieComboBox.getValue().toString().equals(Finals.ACHIZATIE_OP))
-        {
-            generalOperatieOptionSelected(Finals.ACHIZATIE_OP);
-        }
-
         placeAndSizeAllTables();
     }
 
@@ -156,36 +155,42 @@ public class ActionsController {
     @FXML
     public void vizualizareOperatiuniButtonAction()
     {
-        try
+        if (vizualizareOptionsComboBox.getValue() == Finals.OPERATIUNI_VIZ_OP)
         {
-            if(!MySQLJDBCUtil.recordExists(Main.getSocietateActuala(), "mijlocFix", "nrInventar", selectedNrInventarTextBox.getText()))
+            try
             {
-                Alerts.errorAlert(Finals.INVALID_INPUT_TITLE_TEXT, Finals.NR_INVENTAR_DOSENT_EXISTS_HEADER_TEXT, Finals.INVALID_INPUT_CONTENT_TEXT);
-                return;
-            }
-            else
-            {
-                TableDisplayer td = OperatiuniTableInitializer.initializeTable(selectedNrInventarTextBox.getText(), vizualizareOperatiiStartDatePicker.getValue(), vizualizareOperatiiEndDatePicker.getValue());
-                td.getTable().getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-                    if (newSelection != null) {
-                        for (OperatiuniTableDisplayer<OperatiuniTableInitializer.operatieData> otd : OperatiuniTableInitializer.getTds()) //we are looking for  the TableDisplayer
-                        {
-                            if (otd.getTable().getSelectionModel().getSelectedItem() == newSelection)   //If we found it
+                /*if(!MySQLJDBCUtil.recordExists(Main.getSocietateActuala(), "mijlocFix", "nrInventar", selectedNrInventarTextBox.getText()))
+                {
+                    Alerts.errorAlert(Finals.INVALID_INPUT_TITLE_TEXT, Finals.NR_INVENTAR_DOSENT_EXISTS_HEADER_TEXT, Finals.INVALID_INPUT_CONTENT_TEXT);
+                    return;
+                }
+                else*/
+                {
+                    TableDisplayer td = OperatiuniTableInitializer.initializeTable(selectedNrInventarTextBox.getText(), vizualizareOperatiiStartDatePicker.getValue(), vizualizareOperatiiEndDatePicker.getValue());
+                    td.getTable().getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+                        if (newSelection != null) {
+                            for (OperatiuniTableDisplayer<OperatiuniTableInitializer.OperatieData> otd : OperatiuniTableInitializer.getTds()) //we are looking for  the TableDisplayer
                             {
-                                operatieSelectedFromTable(otd); //we use it to call the operatieselected function
-                                return; // thats all we need
+                                if (otd.getTable().getSelectionModel().getSelectedItem() == newSelection)   //If we found it
+                                {
+                                    operatieSelectedFromTable(otd); //we use it to call the operatieselected function
+                                    return; // thats all we need
+                                }
                             }
                         }
-                    }
-                });
-
+                    });
+                }
             }
-        }
-        catch (SQLException e)
-        {
-            e.printStackTrace();
-        }
+            catch (SQLException e)
+            {
+                e.printStackTrace();
+            }
 
+        }
+        else if (vizualizareOptionsComboBox.getValue() == Finals.SUSPENDARI_VIZ_OP)
+        {
+
+        }
     }
 
     public void initialize(Main main) {
@@ -231,6 +236,7 @@ public class ActionsController {
         //................................................................................set up operatiuni combo box
 
         selectareOperatieComboBox.getItems().add(Finals.MIFIX_OP);
+        selectareOperatieComboBox.getItems().add(Finals.SUSPENDARE_OP);
 
         try
         {
@@ -263,7 +269,15 @@ public class ActionsController {
 
         selectareActionComboBox.setValue(selectareActionComboBox.getItems().get(0));
 
-        //
+        //..............................set up vizualizareOptions combo box
+
+        vizualizareOptionsComboBox.getItems().addAll(
+                Finals.OPERATIUNI_VIZ_OP,
+                Finals.SUSPENDARI_VIZ_OP
+        );
+
+        vizualizareOptionsComboBox.setValue(Finals.OPERATIUNI_VIZ_OP);
+
     }
 
     public void mifixOptionSelected()
@@ -300,7 +314,7 @@ public class ActionsController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(Finals.VIEWS_PATH + "generalOperatieView.fxml"));
 
             loader.setControllerFactory(c -> {
-                return new GeneralOperatieController(felOperatiei, selectareActionComboBox);
+                return new GeneralOperatieController(felOperatiei, this);
             });
             HBox sublayerHBox = loader.load();
 
@@ -313,6 +327,62 @@ public class ActionsController {
 
             main.getGlobalPrimaryStage().setMinWidth(1000);
             main.getGlobalPrimaryStage().setMinHeight(380);
+
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public void reevaluareOperatieOptionSelected()
+    {
+        try
+        {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(Finals.VIEWS_PATH + "reevaluareView.fxml"));
+
+            loader.setControllerFactory(c -> {
+                return new ReevaluareController(this);
+            });
+            HBox sublayerHBox = loader.load();
+
+            operationController = loader.getController();
+
+            if (optionContentVBox.getChildren().size() > 1)     //remoove last operatie from the screen if necesarry
+                optionContentVBox.getChildren().remove(1);
+
+            optionContentVBox.getChildren().add(sublayerHBox);
+
+            main.getGlobalPrimaryStage().setMinWidth(1000);
+            main.getGlobalPrimaryStage().setMinHeight(380);
+
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public void suspendareOperatieOptionSelected()
+    {
+        try
+        {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(Finals.VIEWS_PATH + "suspendareView.fxml"));
+
+            loader.setControllerFactory(c -> {
+                return new SuspendareController(this);
+            });
+            HBox sublayerHBox = loader.load();
+
+            operationController = null;
+
+            if (optionContentVBox.getChildren().size() > 1)     //remoove last operatie from the screen if necesarry
+                optionContentVBox.getChildren().remove(1);
+
+            optionContentVBox.getChildren().add(sublayerHBox);
+
+            Main.getGlobalPrimaryStage().setMinWidth(1000);
+            Main.getGlobalPrimaryStage().setMinHeight(380);
 
         }
         catch (Exception e)
@@ -369,13 +439,18 @@ public class ActionsController {
         }
     }
 
-    public void operatieSelectedFromTable(OperatiuniTableDisplayer<OperatiuniTableInitializer.operatieData> otd) //operatie selected from table view
+    public void operatieSelectedFromTable(OperatiuniTableDisplayer<OperatiuniTableInitializer.OperatieData> otd) //operatie selected from table view
     {
+        selectedOperatieData = otd.getTable().getSelectionModel().getSelectedItem();
         selectareOperatieComboBox.setValue(otd.getTable().getSelectionModel().getSelectedItem().getFelOperatiei());
         operationController.operatieSelectedInTable(otd);
     }
 
-    /*    public void vanzareOptionSelected()
+    public OperatiuniTableInitializer.OperatieData getSelectedOperatieData() {
+        return selectedOperatieData;
+    }
+
+    /*public void vanzareOptionSelected()
     {
         try
         {
@@ -397,8 +472,8 @@ public class ActionsController {
             e.printStackTrace();
         }
     }
-
-    public void acizitieOptionSelected()
+*/
+    /*public void acizitieOptionSelected()
     {
         try
         {
@@ -421,5 +496,6 @@ public class ActionsController {
         {
             e.printStackTrace();
         }
-    }*/
+    }
+*/
 }

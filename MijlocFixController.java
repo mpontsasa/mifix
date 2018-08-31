@@ -258,10 +258,11 @@ public class MijlocFixController {
     {
         try
         {
-            if(MySQLJDBCUtil.recordExists(Main.getSocietateActuala(), "mijlocFix", "nrInventar", numarInventarTextField.getText()) &&
-                    Alerts.confirmationAlert(Finals.MODIFICARE_HEADER_TEXT, Finals.MODIFICARE_MIJLOC_FIX_TITLE_TEXT, "Sunteti sigur ca modificati mijloc fix cu nr inventar: \n" + numarInventarTextField.getText() + "  ?"))
+            //if nr inventar exists
+            if(MySQLJDBCUtil.recordExists(Main.getSocietateActuala(), "mijlocFix", "nrInventar", numarInventarTextField.getText()))
             {
-                if (validateInputForModificare())
+                if (validateInputForModificare() &&
+                        Alerts.confirmationAlert(Finals.MODIFICARE_HEADER_TEXT, Finals.MODIFICARE_MIJLOC_FIX_TITLE_TEXT, "Sunteti sigur ca modificati mijloc fix cu nr inventar: \n" + numarInventarTextField.getText() + "  ?"))
                 {
                     MySQLJDBCUtil.updateMifix(numarInventarTextField.getText(),
                             numarInventarTextField.getText(),
@@ -277,10 +278,38 @@ public class MijlocFixController {
                     Alerts.informationAlert(Finals.SUCCESSFUL_OPERATION_TITLE_TEXT, Finals.SUCCESSFUL_OPERATION_HEADER_TEXT, Finals.SUCCESSFUL_OPERATION_CONTENT_TEXT);
 
                 }
-            }
+
+            }// if nrInventar doesent exist
             else
             {
-                //itt tartok
+                // if mijloc fix isnt selected
+                if (actionsController.selectedNrInventarTextBox.getText() == null || actionsController.selectedNrInventarTextBox.getText().equals(""))
+                {
+                    Alerts.informationAlert(Finals.MIFIX_NOt_SELECtED_TEXT, Finals.MIFIX_NOt_SELECtED_TEXT, "");
+                }   // if mifix is selected but it doesent exists
+                else if (!MySQLJDBCUtil.recordExists(Main.getSocietateActuala(), "mijlocFix", "nrInventar", actionsController.selectedNrInventarTextBox.getText())) {
+                    Alerts.errorAlert(Finals.INVALID_INPUT_TITLE_TEXT, Finals.SELECTED_NR_INVENTAR_DOSENT_EXISTS_HEADER_TEXT, "Nr. inventar selectat: " + actionsController.selectedNrInventarTextBox.getText());
+
+                }//if selected nr inventar is all right
+                else if (validateInputForModificare() &&
+                        Alerts.confirmationAlert(Finals.MODIFICARE_HEADER_TEXT, Finals.MODIFICARE_MIJLOC_FIX_TITLE_TEXT, "Sunteti sigur ca modificati numar inventar " +actionsController.selectedNrInventarTextBox.getText()+ " la " + numarInventarTextField.getText() + "  ?"))
+                {
+                    MySQLJDBCUtil.updateMifix(actionsController.selectedNrInventarTextBox.getText(),
+                            numarInventarTextField.getText(),
+                            mijlocFixSiCaracteristiciTextArea.getText(),
+                            codDeClasificareComboBox.getValue().toString(),
+                            Integer.parseInt(durataAmortizariiTextField.getText()),
+                            regimDeAmortizareComboBox.getValue().toString(),
+                            termenDeGarantieDatePicker.getValue(),
+                            contDebitorTextField.getText(),
+                            contCreditorTextField.getText());
+
+                    MijlocFixTableInitializer.reload();
+                    Alerts.informationAlert(Finals.SUCCESSFUL_OPERATION_TITLE_TEXT, Finals.SUCCESSFUL_OPERATION_HEADER_TEXT, Finals.SUCCESSFUL_OPERATION_CONTENT_TEXT);
+
+                }
+
+
             }
         }
         catch(SQLException e)

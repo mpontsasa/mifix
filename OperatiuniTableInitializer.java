@@ -11,12 +11,12 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 
 public class OperatiuniTableInitializer {
-    private static ArrayList<OperatiuniTableDisplayer<operatieData>> tds = new ArrayList<>();
+    private static ArrayList<OperatiuniTableDisplayer<OperatieData>> tds = new ArrayList<>();
 
     public static TableDisplayer initializeTable(String nrInv, LocalDate start, LocalDate end) throws SQLException
     {
 
-        OperatiuniTableDisplayer<operatieData> td = new OperatiuniTableDisplayer<>(nrInv);
+        OperatiuniTableDisplayer<OperatieData> td = new OperatiuniTableDisplayer<>(nrInv);
         tds.add(td);
 
         setData(td, nrInv, start, end);
@@ -26,21 +26,28 @@ public class OperatiuniTableInitializer {
         td.getTable().setPrefHeight(600);
         td.getTable().setPrefWidth(650);
 
+        String title = "Operatiuni ";
+
+        if (nrInv != null || !nrInv.isEmpty())
+        {
+            title += nrInv + " ";
+        }
+
         if (start!= null && end != null)
         {
-            td.getLabel().setText("Operatiuni " + nrInv + " intre " + start.toString() + "  -  " + end.toString());
+            td.getLabel().setText(title + "intre " + start.toString() + "  -  " + end.toString());
         }
         else if (start != null)
         {
-            td.getLabel().setText("Operatiuni " + nrInv + " dupa " + start.toString());
+            td.getLabel().setText(title + "dupa " + start.toString());
         }
         else if (end != null)
         {
-            td.getLabel().setText("Operatiuni " + nrInv + " inainte de " + end.toString());
+            td.getLabel().setText(title + "inainte de " + end.toString());
         }
         else
         {
-            td.getLabel().setText("Operatiuni " + nrInv);
+            td.getLabel().setText(title);
         }
 
         td.getStage().setOnCloseRequest(event -> {
@@ -55,41 +62,71 @@ public class OperatiuniTableInitializer {
         TableColumn felOperatie = new TableColumn("Fel operatie");
         felOperatie.setMinWidth(32);
         felOperatie.setCellValueFactory(
-                new PropertyValueFactory<operatieData, String>("felOperatiei"));
+                new PropertyValueFactory<OperatieData, String>("felOperatiei"));
 
 
         TableColumn nrReceptie = new TableColumn("Nr. receptie");
         nrReceptie.setMinWidth(32);
         nrReceptie.setCellValueFactory(
-                new PropertyValueFactory<operatieData, String>("nrReceptie"));
+                new PropertyValueFactory<OperatieData, String>("nrReceptie"));
 
         TableColumn felDocument = new TableColumn("Fel document");
         felDocument.setMinWidth(10);
         felDocument.setCellValueFactory(
-                new PropertyValueFactory<operatieData, String>("felDocument"));
+                new PropertyValueFactory<OperatieData, String>("felDocument"));
 
 
         TableColumn nrDocument = new TableColumn("Nr. document");
         nrDocument.setMinWidth(32);
         nrDocument.setCellValueFactory(
-                new PropertyValueFactory<operatieData, Integer>("nrDocument"));
+                new PropertyValueFactory<OperatieData, Integer>("nrDocument"));
 
 
         TableColumn dataOperatiei = new TableColumn("Regim de amortizare");
         dataOperatiei.setMinWidth(70);
         dataOperatiei.setCellValueFactory(
-                new PropertyValueFactory<operatieData, String>("dataOperatiei"));
+                new PropertyValueFactory<OperatieData, String>("dataOperatiei"));
 
         TableColumn valoareFaraTVA = new TableColumn("Valoare fara TVA");
         valoareFaraTVA.setMinWidth(15);
         valoareFaraTVA.setCellValueFactory(
-                new PropertyValueFactory<operatieData, String>("valoareFaraTVA"));
+                new PropertyValueFactory<OperatieData, String>("valoareFaraTVA"));
 
         td.getTable().getColumns().addAll(felOperatie, nrReceptie, felDocument, nrDocument, dataOperatiei, valoareFaraTVA);
 
         td.show();
 
+        setUpSearchField(td);
+
         return td;
+    }
+
+    public static void setUpSearchField(OperatiuniTableDisplayer<OperatieData> td)
+    {
+        td.setUpSearchField();
+
+        for (int i = 0; i < td.getSearchTextFields().size(); i++)
+        {
+            td.getSearchTextFields().get(i).textProperty().addListener((observable, oldValue, newValue) -> {
+                System.out.println("text changed");
+                td.getFilteredData().setPredicate(mifix -> {
+
+                    if (newValue == null || newValue.isEmpty()) {       // nem tudom miert, de enelkul nem megy
+
+                    }
+                    System.out.println("b");
+                    for (int j = 0; j < td.getTable().getColumns().size(); j++)
+                    {
+                        if (td.getSearchTextFields().get(j).getText() != null && !td.getSearchTextFields().get(j).getText().isEmpty() &&
+                                !mifix.getProperty(j).toLowerCase().contains(td.getSearchTextFields().get(j).getText().toLowerCase()))
+                        {
+                            return false;
+                        }
+                    }
+                    return true;
+                });
+            });
+        }
     }
 
     public static void setData(TableDisplayer td, String nrInventar, LocalDate start, LocalDate end) throws SQLException
@@ -101,8 +138,14 @@ public class OperatiuniTableInitializer {
                 "from mijlocFix " +
                 "join operatiebase on mijlocFix.mifixID = operatiebase.mifixID " +
                 "Left Join operatievalori on operatiebase.operatieID = operatieValori.operatieID " +
-                "Join commonDataDB.feluriOperatiei on commonDataDB.feluriOperatiei.felOperatieiID = operatiebase.felOperatieiID " +
-                "where nrInventar = '" + nrInventar + "' ";
+                "Join commonDataDB.feluriOperatiei on commonDataDB.feluriOperatiei.felOperatieiID = operatiebase.felOperatieiID ";
+
+        if (nrInventar != null && !nrInventar.isEmpty())
+        {
+            sqlQuery += "where nrInventar = '" + nrInventar + "' ";
+
+        }
+
         if (start != null)
         {
             sqlQuery += "and dataOperatiei >= '" + start.toString() + "' ";
@@ -120,7 +163,7 @@ public class OperatiuniTableInitializer {
 
         while(rs.next())
         {
-            td.getData().add(new OperatiuniTableInitializer.operatieData(
+            td.getData().add(new OperatieData(
                     rs.getInt("opID"),
                     rs.getString("felOperatieidenumire"),
                     rs.getString("nrReceptie"),
@@ -136,7 +179,7 @@ public class OperatiuniTableInitializer {
         c.close();
     }
 
-    public static class operatieData {
+    public static class OperatieData {
         private int operatieID;
         private final SimpleStringProperty felOperatiei;
         private final SimpleStringProperty nrReceptie;
@@ -145,7 +188,7 @@ public class OperatiuniTableInitializer {
         private final SimpleStringProperty dataOperatiei;
         private final SimpleFloatProperty valoareFaraTVA;
 
-        operatieData(int operatieID, String felOperatiei, String nrReceptie, String felDocument, String nrDocument, String dataOperatiei, Float valoareFaraTVA)
+        OperatieData(int operatieID, String felOperatiei, String nrReceptie, String felDocument, String nrDocument, String dataOperatiei, Float valoareFaraTVA)
         {
             this.operatieID = operatieID;
             this.felOperatiei = new SimpleStringProperty(felOperatiei);
@@ -154,6 +197,26 @@ public class OperatiuniTableInitializer {
             this.nrDocument = new SimpleStringProperty(nrDocument);
             this.dataOperatiei = new SimpleStringProperty(dataOperatiei);
             this.valoareFaraTVA = new SimpleFloatProperty(valoareFaraTVA);
+        }
+
+        public String getProperty(int index) {
+            switch(index)
+            {
+                case 0:
+                    return getFelOperatiei();
+                case 1:
+                    return getNrReceptie();
+                case 2:
+                    return getFelDocument();
+                case 3:
+                    return "" + getNrDocument();
+                case 4:
+                    return getDataOperatiei();
+                case 5:
+                    return "" + getValoareFaraTVA();
+                }
+
+            return null;
         }
 
         public int getOperatieID() {
@@ -238,7 +301,7 @@ public class OperatiuniTableInitializer {
         ///coming soon
     }
 
-    public static ArrayList<OperatiuniTableDisplayer<operatieData>> getTds() {
+    public static ArrayList<OperatiuniTableDisplayer<OperatieData>> getTds() {
         return tds;
     }
 }

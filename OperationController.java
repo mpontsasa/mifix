@@ -3,7 +3,6 @@ import javafx.scene.layout.HBox;
 
 import java.sql.*;
 import java.time.LocalDate;
-import java.util.ArrayList;
 
 public class OperationController {
 
@@ -44,7 +43,7 @@ public class OperationController {
         operationBaseController.nrInventarTextField.setText(MijlocFixTableInitializer.getTd().getTable().getSelectionModel().getSelectedItem().getNrInventar());
     }
 
-    public void operatieSelectedInTable(OperatiuniTableDisplayer<OperatiuniTableInitializer.operatieData> otd)
+    public void operatieSelectedInTable(OperatiuniTableDisplayer<OperatiuniTableInitializer.OperatieData> otd)
     {
         operationBaseController.nrInventarTextField.setText(otd.getNrInventar());
         operationBaseController.nrReceptieTextField.setText(otd.getTable().getSelectionModel().getSelectedItem().getNrReceptie());
@@ -59,7 +58,7 @@ public class OperationController {
         operationBaseController.removeAllValueBars();
 
         try (Connection conn = MySQLJDBCUtil.getConnection(Main.getSocietateActuala());
-             PreparedStatement pstmt = conn.prepareStatement(Finals.SELECT_VALORI_FOROPERATION_SQL))
+             PreparedStatement pstmt = conn.prepareStatement(Finals.SELECT_VALORI_FOR_OPERATION_SQL))
         {
 
             pstmt.setInt(1, otd.getTable().getSelectionModel().getSelectedItem().getOperatieID());
@@ -152,14 +151,27 @@ public class OperationController {
         }
     }
 
-    public void modificareInDatabase()
+    public void modificareInDatabase(OperatiuniTableInitializer.OperatieData operatieData)
     {
-
+        stergereInDatabase(operatieData);
+        adaugareInDatabase();
     }
 
-    public void stergereInDatabase()
+    public void stergereInDatabase(OperatiuniTableInitializer.OperatieData operatieData)
     {
+        try (Connection conn = MySQLJDBCUtil.getConnection(Main.getSocietateActuala());
+             PreparedStatement pstmt = conn.prepareStatement(Finals.DELETE_OPERATION_SQL))
+        {
 
+            pstmt.setInt(1, operatieData.getOperatieID());
+
+            pstmt.executeUpdate();
+
+
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
     }
 
     public String getFelOperatiei() {

@@ -87,6 +87,38 @@ public class ClasificariTableInitializer {
                 new PropertyValueFactory<ClasificariData, Integer>("maxDur"));
 
         td.getTable().getColumns().addAll(cod, desc, minDur, maxDur);
+
+        setUpSearchField();
+    }
+
+    public static void setUpSearchField()
+    {
+        td.setUpSearchField();
+
+        for (int i = 0; i < td.getSearchTextFields().size(); i++)
+        {
+            td.getSearchTextFields().get(i).textProperty().addListener((observable, oldValue, newValue) -> {
+                td.getFilteredData().setPredicate(mifix -> {
+
+                    if (newValue == null || newValue.isEmpty()) {       // nem tudom miert, de enelkul nem megy
+                        //return true;
+                        //System.out.println("mindegy");
+                    }
+                    System.out.println("b");
+                    for (int j = 0; j < td.getTable().getColumns().size(); j++)
+                    {
+                        if (td.getSearchTextFields().get(j).getText() != null && !td.getSearchTextFields().get(j).getText().isEmpty() &&
+                                !mifix.getProperty(j).toLowerCase().contains(td.getSearchTextFields().get(j).getText().toLowerCase()))
+                        {
+                            return false;
+                        }
+                    }
+                    return true;
+                });
+            });
+        }
+
+
     }
 
     public static void setData() throws SQLException
@@ -118,6 +150,24 @@ public class ClasificariTableInitializer {
             this.minDur = new SimpleIntegerProperty(minDur);
             this.maxDur = new SimpleIntegerProperty(maxDur);
         }
+
+        public String getProperty(int index)
+        {
+            switch(index)
+            {
+                case 0:
+                    return getCod();
+                case 1:
+                    return getDesc();
+                case 2:
+                    return "" + getMinDur();
+                case 3:
+                    return "" + getMaxDur();
+                }
+
+            return null;
+        }
+
 
         public String getCod() {
             return cod.get();
