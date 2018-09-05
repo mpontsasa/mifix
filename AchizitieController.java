@@ -2,10 +2,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
-
 public class AchizitieController extends OperationController {
 
     @FXML
@@ -17,7 +13,7 @@ public class AchizitieController extends OperationController {
     @FXML
     public void executeButtonAction()
     {
-        adaugareInDatabase();
+        adaugareBaseInDatabase();
     }
 
     public void initialize()

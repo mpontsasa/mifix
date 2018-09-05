@@ -91,6 +91,9 @@ public class Finals {
     final static String NR_RECEPTIE_EMPTY_HEADER_TEXT = "Nr. receptie nu poate ramane gol!";
     final static String FEL_DOCUMNENT_EMPTY_HEADER_TEXT = "Fel document nu poate ramane gol!";
 
+    //...........modificare/stergere operatie
+
+    final static String OPERATIE_NOT_SELECTED_HEADER = "Operatie nu a fost selectata!";
 
 //.....................................SQL commands
 
@@ -99,6 +102,8 @@ public class Finals {
     final static String COMMON_DATABASE_NAME = "commonDataDB";
 
     final static String SET_QUOTES_SQL = "SET sql_mode='ANSI_QUOTES';";
+    final static String START_TRANSACTION = "START TRANSACTION;";
+    final static String COMMIT_TRANSACTION = "COMMIT;";
     final static String SELECT_FROM_CLASIFICARI_SQL = "Select cod, description, minDur, maxDur from clasificari;";
     final static String SELECT_FROM_REGIMI_DE_AMORTIZARE_SQL = "Select denumire from regimiDeAmortizare;";
     final static String SELECT_FELURI_DE_OPERATII_SQL = "Select denumire from commonDataDB.feluriOperatiei;";
@@ -106,4 +111,6 @@ public class Finals {
     final static String DELETE_OPERATION_SQL = "delete from operatieBase where operatieID = ?;";
 
     final static String SELECT_FROM_MIJLOC_FIX_SQL = "Select nrInventar, mifixSiCaracteristiceTechnice, clasificare, durataAmortizarii, regimDeAmortizare, termenDeGarantie, contDebitor, contCreditor from mijlocFix;";
+    final static String UPDATE_OPERATIE_BASE_SQL = "update operatieBase set mifixID = (Select mijlocFix.mifixID from mijlocFix where nrInventar = ?), nrReceptie = ?, felDocument = ?, nrDocument = ?, dataOperatiei = ?, felOperatieiID = (Select commonDataDB.felurioperatiei.felOperatieiID from commondatadb.felurioperatiei where denumire= ? ) where operatieID = ?;";
+    final static String DELETE_VALORI_SQL = "delete from operatieValori where operatieID = ?;";
 }

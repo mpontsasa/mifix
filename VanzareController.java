@@ -13,7 +13,7 @@ public class VanzareController extends OperationController {
     @FXML
     public void executeButtonAction()
     {
-        adaugareInDatabase();
+        adaugareBaseInDatabase();
     }
 
     public void initialize()

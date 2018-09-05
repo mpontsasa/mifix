@@ -12,7 +12,7 @@ public class ActionsController {
 
     private MijlocFixController mijlocFixController = null; //controller of active mifix view
     private OperationController operationController = null; //controller of active operatie
-    private OperatiuniTableInitializer.OperatieData selectedOperatieData;
+    private OperatiuniTableInitializer.OperatieData selectedOperatieData = null;
 
     @FXML
     Label societateActivaLabel;
@@ -448,6 +448,10 @@ public class ActionsController {
 
     public OperatiuniTableInitializer.OperatieData getSelectedOperatieData() {
         return selectedOperatieData;
+    }
+
+    public void setSelectedOperatieData(OperatiuniTableInitializer.OperatieData selectedOperatieData) {
+        this.selectedOperatieData = selectedOperatieData;
     }
 
     /*public void vanzareOptionSelected()

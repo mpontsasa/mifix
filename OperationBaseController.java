@@ -9,6 +9,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
@@ -66,7 +67,7 @@ public class OperationBaseController {
         addEmptyValueBar();
     }
 
-    public boolean validateInputForAdaugare() throws Exception {
+    public boolean validateBaseInputForAdaugare() throws SQLException {
 
         //.......................validate nrInventar
 
@@ -108,6 +109,7 @@ public class OperationBaseController {
         //..............passed
         return true;
     }
+    
 
     public boolean isDirty() {
         return dirtyFlag;
@@ -171,6 +173,5 @@ public class OperationBaseController {
     public ArrayList<ValueBarController> getValueBarControllers() {
         return valueBarControllers;
     }
-
 
 }

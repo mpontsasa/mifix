@@ -7,7 +7,6 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.text.Font?>
 
-
 <HBox fx:id="sublayerHBox" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ReevaluareController">
    <children>
       <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="250.0" prefWidth="188.0">
@@ -18,7 +17,7 @@
                   <Font size="14.0" />
                </font>
             </Label>
-            <TextField fx:id="valoareNouTextField" layoutX="32.0" layoutY="52.0" />
+            <TextField fx:id="valoareNouTextField" layoutX="32.0" layoutY="52.0" onAction="#valoareNouTextFieldAction" />
          </children>
       </AnchorPane>
    </children>
