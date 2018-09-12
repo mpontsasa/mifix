@@ -9,6 +9,7 @@ import javafx.stage.Stage;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Properties;
 
 public class Main extends Application {
@@ -23,11 +24,13 @@ public class Main extends Application {
         globalPrimaryStage = primaryStage;
         globalPrimaryStage.setTitle(Finals.MAIN_STAGE_CAPTION);
 
-        if (!MySQLJDBCUtil.databaseExists(Finals.COMMON_DATABASE_NAME)) {
-            Alerts.setUpCommonDataAlert();
-        }
+
 
         try (FileInputStream f = new FileInputStream("db.properties")) {
+
+            if (!MySQLJDBCUtil.databaseExists(Finals.COMMON_DATABASE_NAME)) {
+                Alerts.setUpCommonDataAlert();
+            }
 
             // load the properties file
             Properties pros = new Properties();
@@ -57,6 +60,12 @@ public class Main extends Application {
         } catch (IOException e) {
             //System.out.println(e.getMessage());
             e.printStackTrace();
+            Alerts.exceptionAlert(e);
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+            Alerts.exceptionAlert(e);
         }
         globalPrimaryStage.show();
 
