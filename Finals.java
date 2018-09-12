@@ -32,6 +32,9 @@ public class Finals {
     final static String MODIFICARE_OP = "Modificare";
     final static String STERGERE_OP = "Stergere";
 
+    final static String CALCULARE_OP = "Calculare amortizare";
+    final static String RECALCULARE_OP = "Recalculare total";
+
 //..................................non numeric TVA procentage
 
     final static String SCUTIT_CU_DREPT = "Scutit cu drept de deducere";

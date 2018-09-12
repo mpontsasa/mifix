@@ -24,8 +24,6 @@ public class Main extends Application {
         globalPrimaryStage = primaryStage;
         globalPrimaryStage.setTitle(Finals.MAIN_STAGE_CAPTION);
 
-
-
         try (FileInputStream f = new FileInputStream("db.properties")) {
 
             if (!MySQLJDBCUtil.databaseExists(Finals.COMMON_DATABASE_NAME)) {
