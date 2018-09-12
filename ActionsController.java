@@ -12,7 +12,10 @@ public class ActionsController {
 
     private MijlocFixController mijlocFixController = null; //controller of active mifix view
     private OperationController operationController = null; //controller of active operatie
+    private SuspendareController suspendareController = null; //controller of active suspendare
+    private MijlocFixTableInitializer.MijlocFixData selectedMifixData = null;
     private OperatiuniTableInitializer.OperatieData selectedOperatieData = null;
+    private SuspendariTableInitializer.SuspendareData selectedSuspendareData = null;
 
     @FXML
     Label societateActivaLabel;
@@ -159,12 +162,13 @@ public class ActionsController {
         {
             try
             {
-                /*if(!MySQLJDBCUtil.recordExists(Main.getSocietateActuala(), "mijlocFix", "nrInventar", selectedNrInventarTextBox.getText()))
+                if( selectedNrInventarTextBox.getText() != null && !selectedNrInventarTextBox.getText().isEmpty() &&    //if its empty, I can still vizualize for all mifix!!
+                        !MySQLJDBCUtil.recordExists(Main.getSocietateActuala(), "mijlocFix", "nrInventar", selectedNrInventarTextBox.getText()))
                 {
                     Alerts.errorAlert(Finals.INVALID_INPUT_TITLE_TEXT, Finals.NR_INVENTAR_DOSENT_EXISTS_HEADER_TEXT, Finals.INVALID_INPUT_CONTENT_TEXT);
                     return;
                 }
-                else*/
+                else
                 {
                     TableDisplayer td = OperatiuniTableInitializer.initializeTable(selectedNrInventarTextBox.getText(), vizualizareOperatiiStartDatePicker.getValue(), vizualizareOperatiiEndDatePicker.getValue());
                     td.getTable().getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
@@ -189,7 +193,35 @@ public class ActionsController {
         }
         else if (vizualizareOptionsComboBox.getValue() == Finals.SUSPENDARI_VIZ_OP)
         {
-
+            try
+            {
+                if( selectedNrInventarTextBox.getText() != null && !selectedNrInventarTextBox.getText().isEmpty() &&    //if its empty, I can still vizualize for all mifix!!
+                        !MySQLJDBCUtil.recordExists(Main.getSocietateActuala(), "mijlocFix", "nrInventar", selectedNrInventarTextBox.getText()))
+                {
+                    Alerts.errorAlert(Finals.INVALID_INPUT_TITLE_TEXT, Finals.NR_INVENTAR_DOSENT_EXISTS_HEADER_TEXT, Finals.INVALID_INPUT_CONTENT_TEXT);
+                    return;
+                }
+                else
+                {
+                    TableDisplayer td = SuspendariTableInitializer.initializeTable(selectedNrInventarTextBox.getText(), vizualizareOperatiiStartDatePicker.getValue(), vizualizareOperatiiEndDatePicker.getValue());
+                    td.getTable().getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+                        if (newSelection != null) {
+                            for (OperatiuniTableDisplayer<SuspendariTableInitializer.SuspendareData> otd : SuspendariTableInitializer.getTds()) //we are looking for  the TableDisplayer
+                            {
+                                if (otd.getTable().getSelectionModel().getSelectedItem() == newSelection)   //If we found it
+                                {
+                                    suspendareSelectedFromTable(otd); //we use it to call the operatieselected function
+                                    return; // thats all we need
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+            catch (SQLException e)
+            {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -248,6 +280,7 @@ public class ActionsController {
             e.printStackTrace();
         }
 
+        selectareOperatieComboBox.getItems().add(Finals.AMORTIZARE_OP);
 
          /*selectareOperatieComboBox.getItems().addAll(
                  Finals.MIFIX_OP,
@@ -299,6 +332,11 @@ public class ActionsController {
 
             main.getGlobalPrimaryStage().setMinWidth(1000);
             main.getGlobalPrimaryStage().setMinHeight(380);
+
+            if (selectedMifixData != null && selectareActionComboBox.getValue() != Finals.ADAUGARE_OP)
+            {
+                mijlocFixController.loadMifix(selectedMifixData);
+            }
 
         }
         catch (Exception e)
@@ -375,6 +413,7 @@ public class ActionsController {
             HBox sublayerHBox = loader.load();
 
             operationController = null;
+            suspendareController = loader.getController();
 
             if (optionContentVBox.getChildren().size() > 1)     //remoove last operatie from the screen if necesarry
                 optionContentVBox.getChildren().remove(1);
@@ -410,19 +449,31 @@ public class ActionsController {
         //set up selected nrInventar
 
         selectedNrInventarTextBox.setText(MijlocFixTableInitializer.getTd().getTable().getSelectionModel().getSelectedItem().getNrInventar());
+        selectedMifixData = MijlocFixTableInitializer.getTd().getTable().getSelectionModel().getSelectedItem();
 
         //...............................................fill input with selected
         if (selectareOperatieComboBox.getValue() != null)
         {
-            if (selectareOperatieComboBox.getValue().toString().equals(Finals.MIFIX_OP) &&
-                    !selectareActionComboBox.getValue().toString().equals(Finals.ADAUGARE_OP))    //mifix option selected but not adaugare action
+            if (selectareOperatieComboBox.getValue().toString().equals(Finals.MIFIX_OP)) //mifix option selected
             {
-                mijlocFixController.mijlocFixSelectedInTable();
+                if (!selectareActionComboBox.getValue().toString().equals(Finals.ADAUGARE_OP))    //but not adaugare action
+                {
+                    mijlocFixController.mijlocFixSelectedInTable();
+                }
             }
-            else if(!selectareOperatieComboBox.getValue().toString().equals(Finals.MIFIX_OP) &&
-                    selectareActionComboBox.getValue().toString().equals(Finals.ADAUGARE_OP))    //operatie option selected and adaugare action
+            else if (selectareOperatieComboBox.getValue().toString().equals(Finals.SUSPENDARE_OP))    //suspendare option selected
             {
-                operationController.mijlocFixSelectedInTable();
+                if (selectareActionComboBox.getValue().toString().equals(Finals.ADAUGARE_OP))  //and adaugare action
+                {
+                    suspendareController.mijlocFixSelectedInTable();
+                }
+            }
+            else if(!selectareOperatieComboBox.getValue().toString().equals(Finals.MIFIX_OP))    //operatie option selected
+            {
+                if(selectareActionComboBox.getValue().toString().equals(Finals.ADAUGARE_OP))    //and adaugare action
+                {
+                    operationController.mijlocFixSelectedInTable();
+                }
             }
         }
     }
@@ -446,12 +497,27 @@ public class ActionsController {
         operationController.operatieSelectedInTable(otd);
     }
 
+    public void suspendareSelectedFromTable(OperatiuniTableDisplayer<SuspendariTableInitializer.SuspendareData> otd)
+    {
+        selectedSuspendareData = otd.getTable().getSelectionModel().getSelectedItem();
+        selectareOperatieComboBox.setValue(Finals.SUSPENDARE_OP);
+        suspendareController.suspendareSelectedInTable(otd);
+    }
+
     public OperatiuniTableInitializer.OperatieData getSelectedOperatieData() {
         return selectedOperatieData;
     }
 
     public void setSelectedOperatieData(OperatiuniTableInitializer.OperatieData selectedOperatieData) {
         this.selectedOperatieData = selectedOperatieData;
+    }
+
+    public SuspendareController getSuspendareController() {
+        return suspendareController;
+    }
+
+    public SuspendariTableInitializer.SuspendareData getSelectedSuspendareData() {
+        return selectedSuspendareData;
     }
 
     /*public void vanzareOptionSelected()

@@ -2,6 +2,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
 
+import java.sql.SQLException;
+
 public class GeneralOperatieController extends OperationController {
 
     @FXML
@@ -14,17 +16,27 @@ public class GeneralOperatieController extends OperationController {
     @FXML
     public void executeButtonAction()
     {
-        if (actionsController.selectareActionComboBox.getValue().toString().equals(Finals.ADAUGARE_OP))
+        try
         {
-            adaugareBaseInDatabase();
+
+            if (actionsController.selectareActionComboBox.getValue().toString().equals(Finals.ADAUGARE_OP))
+            {
+                adaugareBaseInDatabase();
+            }
+            else if (actionsController.selectareActionComboBox.getValue().toString().equals(Finals.MODIFICARE_OP))
+            {
+                modificareBaseInDatabase();
+            }
+            else if (actionsController.selectareActionComboBox.getValue().toString().equals(Finals.STERGERE_OP))
+            {
+                stergereBaseInDatabase();
+            }
+
+            OperatiuniTableInitializer.reload(getOperationBaseController().nrInventarTextField.getText());
         }
-        else if (actionsController.selectareActionComboBox.getValue().toString().equals(Finals.MODIFICARE_OP))
+        catch(SQLException e)
         {
-            modificareBaseInDatabase();
-        }
-        else if (actionsController.selectareActionComboBox.getValue().toString().equals(Finals.STERGERE_OP))
-        {
-            stergereBaseInDatabase();
+            e.printStackTrace();
         }
     }
 

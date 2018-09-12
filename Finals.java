@@ -19,6 +19,7 @@ public class Finals {
     final static String AMENAJARE_OP = "amenajare";
     final static String TRANSPORT_OP = "transport";
     final static String SUSPENDARE_OP = "suspendare";
+    final static String AMORTIZARE_OP = "Amortizare";
 
 //...............................VizualizareOptions
 
@@ -113,4 +114,13 @@ public class Finals {
     final static String SELECT_FROM_MIJLOC_FIX_SQL = "Select nrInventar, mifixSiCaracteristiceTechnice, clasificare, durataAmortizarii, regimDeAmortizare, termenDeGarantie, contDebitor, contCreditor from mijlocFix;";
     final static String UPDATE_OPERATIE_BASE_SQL = "update operatieBase set mifixID = (Select mijlocFix.mifixID from mijlocFix where nrInventar = ?), nrReceptie = ?, felDocument = ?, nrDocument = ?, dataOperatiei = ?, felOperatieiID = (Select commonDataDB.felurioperatiei.felOperatieiID from commondatadb.felurioperatiei where denumire= ? ) where operatieID = ?;";
     final static String DELETE_VALORI_SQL = "delete from operatieValori where operatieID = ?;";
+
+    final static String INSERT_IN_REEVALUARE_SQL = "insert into reevaluari (operatieID, newValue) VALUES ((Select MAX(operatieID) from operatiebase),?);";
+    final static String MODIFICARE_REEVALUARE_SQL = "update reevaluari set newValue = ? where operatieID = ?;";
+    final static String DELETE_REEVALUARE_SQL = "delete reevaluari where operatieID = ?;";
+
+    final static String INSERT_IN_SUSPENDARE_SQL = "insert into suspendari (mifixID, startDate, endDate) VALUES ((Select mifixID from mijlocFix where nrInventar=?),?,?);";
+    final static String UPDATE_SUSPENDARE_SQL = "update suspendari set  mifixID = (Select mifixID from mijlocFix where nrInventar = ?), startDate = ?, endDate = ? where suspendareID = ?;";
+    final static String DELETE_SUSPENDARE_SQL = "delete from suspendari where suspendareID = ?;";
+
 }

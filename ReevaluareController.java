@@ -4,6 +4,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -81,8 +82,8 @@ public class ReevaluareController extends OperationController {
                     Statement s = c.createStatement();
                     s.execute(Finals.START_TRANSACTION);
 
-                    stergereBaseInDatabase(c);
-                    stergereReevaluareInDatabase(c);
+                    modificareBaseInDatabase(c);
+                    modificareReevaluareInDatabase(c);
 
                     s.execute(Finals.COMMIT_TRANSACTION);
                     s.close();
@@ -110,6 +111,7 @@ public class ReevaluareController extends OperationController {
                     Statement s = c.createStatement();
                     s.execute(Finals.START_TRANSACTION);
 
+                    stergereBaseInDatabase(c);
                     stergereReevaluareInDatabase(c);
 
                     s.execute(Finals.COMMIT_TRANSACTION);
@@ -126,6 +128,15 @@ public class ReevaluareController extends OperationController {
                 //....
             }
         }
+        try
+        {
+
+            OperatiuniTableInitializer.reload(getOperationBaseController().nrInventarTextField.getText());
+        }
+        catch(SQLException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     public boolean validateReevaluareInput()
@@ -139,43 +150,40 @@ public class ReevaluareController extends OperationController {
 
     public void adaugareReevaluareInDB(Connection c) throws SQLException
     {
-                Statement s = c.createStatement();
-                s.executeUpdate(Finals.SET_QUOTES_SQL);
-                s.executeUpdate("use \"" + Main.getSocietateActuala() +"\";");
+        try (PreparedStatement pstmt = c.prepareStatement(Finals.INSERT_IN_REEVALUARE_SQL))
+        {
+            pstmt.setString(1, valoareNouTextField.getText());
 
-
-                String insSql = "insert into reevaluari (mifixID, nrReceptie, felDocument, nrDocument, dataOperatiei, felOperatieiID) VALUES \n" +
-                        "((Select mifixID from mijlocFix where nrInventar='"+ getOperationBaseController().nrInventarTextField.getText() +"')"+ ", '" +
-                        getOperationBaseController().nrReceptieTextField.getText() + "', '"+
-                        getOperationBaseController().felDocumentTextField.getText() +"', '"+
-                        getOperationBaseController().nrDocumentTextField.getText() +"', '"+
-                        getOperationBaseController().dataOperatieiDatePicker.getValue().toString() +"', \n" +
-                        "(Select commonDataDB.felurioperatiei.felOperatieiID from commondatadb.felurioperatiei where denumire='"+Finals.REEVALUARE_OP+"'));";
-
-                System.out.println(insSql);
-                s.executeUpdate(insSql);
-
-                //..................
-                s.close();
-                c.close();
-
-                Alerts.informationAlert(Finals.SUCCESSFUL_OPERATION_TITLE_TEXT, Finals.SUCCESSFUL_OPERATION_HEADER_TEXT, Finals.SUCCESSFUL_OPERATION_CONTENT_TEXT);
-
+            pstmt.executeUpdate();
+        }
     }
 
-    public void modificareReevaluareInDatabase(Connection c)
+    public void modificareReevaluareInDatabase(Connection c) throws SQLException
     {
+        try (PreparedStatement pstmt = c.prepareStatement(Finals.MODIFICARE_REEVALUARE_SQL))
+        {
+            pstmt.setString(1, valoareNouTextField.getText());
+            pstmt.setInt(2, actionsController.getSelectedOperatieData().getOperatieID());
 
+            pstmt.executeUpdate();
+        }
     }
 
-    public void stergereReevaluareInDatabase(Connection c)
+    public void stergereReevaluareInDatabase(Connection c) throws SQLException
     {
+        try (PreparedStatement pstmt = c.prepareStatement(Finals.DELETE_REEVALUARE_SQL))
+        {
+            pstmt.setInt(1, actionsController.getSelectedOperatieData().getOperatieID());
 
+            pstmt.executeUpdate();
+        }
     }
 
     ReevaluareController(ActionsController actionsController)
     {
         this.actionsController = actionsController;
+        setFelOperatiei("reevaluare");
+        setActionsController(actionsController);
     }
 
     public void initialize ()

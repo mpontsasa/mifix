@@ -48,7 +48,7 @@ public class OperationController {
 
     public void operatieSelectedInTable(OperatiuniTableDisplayer<OperatiuniTableInitializer.OperatieData> otd)
     {
-        operationBaseController.nrInventarTextField.setText(otd.getNrInventar());
+        operationBaseController.nrInventarTextField.setText(otd.getTable().getSelectionModel().getSelectedItem().getNrInventar());
         operationBaseController.nrReceptieTextField.setText(otd.getTable().getSelectionModel().getSelectedItem().getNrReceptie());
         operationBaseController.felDocumentTextField.setText(otd.getTable().getSelectionModel().getSelectedItem().getFelDocument());
         operationBaseController.nrDocumentTextField.setText(otd.getTable().getSelectionModel().getSelectedItem().getNrDocument());
@@ -294,8 +294,6 @@ public class OperationController {
             pstmt.setInt(1, actionsController.getSelectedOperatieData().getOperatieID());
 
             pstmt.executeUpdate();
-
-
         }
     }
 

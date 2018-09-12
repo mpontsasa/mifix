@@ -16,7 +16,7 @@ public class OperatiuniTableInitializer {
     public static TableDisplayer initializeTable(String nrInv, LocalDate start, LocalDate end) throws SQLException
     {
 
-        OperatiuniTableDisplayer<OperatieData> td = new OperatiuniTableDisplayer<>(nrInv);
+        OperatiuniTableDisplayer<OperatieData> td = new OperatiuniTableDisplayer<>(nrInv, start, end);
         tds.add(td);
 
         setData(td, nrInv, start, end);
@@ -28,7 +28,7 @@ public class OperatiuniTableInitializer {
 
         String title = "Operatiuni ";
 
-        if (nrInv != null || !nrInv.isEmpty())
+        if (nrInv != null && !nrInv.isEmpty())
         {
             title += nrInv + " ";
         }
@@ -54,10 +54,18 @@ public class OperatiuniTableInitializer {
             tds.remove(td);
         });
 
-        /*TableColumn felOperatiei = new TableColumn("Nr. Inventar");
-        felOperatiei.setMinWidth(100);
-        felOperatiei.setCellValueFactory(
-                new PropertyValueFactory<MijlocFixTableInitializer.MijlocFixData, String>("felOperatiei"));*/
+
+        if (nrInv == null || nrInv.isEmpty())
+        {
+            TableColumn nrInventar = new TableColumn("Nr. Inventar");
+            nrInventar.setMinWidth(100);
+            nrInventar.setCellValueFactory(
+                    new PropertyValueFactory<MijlocFixTableInitializer.MijlocFixData, String>("nrInventar"));
+
+            td.getTable().getColumns().add(nrInventar);
+        }
+
+
 
         TableColumn felOperatie = new TableColumn("Fel operatie");
         felOperatie.setMinWidth(32);
@@ -108,17 +116,27 @@ public class OperatiuniTableInitializer {
         for (int i = 0; i < td.getSearchTextFields().size(); i++)
         {
             td.getSearchTextFields().get(i).textProperty().addListener((observable, oldValue, newValue) -> {
-                System.out.println("text changed");
+                //System.out.println("text changed");
                 td.getFilteredData().setPredicate(mifix -> {
 
-                    if (newValue == null || newValue.isEmpty()) {       // nem tudom miert, de enelkul nem megy
+                    if (newValue == null || newValue.isEmpty()) {}       // nem tudom miert, de enelkul nem megy
 
-                    }
-                    System.out.println("b");
-                    for (int j = 0; j < td.getTable().getColumns().size(); j++)
+                    int nrInvDif = 0;   //0 if I dont have nrInv column, 1 if I do
+
+                    if (td.getNrInventar() == null || td.getNrInventar().isEmpty()) //if I have nr inventar column
                     {
-                        if (td.getSearchTextFields().get(j).getText() != null && !td.getSearchTextFields().get(j).getText().isEmpty() &&
-                                !mifix.getProperty(j).toLowerCase().contains(td.getSearchTextFields().get(j).getText().toLowerCase()))
+                        if (td.getSearchTextFields().get(0).getText() != null && !td.getSearchTextFields().get(0).getText().isEmpty() &&
+                                !mifix.getNrInventar().toLowerCase().contains(td.getSearchTextFields().get(0).getText().toLowerCase()))
+                        {
+                            return false;
+                        }
+                        nrInvDif = 1;
+                    }
+
+                    for (int j = 0; j < td.getTable().getColumns().size() - nrInvDif; j++)
+                    {
+                        if (td.getSearchTextFields().get(j + nrInvDif).getText() != null && !td.getSearchTextFields().get(j + nrInvDif).getText().isEmpty() &&
+                                !mifix.getProperty(j).toLowerCase().contains(td.getSearchTextFields().get(j + nrInvDif).getText().toLowerCase()))
                         {
                             return false;
                         }
@@ -134,7 +152,7 @@ public class OperatiuniTableInitializer {
         Connection c = MySQLJDBCUtil.getConnection(Main.getSocietateActuala());    //get the connection
         Statement st = c.createStatement();                                         //make a statement
 
-        String sqlQuery = "select operatiebase.operatieID as opID, commonDataDB.feluriOperatiei.denumire as felOperatieidenumire , nrReceptie, felDocument, nrDocument, dataOperatiei, sum(valoareFaraTVA) as valoareFaraTVASum " +
+        String sqlQuery = "select operatiebase.operatieID as opID, nrInventar, commonDataDB.feluriOperatiei.denumire as felOperatieidenumire , nrReceptie, felDocument, nrDocument, dataOperatiei, sum(valoareFaraTVA) as valoareFaraTVASum " +
                 "from mijlocFix " +
                 "join operatiebase on mijlocFix.mifixID = operatiebase.mifixID " +
                 "Left Join operatievalori on operatiebase.operatieID = operatieValori.operatieID " +
@@ -165,6 +183,7 @@ public class OperatiuniTableInitializer {
         {
             td.getData().add(new OperatieData(
                     rs.getInt("opID"),
+                    rs.getString("nrInventar"),
                     rs.getString("felOperatieidenumire"),
                     rs.getString("nrReceptie"),
                     rs.getString("felDocument"),
@@ -181,6 +200,7 @@ public class OperatiuniTableInitializer {
 
     public static class OperatieData {
         private int operatieID;
+        private final SimpleStringProperty nrInventar;
         private final SimpleStringProperty felOperatiei;
         private final SimpleStringProperty nrReceptie;
         private final SimpleStringProperty felDocument;
@@ -188,9 +208,10 @@ public class OperatiuniTableInitializer {
         private final SimpleStringProperty dataOperatiei;
         private final SimpleFloatProperty valoareFaraTVA;
 
-        OperatieData(int operatieID, String felOperatiei, String nrReceptie, String felDocument, String nrDocument, String dataOperatiei, Float valoareFaraTVA)
+        OperatieData(int operatieID, String nrInventar, String felOperatiei, String nrReceptie, String felDocument, String nrDocument, String dataOperatiei, Float valoareFaraTVA)
         {
             this.operatieID = operatieID;
+            this.nrInventar = new SimpleStringProperty(nrInventar);
             this.felOperatiei = new SimpleStringProperty(felOperatiei);
             this.nrReceptie = new SimpleStringProperty(nrReceptie);
             this.felDocument = new SimpleStringProperty(felDocument);
@@ -221,6 +242,18 @@ public class OperatiuniTableInitializer {
 
         public int getOperatieID() {
             return operatieID;
+        }
+
+        public String getNrInventar() {
+            return nrInventar.get();
+        }
+
+        public SimpleStringProperty nrInventarProperty() {
+            return nrInventar;
+        }
+
+        public void setNrInventar(String nrInventar) {
+            this.nrInventar.set(nrInventar);
         }
 
         public String getFelOperatiei() {
@@ -296,12 +329,20 @@ public class OperatiuniTableInitializer {
         }
     }
 
-    public static void reload() throws SQLException
-    {
-        ///coming soon
-    }
-
     public static ArrayList<OperatiuniTableDisplayer<OperatieData>> getTds() {
         return tds;
     }
+
+    public static void reload(String nrInv) throws SQLException
+    {
+        for (OperatiuniTableDisplayer<OperatieData> td : tds)
+        {
+            if (td.getNrInventar().equals(nrInv)  || td.getNrInventar() == null || td.getNrInventar().isEmpty())
+            {
+                td.getData().clear();
+                setData(td, nrInv, td.getStart(), td.getEnd());
+            }
+        }
+    }
+
 }

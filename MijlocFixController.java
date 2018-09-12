@@ -630,6 +630,21 @@ public class MijlocFixController {
         this.main = main;
     }
 
+    public void loadMifix(MijlocFixTableInitializer.MijlocFixData mifixData)
+    {
+        numarInventarTextField.setText(mifixData.getNrInventar());
+        durataAmortizariiTextField.setText("" + mifixData.getDurataAmortizarii());
+        contDebitorTextField.setText(mifixData.getContDebitor());
+        contCreditorTextField.setText(mifixData.getContCreditor());
+        mijlocFixSiCaracteristiciTextArea.setText(mifixData.getMifixSiCar());
+        codDeClasificareComboBox.setValue("" + mifixData.toString());
+        regimDeAmortizareComboBox.setValue("" + mifixData.getRegimDeAmortizare().toString());
+
+        if (mifixData.getTermenDeGarantie() != null)
+            termenDeGarantieDatePicker.setValue(LocalDate.parse(mifixData.getTermenDeGarantie()));
+
+    }
+
     public void mijlocFixSelectedInTable()
     {
         numarInventarTextField.setText(MijlocFixTableInitializer.getTd().getTable().getSelectionModel().getSelectedItem().getNrInventar());
