@@ -13,6 +13,7 @@ public class ActionsController {
     private MijlocFixController mijlocFixController = null; //controller of active mifix view
     private OperationController operationController = null; //controller of active operatie
     private SuspendareController suspendareController = null; //controller of active suspendare
+    private AmortizareController amortizareController = null; //controller of active amortizare
     private MijlocFixTableInitializer.MijlocFixData selectedMifixData = null;
     private OperatiuniTableInitializer.OperatieData selectedOperatieData = null;
     private SuspendariTableInitializer.SuspendareData selectedSuspendareData = null;
@@ -90,6 +91,9 @@ public class ActionsController {
                 break;
             case Finals.SUSPENDARE_OP:
                 suspendareOperatieOptionSelected();
+                break;
+            case Finals.AMORTIZARE_OP:
+                amortizareOperatieOptionSelected();
                 break;
         }
         placeAndSizeAllTables();
@@ -429,6 +433,36 @@ public class ActionsController {
             e.printStackTrace();
         }
     }
+
+    public void amortizareOperatieOptionSelected()
+    {
+        try
+        {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(Finals.VIEWS_PATH + "amortizareView.fxml"));
+
+            loader.setControllerFactory(c -> {
+                return new AmortizareController(this);
+            });
+            HBox sublayerHBox = loader.load();
+
+            //operationController = null;
+            amortizareController = loader.getController();
+
+            if (optionContentVBox.getChildren().size() > 1)     //remoove last operatie from the screen if necesarry
+                optionContentVBox.getChildren().remove(1);
+
+            optionContentVBox.getChildren().add(sublayerHBox);
+
+            Main.getGlobalPrimaryStage().setMinWidth(1000);
+            Main.getGlobalPrimaryStage().setMinHeight(380);
+
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
 
     public void placeAndSizeAllTables()
     {

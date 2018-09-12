@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<HBox fx:id="sublayerHBox" prefHeight="222.0" prefWidth="395.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="amortizareController">
+<HBox fx:id="sublayerHBox" prefHeight="222.0" prefWidth="395.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="AmortizareController">
    <children>
       <VBox prefHeight="222.0" prefWidth="345.0">
          <children>
@@ -72,7 +72,7 @@
                         <Insets bottom="5.0" left="3.0" right="3.0" top="5.0" />
                      </HBox.margin>
                   </ComboBox>
-                  <ComboBox fx:id="endMonthTextField" onAction="#endMonthTextField" prefHeight="26.0" prefWidth="64.0">
+                  <ComboBox fx:id="endMonthTextField" onAction="#endMonthTextFieldAction" prefHeight="26.0" prefWidth="64.0">
                      <HBox.margin>
                         <Insets bottom="5.0" left="3.0" right="3.0" top="5.0" />
                      </HBox.margin>
