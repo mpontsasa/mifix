@@ -174,7 +174,8 @@ public class OperatiuniTableInitializer {
             sqlQuery += "and dataOperatiei <= '" + end.toString() + "' ";
         }
 
-        sqlQuery += "group by operatiebase.operatieID;";
+        sqlQuery += "group by operatiebase.operatieID " +
+                "order by dataOperatiei;";
 
         System.out.println(sqlQuery);
         ResultSet rs = st.executeQuery(sqlQuery);

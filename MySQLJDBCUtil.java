@@ -187,4 +187,52 @@ public class MySQLJDBCUtil {
         }
         return result;
     }
+
+    public static Float valueOfMifixAtADate(String nrInv, LocalDate date) throws SQLException   // Operations on the day date dont count
+                                                                            // Returns null if mifix is alredy sold or casat
+    {
+        Float value = 0f;
+        try (Connection c = getConnection();
+                PreparedStatement getOpsPstm = c.prepareStatement(Finals.GET_ALL_OPERATIE_OF_MIFIX_SQL);
+                Statement s = c.createStatement();)
+        {
+            s.executeUpdate(Finals.SET_QUOTES_SQL);
+            s.executeUpdate("use \"" + "Freeform 2005" +"\";");
+
+            getOpsPstm.setString(1,nrInv);
+            ResultSet operations = getOpsPstm.executeQuery();
+
+
+
+            while(operations.next())
+            {
+                LocalDate dateOfOp = LocalDate.parse(operations.getString("dataOperatiei"));
+                if (dateOfOp.isAfter(date) || dateOfOp.equals(date))
+                {
+                    return value;
+                }
+
+                if (operations.getString("felOperatieidenumire").equals(Finals.VANZARE_OP) ||
+                        operations.getString("felOperatieidenumire").equals(Finals.CASARE_OP))
+                {
+                    return null;
+                }
+                else if (operations.getString("felOperatieidenumire").equals(Finals.REEVALUARE_OP))
+                {
+                    PreparedStatement reevValuePstm = c.prepareStatement(Finals.REEVALUARE_VALUE_SQL);
+                    reevValuePstm.setInt(1, operations.getInt("opID"));
+                    ResultSet reevValue = reevValuePstm.executeQuery();
+
+                    reevValue.next();
+                    value = reevValue.getFloat("newValue");
+                }
+                else
+                {
+                    value += operations.getFloat("valoareFaraTVASum");
+                }
+            }
+
+        }
+        return value;
+    }
 }

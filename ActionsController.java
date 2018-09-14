@@ -109,6 +109,11 @@ public class ActionsController {
         }
         else
         {
+            if (selectareActionComboBox.getValue() == null)
+            {
+                selectareActionComboBox.setValue(Finals.ADAUGARE_OP);
+            }
+
             String oldOption = selectareActionComboBox.getValue().toString();
             selectareActionComboBox.getItems().clear();
             selectareActionComboBox.getItems().addAll(
@@ -117,14 +122,11 @@ public class ActionsController {
                     Finals.STERGERE_OP
             );
 
-            if (oldOption!= null && (oldOption.equals(Finals.ADAUGARE_OP) || oldOption.equals(Finals.MODIFICARE_OP) || oldOption.equals(Finals.STERGERE_OP)))
-            {
+
                 selectareActionComboBox.setValue(oldOption);
-            }
-            else
-            {
+
                 selectareActionComboBox.setValue(Finals.ADAUGARE_OP);
-            }
+
         }
 
         placeAndSizeAllTables();

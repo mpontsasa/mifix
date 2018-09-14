@@ -126,4 +126,16 @@ public class Finals {
     final static String UPDATE_SUSPENDARE_SQL = "update suspendari set  mifixID = (Select mifixID from mijlocFix where nrInventar = ?), startDate = ?, endDate = ? where suspendareID = ?;";
     final static String DELETE_SUSPENDARE_SQL = "delete from suspendari where suspendareID = ?;";
 
+    //amortizare sql
+
+    final static String GET_ALL_OPERATIE_OF_MIFIX_SQL = "select operatiebase.operatieID as opID, commonDataDB.feluriOperatiei.denumire as felOperatieidenumire, dataOperatiei, sum(valoareFaraTVA) as valoareFaraTVASum " +
+            "from mijlocFix join operatiebase on mijlocFix.mifixID = operatiebase.mifixID " +
+            "Left Join operatievalori on operatiebase.operatieID = operatieValori.operatieID " +
+            "Join commonDataDB.feluriOperatiei on commonDataDB.feluriOperatiei.felOperatieiID = operatiebase.felOperatieiID " +
+            "where mijlocFix.nrInventar = ?" +
+            "group by operatiebase.operatieID " +
+            "order by dataOperatiei;";
+
+    final static String NOT_CALCULATED_IN_A_MONTH_SQL = "select mifixID from mijlocFix where mifixID NOT IN (select mifixID from amortizare where monthOfAmortizare = ?);";
+    final static String REEVALUARE_VALUE_SQL = "select newValue from reevaluari where operatieID = ?;";
 }
