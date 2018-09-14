@@ -99,6 +99,10 @@ public class Finals {
 
     final static String OPERATIE_NOT_SELECTED_HEADER = "Operatie nu a fost selectata!";
 
+    //....amortizare
+
+    final static String START_DATE_AFTER_END_HEADER = "Date of start cant be befor end date";
+
 //.....................................SQL commands
 
     final static String SQL_COMMAND_DELIMITER = "----";
@@ -138,4 +142,9 @@ public class Finals {
 
     final static String NOT_CALCULATED_IN_A_MONTH_SQL = "select mifixID from mijlocFix where mifixID NOT IN (select mifixID from amortizare where monthOfAmortizare = ?);";
     final static String REEVALUARE_VALUE_SQL = "select newValue from reevaluari where operatieID = ?;";
+    final static String IS_SUSPENDED_SQL = "select suspendareID from suspendari " +
+            "where mifixID = (select mifixID from mijlocFix where nrInventar = ?) and DATE(?) between startDate and endDate;";
+    final static String IS_AMORTIZAT_SQL = "select amortizareID from amortizare " +
+            "where mifixID = (select mifixID from mijlocFix where nrInventar = ?) and monthOfAmortizare.MONTH() = Date(?).MONTH() and monthOfAmortizare.YEAR() = Date(?).YEAR();";
+
 }

@@ -24,18 +24,6 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception{
 
-
-
-
-
-
-        System.out.println(MySQLJDBCUtil.valueOfMifixAtADate("1526", LocalDate.parse("2014-12-03")));
-
-
-
-
-
-
         globalPrimaryStage = primaryStage;
         globalPrimaryStage.setTitle(Finals.MAIN_STAGE_CAPTION);
 

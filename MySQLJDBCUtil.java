@@ -188,27 +188,26 @@ public class MySQLJDBCUtil {
         return result;
     }
 
-    public static Float valueOfMifixAtADate(String nrInv, LocalDate date) throws SQLException   // Operations on the day date dont count
-                                                                            // Returns null if mifix is alredy sold or casat
+    public static Float valueOfMifixAtADate(String nrInv, LocalDate date, Connection c) throws SQLException   // Operations on the day date dont count
+                                                                            // Returns null if mifix is alredy sold or casat, or doesent exists yet
     {
         Float value = 0f;
-        try (Connection c = getConnection();
-                PreparedStatement getOpsPstm = c.prepareStatement(Finals.GET_ALL_OPERATIE_OF_MIFIX_SQL);
-                Statement s = c.createStatement();)
+        try (PreparedStatement getOpsPstm = c.prepareStatement(Finals.GET_ALL_OPERATIE_OF_MIFIX_SQL);
+                Statement s = c.createStatement())
         {
             s.executeUpdate(Finals.SET_QUOTES_SQL);
-            s.executeUpdate("use \"" + "Freeform 2005" +"\";");
+            s.executeUpdate("use \"" + Main.getSocietateActuala() +"\";");
 
             getOpsPstm.setString(1,nrInv);
             ResultSet operations = getOpsPstm.executeQuery();
-
-
 
             while(operations.next())
             {
                 LocalDate dateOfOp = LocalDate.parse(operations.getString("dataOperatiei"));
                 if (dateOfOp.isAfter(date) || dateOfOp.equals(date))
                 {
+                    if (value.equals(0f))
+                        return null;
                     return value;
                 }
 
@@ -234,5 +233,49 @@ public class MySQLJDBCUtil {
 
         }
         return value;
+    }
+
+    public static boolean isSuspended(String nrInv, LocalDate dateOfAmort, Connection c) throws SQLException {
+        try (PreparedStatement pstm = c.prepareStatement(Finals.IS_SUSPENDED_SQL);
+             Statement s = c.createStatement()) {
+            s.executeUpdate(Finals.SET_QUOTES_SQL);
+            s.executeUpdate("use \"" + Main.getSocietateActuala() + "\";");
+
+            pstm.setString(1, nrInv);
+            pstm.setString(2, dateOfAmort.toString());
+
+            ResultSet rs = pstm.executeQuery();
+
+            if (rs.next())
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+    }
+
+    public static boolean isAmortizat(String nrInv, LocalDate dateOfAmort, Connection c) throws SQLException {
+
+        try (PreparedStatement pstm = c.prepareStatement(Finals.IS_AMORTIZAT_SQL);
+             Statement s = c.createStatement()) {
+            s.executeUpdate(Finals.SET_QUOTES_SQL);
+            s.executeUpdate("use \"" + Main.getSocietateActuala() + "\";");
+
+            pstm.setString(1, nrInv);
+            pstm.setString(2, dateOfAmort.toString());
+            pstm.setString(3, dateOfAmort.toString());
+
+            ResultSet rs = pstm.executeQuery();
+
+            if (rs.next())
+            {
+                return true;
+            }
+
+            return false;
+        }
+
     }
 }

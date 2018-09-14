@@ -4,8 +4,10 @@ import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDate;
 
 public class AmortizareController {
 
@@ -147,6 +149,14 @@ public class AmortizareController {
             return false;
         }
 
+        if (Integer.parseInt(startYearTextField.getText()) < Integer.parseInt(endYearTextField.getText()) ||
+                (Integer.parseInt(startYearTextField.getText()) == Integer.parseInt(endYearTextField.getText()) &&
+                        Integer.parseInt(startMonthTextField.getText()) < Integer.parseInt(endMonthTextField.getText())))
+        {
+            Alerts.errorAlert(Finals.INVALID_INPUT_TITLE_TEXT, Finals.START_DATE_AFTER_END_HEADER, Finals.INVALID_INPUT_CONTENT_TEXT);
+            return false;
+        }
+
         return true;
     }
 
@@ -162,10 +172,40 @@ public class AmortizareController {
         // NEEDS TO BE ASKED< IF ITS FOR SURE (confirmation alert)
     }
 
-    public void calculareInDatabase(Connection c) throws SQLException {
+    public void calculateInDatabaseForOne(String nrInv, Connection c) throws SQLException
+    {
+        LocalDate dateOfAmort = LocalDate.parse(startYearTextField.getText() + "-" + startMonthTextField.getText() + "-" +  "01");
+        LocalDate endDate = LocalDate.parse(endYearTextField.getText() + "-" + endMonthTextField.getText() + "-" +  "01");
 
+        for (;!dateOfAmort.isAfter(endDate); dateOfAmort = dateOfAmort.plusMonths(1))
+        {
+            if (!MySQLJDBCUtil.isSuspended(nrInv, dateOfAmort, c) && !MySQLJDBCUtil.isAmortizat(nrInv, dateOfAmort, c))
+            {
+                Float valueOfMifix = MySQLJDBCUtil.valueOfMifixAtADate(nrInv, dateOfAmort, c);
+
+                if (valueOfMifix == null)   // has no operations yet or alredy sold/casat
+                {
+                    return;
+                }
+
+                itt hagytam abba
+            }
+        }
     }
 
+    public void calculareInDatabase(Connection c) throws SQLException {
+
+        try (PreparedStatement getMifixsPstm = c.prepareStatement(Finals.GET_ALL_OPERATIE_OF_MIFIX_SQL);
+             Statement s = c.createStatement()) {
+
+            s.executeUpdate(Finals.SET_QUOTES_SQL);
+            s.executeUpdate("use \"" + Main.getSocietateActuala() + "\";");
+
+
+
+
+        }
+    }
     public void recalculareInDatabase(Connection c) throws SQLException {
 
     }
@@ -217,5 +257,4 @@ public class AmortizareController {
             }
         };
     }   // copy paste, I didnt make this (dont blame me for naming convention)
-
 }
