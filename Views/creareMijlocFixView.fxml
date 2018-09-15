@@ -18,11 +18,11 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<ScrollPane prefHeight="233.0" prefWidth="870.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="MijlocFixController">
+<ScrollPane prefHeight="297.0" prefWidth="870.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="MijlocFixController">
    <content>
-      <HBox prefHeight="219.0" prefWidth="862.0">
+      <HBox prefHeight="279.0" prefWidth="862.0">
          <children>
-            <GridPane prefHeight="443.0" prefWidth="306.0">
+            <GridPane prefHeight="266.0" prefWidth="298.0">
               <columnConstraints>
                 <ColumnConstraints hgrow="SOMETIMES" maxWidth="191.79999237060548" minWidth="10.0" prefWidth="168.80001831054688" />
                 <ColumnConstraints hgrow="SOMETIMES" maxWidth="254.1999938964844" minWidth="10.0" prefWidth="174.3999816894531" />
@@ -31,9 +31,10 @@
                 <RowConstraints maxHeight="139.60001220703126" minHeight="0.0" prefHeight="61.8000244140625" vgrow="SOMETIMES" />
                   <RowConstraints maxHeight="162.80001716613768" minHeight="13.40000610351563" prefHeight="24.1999755859375" vgrow="SOMETIMES" />
                 <RowConstraints maxHeight="354.0" minHeight="0.0" prefHeight="75.39999389648436" vgrow="SOMETIMES" />
-                  <RowConstraints maxHeight="319.7999801635742" minHeight="10.0" prefHeight="31.600006103515625" vgrow="SOMETIMES" />
-                  <RowConstraints maxHeight="319.7999801635742" minHeight="0.0" prefHeight="43.800012207031244" vgrow="SOMETIMES" />
-                  <RowConstraints maxHeight="386.80003662109374" minHeight="10.0" prefHeight="36.800012207031244" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="354.0" minHeight="10.0" prefHeight="20.0" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="319.7999801635742" minHeight="10.0" prefHeight="28.00001220703126" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="319.7999801635742" minHeight="0.0" prefHeight="32.79998779296875" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="386.80003662109374" minHeight="10.0" prefHeight="37.00003662109373" vgrow="SOMETIMES" />
               </rowConstraints>
                <children>
                   <TextArea fx:id="descriptieClasificareTextArea" editable="false" prefHeight="67.0" prefWidth="202.0" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="2" />
@@ -69,7 +70,7 @@
                         <ComboBox fx:id="codDeClasificareComboBox" editable="true" layoutX="1.0" layoutY="2.0" onAction="#codDeClasificareComboBoxAction" onKeyReleased="#codDeClasificareComboBoxKeyTyped" prefHeight="25.0" prefWidth="116.0" />
                      </children>
                   </Pane>
-                  <Label prefHeight="20.0" prefWidth="144.0" text="Regim de amortizare:" GridPane.rowIndex="5">
+                  <Label prefHeight="20.0" prefWidth="144.0" text="Regim de amortizare:" GridPane.rowIndex="6">
                      <font>
                         <Font size="14.0" />
                      </font>
@@ -77,7 +78,7 @@
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                      </GridPane.margin>
                   </Label>
-                  <Label prefHeight="20.0" prefWidth="116.0" text="Durata amortizarii:" GridPane.rowIndex="4">
+                  <Label prefHeight="20.0" prefWidth="116.0" text="Durata amortizarii:" GridPane.rowIndex="5">
                      <font>
                         <Font size="14.0" />
                      </font>
@@ -93,8 +94,8 @@
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                      </GridPane.margin>
                   </Label>
-                  <Region prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-                  <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
+                  <Region prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                  <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="5">
                      <children>
                         <TextField fx:id="durataAmortizariiTextField" onAction="#durataAmortizoriiTextFieldAction" prefHeight="26.0" prefWidth="47.0" />
                         <Label fx:id="durataHelper" text="-">
@@ -110,7 +111,7 @@
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                      </GridPane.margin>
                   </HBox>
-                  <HBox alignment="CENTER_LEFT" GridPane.columnIndex="1" GridPane.rowIndex="5">
+                  <HBox alignment="CENTER_LEFT" GridPane.columnIndex="1" GridPane.rowIndex="6">
                      <children>
                         <ComboBox fx:id="regimDeAmortizareComboBox" onAction="#regimDeAmortizareComboBoxAction" prefHeight="26.0" prefWidth="132.0">
                            <HBox.margin>
@@ -119,7 +120,31 @@
                         </ComboBox>
                      </children>
                   </HBox>
-                  <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                  <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
+                     <children>
+                        <HBox prefHeight="100.0" prefWidth="200.0">
+                           <children>
+                              <TextField fx:id="startingYearTextField" prefHeight="26.0" prefWidth="172.0" promptText="An">
+                                 <HBox.margin>
+                                    <Insets bottom="5.0" left="3.0" right="3.0" top="5.0" />
+                                 </HBox.margin>
+                              </TextField>
+                              <TextField fx:id="startingMonthTextField" promptText="Luna">
+                                 <HBox.margin>
+                                    <Insets bottom="5.0" left="3.0" right="3.0" top="5.0" />
+                                 </HBox.margin>
+                              </TextField>
+                           </children>
+                        </HBox>
+                     </children></HBox>
+                  <Label text="Inceputul amortizarii:" GridPane.rowIndex="4">
+                     <GridPane.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </GridPane.margin>
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Label>
                </children>
             </GridPane>
             <Region prefHeight="443.0" prefWidth="16.0" />

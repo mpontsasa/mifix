@@ -22,7 +22,7 @@ public class Alerts {
         Optional<ButtonType> result = alert.showAndWait();
         if (result.get() == ButtonType.OK){
             System.out.println("Setting up commonDataDB");
-            SQLExecuter.executeFile("setUpCommonDataDB.sql");
+            SQLExecuter.executeFile(Finals.SQL_QUERIES+"setUpCommonDataDB.sql");
             System.out.println("commonDataDB set up finished");
         } else {
             exit();

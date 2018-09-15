@@ -367,8 +367,8 @@ public class ActionsController {
 
             optionContentVBox.getChildren().add(creareMifixPanel);
 
-            main.getGlobalPrimaryStage().setMinWidth(1000);
-            main.getGlobalPrimaryStage().setMinHeight(380);
+            main.getGlobalPrimaryStage().setMinWidth(1050);
+            main.getGlobalPrimaryStage().setMinHeight(450);
 
             if (selectedMifixData != null && selectareActionComboBox.getValue() != Finals.ADAUGARE_OP)
             {
@@ -495,7 +495,6 @@ public class ActionsController {
             e.printStackTrace();
         }
     }
-
 
     public void placeAndSizeAllTables()
     {

@@ -107,8 +107,7 @@ public class MySQLJDBCUtil {
             s.executeUpdate(Finals.SET_QUOTES_SQL);
             s.executeUpdate("create database \"" + selectedSocietate.trim() + "\";");
             s.executeUpdate("use \"" + selectedSocietate.trim() + "\";");
-
-            SQLExecuter.executeFile("setUpSocietateDB.sql", c);
+            SQLExecuter.executeFile(Finals.SQL_QUERIES+"setUpSocietateDB.sql", c);
 
             s.close();
             //ps.close();
@@ -233,6 +232,26 @@ public class MySQLJDBCUtil {
 
         }
         return value;
+    }
+
+    public static Float valueAmortizata(String nrInv, LocalDate date, Connection c) throws SQLException   // Operations on the day date dont count
+                                                                                                        // Returns null if mifix is alredy sold or casat, or doesent exists yet
+    {
+        Float res;
+        try (PreparedStatement getOpsPstm = c.prepareStatement(Finals.AMORTIZAT_VALUE_UNTIL_SQL);
+             Statement s = c.createStatement()) {
+            s.executeUpdate(Finals.SET_QUOTES_SQL);
+            s.executeUpdate("use \"" + Main.getSocietateActuala() + "\";");
+
+            getOpsPstm.setString(1, nrInv);
+            getOpsPstm.setString(2, date.toString());
+            ResultSet values = getOpsPstm.executeQuery();
+
+            values.next();
+
+            res = values.getFloat("diffSum") + values.getFloat("calcSum");
+        }
+        return res;
     }
 
     public static boolean isSuspended(String nrInv, LocalDate dateOfAmort, Connection c) throws SQLException {

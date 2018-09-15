@@ -3,6 +3,7 @@ public class Finals {
     final static String VIEWS_PATH = "Views\\";
     final static String CONTDIC_PATH = "CONTDIC.DBF";
     final static String TVA_PATH = "TVA.DBF";
+    final static String SQL_QUERIES = "sqlqueries\\";
 
 
     final static String MAIN_STAGE_CAPTION = "Mijloc Fix";
@@ -75,6 +76,7 @@ public class Finals {
     final static String DURATA_AMORTIZARII_EMPTY_HEADER_TEXT = "Durata amortizarii nu poate ramane gol!";
     final static String MI_FIX_SI_CAR_TOO_LONG_HEADER_TEXT = "Mijloc fix si caracteristice technice cant be longer than 500 chars!";
     final static String COD_DE_CLASIFICARE_EMPTY_HEADER_TEXT = "Cod de clasificare nu poate ramane gol!";
+    final static String INCEPUTUL_AMORTIZARII_EMPTY_HEADER_TEXT = "Inceputul amortizarii nu poate ramane gol!";
     final static String COD_DE_CLASIFICARE_INCORECT_HEADER_TEXT = "Incorect cod de clasificare!";
     final static String INEXISTENT_CONT_DEBITOR_HEADER_TEXT = "Cont debitor nu exista!";
     final static String INEXISTENT_CONT_CREDITOR_HEADER_TEXT = "Cont creditor nu exista!";
@@ -146,5 +148,8 @@ public class Finals {
             "where mifixID = (select mifixID from mijlocFix where nrInventar = ?) and DATE(?) between startDate and endDate;";
     final static String IS_AMORTIZAT_SQL = "select amortizareID from amortizare " +
             "where mifixID = (select mifixID from mijlocFix where nrInventar = ?) and monthOfAmortizare.MONTH() = Date(?).MONTH() and monthOfAmortizare.YEAR() = Date(?).YEAR();";
+    final static String AMORTIZAT_VALUE_UNTIL_SQL = "select sum(calculatedValue) as calcSum, sum(diferenta) as diffSum from amortizare " +
+            "where mifixID = (select mifixID from mijlocFix where nrInventar = ?) and monthOfAmortizare < DATE(?);";
+    final static String INSERT_INTO_AMORTIZARE_SQL = "insert into amortizare (mifixID, monthOfAmortizare, calculatedValue, diferenta) VALUES ((select mifixID from mijlocFix where nrInventar = ?),?,?,?)";
 
 }

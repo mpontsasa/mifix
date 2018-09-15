@@ -177,18 +177,31 @@ public class AmortizareController {
         LocalDate dateOfAmort = LocalDate.parse(startYearTextField.getText() + "-" + startMonthTextField.getText() + "-" +  "01");
         LocalDate endDate = LocalDate.parse(endYearTextField.getText() + "-" + endMonthTextField.getText() + "-" +  "01");
 
-        for (;!dateOfAmort.isAfter(endDate); dateOfAmort = dateOfAmort.plusMonths(1))
+
+        try (PreparedStatement pstm = c.prepareStatement(Finals.INSERT_INTO_AMORTIZARE_SQL);
+             Statement s = c.createStatement())
         {
-            if (!MySQLJDBCUtil.isSuspended(nrInv, dateOfAmort, c) && !MySQLJDBCUtil.isAmortizat(nrInv, dateOfAmort, c))
+            for (;!dateOfAmort.isAfter(endDate); dateOfAmort = dateOfAmort.plusMonths(1))
             {
-                Float valueOfMifix = MySQLJDBCUtil.valueOfMifixAtADate(nrInv, dateOfAmort, c);
-
-                if (valueOfMifix == null)   // has no operations yet or alredy sold/casat
+                if (!MySQLJDBCUtil.isSuspended(nrInv, dateOfAmort, c) && !MySQLJDBCUtil.isAmortizat(nrInv, dateOfAmort, c))
                 {
-                    return;
-                }
+                    Float valueOfMifix = MySQLJDBCUtil.valueOfMifixAtADate(nrInv, dateOfAmort, c);
 
-                itt hagytam abba
+                    if (valueOfMifix == null)   // has no operations yet or alredy sold/casat
+                    {
+                        return;
+                    }
+
+                    Float amortizareValue = valueOfMifix - MySQLJDBCUtil.valueAmortizata(nrInv, dateOfAmort, c);
+
+                    pstm.setString(1, nrInv);
+                    pstm.setString(2, dateOfAmort.toString());
+                    pstm.setFloat(3, amortizareValue);
+                    pstm.setFloat(4, 0f);
+
+                    pstm.executeUpdate();
+
+                }
             }
         }
     }
@@ -216,45 +229,9 @@ public class AmortizareController {
 
     public void initialize()
     {
-        startYearTextField.addEventFilter(KeyEvent.KEY_TYPED , numeric_Validation(4));
-        startMonthTextField.addEventFilter(KeyEvent.KEY_TYPED , numeric_Validation(2));
-        endYearTextField.addEventFilter(KeyEvent.KEY_TYPED , numeric_Validation(4));
-        endMonthTextField.addEventFilter(KeyEvent.KEY_TYPED , numeric_Validation(2));
+        startYearTextField.addEventFilter(KeyEvent.KEY_TYPED , Util.numeric_Validation(4));
+        startMonthTextField.addEventFilter(KeyEvent.KEY_TYPED , Util.numeric_Validation(2));
+        endYearTextField.addEventFilter(KeyEvent.KEY_TYPED , Util.numeric_Validation(4));
+        endMonthTextField.addEventFilter(KeyEvent.KEY_TYPED , Util.numeric_Validation(2));
     }
-
-    public EventHandler<KeyEvent> numeric_Validation(final Integer max_Lengh) {
-        return new EventHandler<KeyEvent>() {
-            @Override
-            public void handle(KeyEvent e) {
-                TextField txt_TextField = (TextField) e.getSource();
-                if (txt_TextField.getText().length() >= max_Lengh) {
-                    e.consume();
-                }
-                if(e.getCharacter().matches("[0-9]")){
-                    /*if(txt_TextField.getText().contains(".") && e.getCharacter().matches("[.]")){
-                        e.consume();
-                    }else if(txt_TextField.getText().length() == 0 && e.getCharacter().matches("[.]")){
-                        e.consume();
-                    }*/
-                }else{
-                    e.consume();
-                }
-
-                if(max_Lengh == 2 && !(txt_TextField.getText() + e.getCharacter()).isEmpty())  //month
-                {
-                    try
-                    {
-
-                        if (Integer.parseInt(txt_TextField.getText() + e.getCharacter()) > 12 || Integer.parseInt(txt_TextField.getText() + e.getCharacter()) < 1)
-                            e.consume();
-                    }
-                    catch(NumberFormatException numEx)
-                    {
-                        //hehhe, do nothing(this try-catch is for backspace)
-                    }
-                }
-
-            }
-        };
-    }   // copy paste, I didnt make this (dont blame me for naming convention)
 }
