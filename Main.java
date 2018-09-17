@@ -9,7 +9,10 @@ import javafx.stage.Stage;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.time.LocalDate;
 import java.util.Properties;
 
 public class Main extends Application {
@@ -23,8 +26,6 @@ public class Main extends Application {
 
         globalPrimaryStage = primaryStage;
         globalPrimaryStage.setTitle(Finals.MAIN_STAGE_CAPTION);
-
-
 
         try (FileInputStream f = new FileInputStream("db.properties")) {
 

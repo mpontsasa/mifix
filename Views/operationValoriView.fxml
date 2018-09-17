@@ -45,6 +45,26 @@
             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
          </GridPane.margin>
       </Label>
+      <HBox GridPane.columnIndex="3">
+         <GridPane.margin>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </GridPane.margin>
+         <children>
+            <ComboBox fx:id="procentTVAComboBox" onAction="#procentTVAComboBoxAction" prefHeight="26.0" prefWidth="60.0">
+               <HBox.margin>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </HBox.margin>
+            </ComboBox>
+            <Label text="\%">
+               <font>
+                  <Font size="18.0" />
+               </font>
+               <HBox.margin>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </HBox.margin>
+            </Label>
+         </children>
+      </HBox>
       <Label prefHeight="20.0" prefWidth="81.0" text="Valoare TVA" GridPane.rowIndex="1">
          <font>
             <Font size="14.0" />
@@ -79,25 +99,5 @@
             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
          </GridPane.margin>
       </Button>
-      <HBox GridPane.columnIndex="3">
-         <GridPane.margin>
-            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-         </GridPane.margin>
-         <children>
-            <ComboBox fx:id="procentTVAComboBox" onAction="#procentTVAComboBoxAction" prefHeight="26.0" prefWidth="60.0">
-               <HBox.margin>
-                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-               </HBox.margin>
-            </ComboBox>
-            <Label text="\%">
-               <font>
-                  <Font size="18.0" />
-               </font>
-               <HBox.margin>
-                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-               </HBox.margin>
-            </Label>
-         </children>
-      </HBox>
    </children>
 </GridPane>

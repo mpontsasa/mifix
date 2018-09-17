@@ -96,6 +96,39 @@ public class ActionsController {
                 amortizareOperatieOptionSelected();
                 break;
         }
+
+        if (selectareOperatieComboBox.getValue().toString() == Finals.AMORTIZARE_OP)
+        {
+            selectareActionComboBox.getItems().clear();
+            selectareActionComboBox.getItems().addAll(
+                    Finals.CALCULARE_OP,
+                    Finals.RECALCULARE_OP,
+                    Finals.STERGERE_OP);
+            selectareActionComboBox.setValue(Finals.CALCULARE_OP);
+
+        }
+        else
+        {
+            if (selectareActionComboBox.getValue() == null)
+            {
+                selectareActionComboBox.setValue(Finals.ADAUGARE_OP);
+            }
+
+            String oldOption = selectareActionComboBox.getValue().toString();
+            selectareActionComboBox.getItems().clear();
+            selectareActionComboBox.getItems().addAll(
+                    Finals.ADAUGARE_OP,
+                    Finals.MODIFICARE_OP,
+                    Finals.STERGERE_OP
+            );
+
+
+                selectareActionComboBox.setValue(oldOption);
+
+                selectareActionComboBox.setValue(Finals.ADAUGARE_OP);
+
+        }
+
         placeAndSizeAllTables();
     }
 
@@ -298,13 +331,13 @@ public class ActionsController {
          );*/
         //................................................................................set up actions combo box
 
-        selectareActionComboBox.getItems().addAll(
+        /*selectareActionComboBox.getItems().addAll(
                 Finals.ADAUGARE_OP,
                 Finals.MODIFICARE_OP,
                 Finals.STERGERE_OP
         );
 
-        selectareActionComboBox.setValue(selectareActionComboBox.getItems().get(0));
+        selectareActionComboBox.setValue(selectareActionComboBox.getItems().get(0));*/
 
         //..............................set up vizualizareOptions combo box
 
@@ -334,8 +367,8 @@ public class ActionsController {
 
             optionContentVBox.getChildren().add(creareMifixPanel);
 
-            main.getGlobalPrimaryStage().setMinWidth(1000);
-            main.getGlobalPrimaryStage().setMinHeight(380);
+            main.getGlobalPrimaryStage().setMinWidth(1050);
+            main.getGlobalPrimaryStage().setMinHeight(450);
 
             if (selectedMifixData != null && selectareActionComboBox.getValue() != Finals.ADAUGARE_OP)
             {
@@ -463,7 +496,6 @@ public class ActionsController {
         }
     }
 
-
     public void placeAndSizeAllTables()
     {
 
@@ -553,53 +585,4 @@ public class ActionsController {
     public SuspendariTableInitializer.SuspendareData getSelectedSuspendareData() {
         return selectedSuspendareData;
     }
-
-    /*public void vanzareOptionSelected()
-    {
-        try
-        {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(Finals.VIEWS_PATH + "vanzareView.fxml"));
-            HBox sublayerHBox = loader.load();
-
-            operationController = (VanzareController) loader.getController();
-            if (optionContentVBox.getChildren().size() > 1)     //remoove last operatie from the screen if necesarry
-                optionContentVBox.getChildren().remove(1);
-
-            optionContentVBox.getChildren().add(sublayerHBox);
-
-            main.getGlobalPrimaryStage().setMinWidth(1000);
-            main.getGlobalPrimaryStage().setMinHeight(380);
-
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-    }
-*/
-    /*public void acizitieOptionSelected()
-    {
-        try
-        {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(Finals.VIEWS_PATH + "achizitieView.fxml"));
-            HBox sublayerHBox = loader.load();
-
-            operationController = (AchizitieController) loader.getController();
-            ((AchizitieController)operationController).setMain(main);
-
-            if (optionContentVBox.getChildren().size() > 1)     //remoove last operatie from the screen if necesarry
-                optionContentVBox.getChildren().remove(1);
-
-            optionContentVBox.getChildren().add(sublayerHBox);
-
-            main.getGlobalPrimaryStage().setMinWidth(1000);
-            main.getGlobalPrimaryStage().setMinHeight(380);
-
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-    }
-*/
 }

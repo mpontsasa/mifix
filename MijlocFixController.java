@@ -1,7 +1,9 @@
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyEvent;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -41,7 +43,10 @@ public class MijlocFixController {
     ComboBox regimDeAmortizareComboBox;
 
     @FXML
-    Button adaugareButton;
+    TextField startingYearTextField;
+
+    @FXML
+    TextField startingMonthTextField;
 
     @FXML
     TextArea mijlocFixSiCaracteristiciTextArea;
@@ -204,10 +209,11 @@ public class MijlocFixController {
                 s.executeUpdate("use \"" + main.getSocietateActuala() +"\";");
 
                 String insSql = "insert into mijlocFix"+
-                        "(nrInventar,mifixSiCaracteristiceTechnice, clasificare, durataAmortizarii, regimDeAmortizare, termenDeGarantie, contDebitor, contCreditor ) VALUES ('" +
+                        "(nrInventar,mifixSiCaracteristiceTechnice, clasificare, inceputulAmortizarii, durataAmortizarii, regimDeAmortizare, termenDeGarantie, contDebitor, contCreditor ) VALUES ('" +
                         numarInventarTextField.getText() + "', '"+
                         mijlocFixSiCaracteristiciTextArea.getText() + "', '"+
                         codDeClasificareComboBox.getValue().toString() + "', '"+
+                        startingYearTextField.toString() + "-" + startingMonthTextField + "-" + "1" + "', '"+
                         durataAmortizariiTextField.getText() + "', '" +
                         regimDeAmortizareComboBox.getValue().toString() + "', ";
 
@@ -363,8 +369,12 @@ public class MijlocFixController {
 
     public void initialize() throws Exception
     {
+        //initialize yer and month text field event handlers
+        startingYearTextField.addEventFilter(KeyEvent.KEY_TYPED , Util.numeric_Validation(4));
+        startingMonthTextField.addEventFilter(KeyEvent.KEY_TYPED , Util.numeric_Validation(2));
 
-        dirtiFlag = false;  //initialize dirty flag
+        //initialize dirty flag
+        dirtiFlag = false;
         //............................................................................set up clasificari
         Connection c = MySQLJDBCUtil.getConnection(Finals.COMMON_DATABASE_NAME);    //get the connection
         Statement st = c.createStatement();                                         //make a statement
@@ -451,6 +461,14 @@ public class MijlocFixController {
         if (!codDeClasificareComboBox.getItems().contains(codDeClasificareComboBox.getValue()))
         {
             Alerts.errorAlert(Finals.INVALID_INPUT_TITLE_TEXT, Finals.COD_DE_CLASIFICARE_INCORECT_HEADER_TEXT, Finals.INVALID_INPUT_CONTENT_TEXT);
+            return false;
+        }
+
+        //validation incepu amortizare
+
+        if (startingMonthTextField.getText()== null || startingMonthTextField.getText().isEmpty() || startingYearTextField.getText() == null || startingYearTextField.getText().isEmpty())
+        {
+            Alerts.errorAlert(Finals.INVALID_INPUT_TITLE_TEXT, Finals.INCEPUTUL_AMORTIZARII_EMPTY_HEADER_TEXT, Finals.INVALID_INPUT_CONTENT_TEXT);
             return false;
         }
 

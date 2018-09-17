@@ -3,6 +3,7 @@ public class Finals {
     final static String VIEWS_PATH = "Views\\";
     final static String CONTDIC_PATH = "CONTDIC.DBF";
     final static String TVA_PATH = "TVA.DBF";
+    final static String SQL_QUERIES = "sqlqueries\\";
 
 
     final static String MAIN_STAGE_CAPTION = "Mijloc Fix";
@@ -31,6 +32,9 @@ public class Finals {
     final static String ADAUGARE_OP = "Adaugare";
     final static String MODIFICARE_OP = "Modificare";
     final static String STERGERE_OP = "Stergere";
+
+    final static String CALCULARE_OP = "Calculare amortizare";
+    final static String RECALCULARE_OP = "Recalculare total";
 
 //..................................non numeric TVA procentage
 
@@ -63,6 +67,7 @@ public class Finals {
     final static String INVALID_INPUT_CONTENT_TEXT = "Fără corectarea celulelor greșite, datele introduse se vor pierde!";//fix this
 
     //.......................creare mijloc fix
+
     final static String NR_INVENTAR_EXISTS_HEADER_TEXT = "Nr.inventar există!";
     final static String NR_INVENTAR_DOSENT_EXISTS_HEADER_TEXT = "Nr.inventar nu există!";
     final static String SELECTED_NR_INVENTAR_DOSENT_EXISTS_HEADER_TEXT = "Nr.inventar seletată nu există!";
@@ -73,6 +78,7 @@ public class Finals {
     final static String MI_FIX_SI_CAR_TOO_LONG_HEADER_TEXT = "Mijloc fix și caracteristice technice nu poate depăsi 500 de caractere!";
     final static String COD_DE_CLASIFICARE_EMPTY_HEADER_TEXT = "Cod de clasificare nu poate ramâne gol!";
     final static String COD_DE_CLASIFICARE_INCORECT_HEADER_TEXT = "Cod de clasificare incorectă!";
+    final static String INCEPUTUL_AMORTIZARII_EMPTY_HEADER_TEXT = "Inceputul amortizarii nu poate ramane gol!";
     final static String INEXISTENT_CONT_DEBITOR_HEADER_TEXT = "Cont debitor nu există!";
     final static String INEXISTENT_CONT_CREDITOR_HEADER_TEXT = "Cont creditor nu există!";
 
@@ -95,6 +101,10 @@ public class Finals {
     //...........modificare/stergere operatie
 
     final static String OPERATIE_NOT_SELECTED_HEADER = "Operație nu a fost selectată!";
+
+    //....amortizare
+
+    final static String START_DATE_AFTER_END_HEADER = "Date of start cant be befor end date";
 
 //.....................................SQL commands
 
@@ -122,5 +132,25 @@ public class Finals {
     final static String INSERT_IN_SUSPENDARE_SQL = "insert into suspendari (mifixID, startDate, endDate) VALUES ((Select mifixID from mijlocFix where nrInventar=?),?,?);";
     final static String UPDATE_SUSPENDARE_SQL = "update suspendari set  mifixID = (Select mifixID from mijlocFix where nrInventar = ?), startDate = ?, endDate = ? where suspendareID = ?;";
     final static String DELETE_SUSPENDARE_SQL = "delete from suspendari where suspendareID = ?;";
+
+    //amortizare sql
+
+    final static String GET_ALL_OPERATIE_OF_MIFIX_SQL = "select operatiebase.operatieID as opID, commonDataDB.feluriOperatiei.denumire as felOperatieidenumire, dataOperatiei, sum(valoareFaraTVA) as valoareFaraTVASum " +
+            "from mijlocFix join operatiebase on mijlocFix.mifixID = operatiebase.mifixID " +
+            "Left Join operatievalori on operatiebase.operatieID = operatieValori.operatieID " +
+            "Join commonDataDB.feluriOperatiei on commonDataDB.feluriOperatiei.felOperatieiID = operatiebase.felOperatieiID " +
+            "where mijlocFix.nrInventar = ?" +
+            "group by operatiebase.operatieID " +
+            "order by dataOperatiei;";
+
+    final static String NOT_CALCULATED_IN_A_MONTH_SQL = "select mifixID from mijlocFix where mifixID NOT IN (select mifixID from amortizare where monthOfAmortizare = ?);";
+    final static String REEVALUARE_VALUE_SQL = "select newValue from reevaluari where operatieID = ?;";
+    final static String IS_SUSPENDED_SQL = "select suspendareID from suspendari " +
+            "where mifixID = (select mifixID from mijlocFix where nrInventar = ?) and DATE(?) between startDate and endDate;";
+    final static String IS_AMORTIZAT_SQL = "select amortizareID from amortizare " +
+            "where mifixID = (select mifixID from mijlocFix where nrInventar = ?) and monthOfAmortizare.MONTH() = Date(?).MONTH() and monthOfAmortizare.YEAR() = Date(?).YEAR();";
+    final static String AMORTIZAT_VALUE_UNTIL_SQL = "select sum(calculatedValue) as calcSum, sum(diferenta) as diffSum from amortizare " +
+            "where mifixID = (select mifixID from mijlocFix where nrInventar = ?) and monthOfAmortizare < DATE(?);";
+    final static String INSERT_INTO_AMORTIZARE_SQL = "insert into amortizare (mifixID, monthOfAmortizare, calculatedValue, diferenta) VALUES ((select mifixID from mijlocFix where nrInventar = ?),?,?,?)";
 
 }

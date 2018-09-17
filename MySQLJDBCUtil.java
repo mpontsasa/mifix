@@ -107,8 +107,7 @@ public class MySQLJDBCUtil {
             s.executeUpdate(Finals.SET_QUOTES_SQL);
             s.executeUpdate("create database \"" + selectedSocietate.trim() + "\";");
             s.executeUpdate("use \"" + selectedSocietate.trim() + "\";");
-
-            SQLExecuter.executeFile("setUpSocietateDB.sql", c);
+            SQLExecuter.executeFile(Finals.SQL_QUERIES+"setUpSocietateDB.sql", c);
 
             s.close();
             //ps.close();
@@ -186,5 +185,116 @@ public class MySQLJDBCUtil {
             result.add(rs.getString("denumire"));
         }
         return result;
+    }
+
+    public static Float valueOfMifixAtADate(String nrInv, LocalDate date, Connection c) throws SQLException   // Operations on the day date dont count
+                                                                            // Returns null if mifix is alredy sold or casat, or doesent exists yet
+    {
+        Float value = 0f;
+        try (PreparedStatement getOpsPstm = c.prepareStatement(Finals.GET_ALL_OPERATIE_OF_MIFIX_SQL);
+                Statement s = c.createStatement())
+        {
+            s.executeUpdate(Finals.SET_QUOTES_SQL);
+            s.executeUpdate("use \"" + Main.getSocietateActuala() +"\";");
+
+            getOpsPstm.setString(1,nrInv);
+            ResultSet operations = getOpsPstm.executeQuery();
+
+            while(operations.next())
+            {
+                LocalDate dateOfOp = LocalDate.parse(operations.getString("dataOperatiei"));
+                if (dateOfOp.isAfter(date) || dateOfOp.equals(date))
+                {
+                    if (value.equals(0f))
+                        return null;
+                    return value;
+                }
+
+                if (operations.getString("felOperatieidenumire").equals(Finals.VANZARE_OP) ||
+                        operations.getString("felOperatieidenumire").equals(Finals.CASARE_OP))
+                {
+                    return null;
+                }
+                else if (operations.getString("felOperatieidenumire").equals(Finals.REEVALUARE_OP))
+                {
+                    PreparedStatement reevValuePstm = c.prepareStatement(Finals.REEVALUARE_VALUE_SQL);
+                    reevValuePstm.setInt(1, operations.getInt("opID"));
+                    ResultSet reevValue = reevValuePstm.executeQuery();
+
+                    reevValue.next();
+                    value = reevValue.getFloat("newValue");
+                }
+                else
+                {
+                    value += operations.getFloat("valoareFaraTVASum");
+                }
+            }
+
+        }
+        return value;
+    }
+
+    public static Float valueAmortizata(String nrInv, LocalDate date, Connection c) throws SQLException   // Operations on the day date dont count
+                                                                                                        // Returns null if mifix is alredy sold or casat, or doesent exists yet
+    {
+        Float res;
+        try (PreparedStatement getOpsPstm = c.prepareStatement(Finals.AMORTIZAT_VALUE_UNTIL_SQL);
+             Statement s = c.createStatement()) {
+            s.executeUpdate(Finals.SET_QUOTES_SQL);
+            s.executeUpdate("use \"" + Main.getSocietateActuala() + "\";");
+
+            getOpsPstm.setString(1, nrInv);
+            getOpsPstm.setString(2, date.toString());
+            ResultSet values = getOpsPstm.executeQuery();
+
+            values.next();
+
+            res = values.getFloat("diffSum") + values.getFloat("calcSum");
+        }
+        return res;
+    }
+
+    public static boolean isSuspended(String nrInv, LocalDate dateOfAmort, Connection c) throws SQLException {
+        try (PreparedStatement pstm = c.prepareStatement(Finals.IS_SUSPENDED_SQL);
+             Statement s = c.createStatement()) {
+            s.executeUpdate(Finals.SET_QUOTES_SQL);
+            s.executeUpdate("use \"" + Main.getSocietateActuala() + "\";");
+
+            pstm.setString(1, nrInv);
+            pstm.setString(2, dateOfAmort.toString());
+
+            ResultSet rs = pstm.executeQuery();
+
+            if (rs.next())
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+    }
+
+    public static boolean isAmortizat(String nrInv, LocalDate dateOfAmort, Connection c) throws SQLException {
+
+        try (PreparedStatement pstm = c.prepareStatement(Finals.IS_AMORTIZAT_SQL);
+             Statement s = c.createStatement()) {
+            s.executeUpdate(Finals.SET_QUOTES_SQL);
+            s.executeUpdate("use \"" + Main.getSocietateActuala() + "\";");
+
+            pstm.setString(1, nrInv);
+            pstm.setString(2, dateOfAmort.toString());
+            pstm.setString(3, dateOfAmort.toString());
+
+            ResultSet rs = pstm.executeQuery();
+
+            if (rs.next())
+            {
+                return true;
+            }
+
+            return false;
+        }
+
     }
 }
