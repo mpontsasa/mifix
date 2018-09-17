@@ -26,7 +26,7 @@ public class AmortizareTableInitializer {
         td.getTable().setPrefHeight(600);
         td.getTable().setPrefWidth(650);
 
-        String title = "Suspendari ";
+        String title = "Amortizari ";
 
         if (nrInv != null && !nrInv.isEmpty())
         {
@@ -65,19 +65,25 @@ public class AmortizareTableInitializer {
             td.getTable().getColumns().add(nrInventar);
         }
 
-        TableColumn startDate = new TableColumn("De la");
-        startDate.setMinWidth(32);
-        startDate.setCellValueFactory(
-                new PropertyValueFactory<AmortizareData, String>("startDate"));
+        TableColumn date = new TableColumn("Data");
+        date.setMinWidth(32);
+        date.setCellValueFactory(
+                new PropertyValueFactory<AmortizareData, String>("Data"));
 
 
-        TableColumn endDate = new TableColumn("pana");
-        endDate.setMinWidth(32);
-        endDate.setCellValueFactory(
-                new PropertyValueFactory<AmortizareData, String>("endDate"));
+        TableColumn valoareaAmortizari = new TableColumn("Valoarea amortizării");
+        valoareaAmortizari.setMinWidth(32);
+        valoareaAmortizari.setCellValueFactory(
+                new PropertyValueFactory<AmortizareData, String>("valoareaAmortizari"));
+
+        TableColumn diferenta = new TableColumn("Diferență");
+        diferenta.setMinWidth(32);
+        diferenta.setCellValueFactory(
+                new PropertyValueFactory<AmortizareData, String>("diferenta"));
 
 
-        td.getTable().getColumns().addAll(startDate, endDate);
+
+        td.getTable().getColumns().addAll(date, valoareaAmortizari, diferenta);
 
         td.show();
 
@@ -129,8 +135,8 @@ public class AmortizareTableInitializer {
         Connection c = MySQLJDBCUtil.getConnection(Main.getSocietateActuala());    //get the connection
         Statement st = c.createStatement();                                         //make a statement
 
-        String sqlQuery = "select suspendareID, nrInventar, startDate, endDate from suspendari, mijlocFix " +
-                "where mijlocFix.mifixID = suspendari.mifixID ";
+        String sqlQuery = "select amortizareID, nrInventar, date, valoareaAmortizari, diferenta from amortizari, mijlocFix " +
+                "where mijlocFix.mifixID = amortizari.mifixID ";
 
         if (nrInventar != null && !nrInventar.isEmpty())
         {
@@ -156,10 +162,11 @@ public class AmortizareTableInitializer {
         while(rs.next())
         {
             td.getData().add(new AmortizareData(
-                    rs.getInt("suspendareID"),
+                    rs.getInt("amortizareID"),
                     rs.getString("nrInventar"),
-                    rs.getString("startDate"),
-                    rs.getString("endDate"))
+                    rs.getString("data"),
+                    rs.getFloat("valoareAmortizari"),
+                    rs.getFloat("diferenta"))
             );
         }
 
@@ -183,20 +190,20 @@ public class AmortizareTableInitializer {
                 case 1:
                     return getDate();
                 case 2:
-                    return getValoareAmortizari();
+                    return ""+getValoareAmortizari();
                 case 3:
-                    return getDiferenta();
+                    return ""+getDiferenta();
             }
 
             return null;
         }
 
-        public AmortizareData(int amortizareID, SimpleStringProperty nrInventar, SimpleStringProperty date, SimpleFloatProperty valoareAmortizari, SimpleFloatProperty diferenta) {
+        public AmortizareData(int amortizareID, String nrInventar, String date, Float valoareAmortizari, Float diferenta) {
             this.amortizareID = amortizareID;
-            this.nrInventar = nrInventar;
-            this.date = date;
-            this.valoareAmortizari = valoareAmortizari;
-            this.diferenta = diferenta;
+            this.nrInventar = new SimpleStringProperty(nrInventar);
+            this.date = new SimpleStringProperty(date);
+            this.valoareAmortizari = new SimpleFloatProperty(valoareAmortizari);
+            this.diferenta = new SimpleFloatProperty(diferenta);
         }
 
         public int getAmortizareID() {

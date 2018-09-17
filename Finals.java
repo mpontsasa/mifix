@@ -7,8 +7,8 @@ public class Finals {
 
 
     final static String MAIN_STAGE_CAPTION = "Mijloc Fix";
-    final static String SECIETATE_NU_EXISTA = "Societatea selectata nu exista!";
-    final static String SECIETATE_NU_A_FOST_SELECTATA = "Societate nu fost selectata!";
+    final static String SECIETATE_NU_EXISTA = "Societatea selectată nu există!";
+    final static String SECIETATE_NU_A_FOST_SELECTATA = "Societatea nu fost selectată!";
 
 //...............................Operatii
     final static String MIFIX_OP = "Mijloc fix";
@@ -44,47 +44,49 @@ public class Finals {
 
 
 //................................Alerts
-    final static String SOCIETATE_DATABASE_NOT_SET_UP_TITLE_TEXT = "DB not set up";
-    final static String SOCIETATE_DATABASE_NOT_SET_UP_CONTENT_TEXT = "DB for societatea selectta was not set up. Do you want to set it up?";
+    final static String SOCIETATE_DATABASE_NOT_SET_UP_TITLE_TEXT = "Nu a fost creat bază de date!";
+    final static String SOCIETATE_DATABASE_NOT_SET_UP_CONTENT_TEXT = "Bază de dată al societații selectate nu există! Doriți să creați??";
 
     final static String COMMON_DATABASE_NOT_SET_UP_TITLE_TEXT = "commonDataDB";
-    final static String COMMON_DATABASE_NOT_SET_UP_HEADER_TEXT = "commonDataDB was not set up.";
-    final static String COMMON_DATABASE_NOT_SET_UP_CONTENT_TEXT = "Do you want to set it up?";
+    final static String COMMON_DATABASE_NOT_SET_UP_HEADER_TEXT = "commonDataDB nu a fost creată!";
+    final static String COMMON_DATABASE_NOT_SET_UP_CONTENT_TEXT = "Doriți să creați?";
 
-    final static String SUCCESSFUL_OPERATION_TITLE_TEXT = "Success";
-    final static String SUCCESSFUL_OPERATION_HEADER_TEXT = "Operatiune terminata cu success!";
+    final static String SUCCESSFUL_OPERATION_TITLE_TEXT = "Succes";
+    final static String SUCCESSFUL_OPERATION_HEADER_TEXT = "Operațiune terminată cu success!";
     final static String SUCCESSFUL_OPERATION_CONTENT_TEXT = "";
 
-    final static String MIFIX_TO_DELETE_HAS_OPERATIONS_TITLE_TEXT = "ATENTIE!";
-    final static String MIFIX_TO_DELETE_HAS_OPERATIONS_HEADER_TEXT = "Mijloc fix are operatii!";
-    final static String MIFIX_TO_DELETE_HAS_OPERATIONS_CONTENT_TEXT = "Vreti sa stergeti mijlocul fix cu toate operatii?";
+    final static String MIFIX_TO_DELETE_HAS_OPERATIONS_TITLE_TEXT = "ATENȚIE!";
+    final static String MIFIX_TO_DELETE_HAS_OPERATIONS_HEADER_TEXT = "Mijloc fix are operații!";
+    final static String MIFIX_TO_DELETE_HAS_OPERATIONS_CONTENT_TEXT = "Vreți să ștergeți mijlocul fix cu datele existente?";
 
-    final static String INAPOI_BUTTON_TITLE_TEXT = "Unsaved work!";
-    final static String INAPOI_BUTTON_HEADER_TEXT = "You didnt finish your Action. You will loose all unsaved work;";
-    final static String INAPOI_BUTTON_CONTENT_TEXT = "Do you really want to exit?";
+    final static String INAPOI_BUTTON_TITLE_TEXT = "Date nesalvate!";
+    final static String INAPOI_BUTTON_HEADER_TEXT = "Acțiune neterminată! Datele nesalvate se vor pierde!";
+    final static String INAPOI_BUTTON_CONTENT_TEXT = "Doriți să iesiți?";
 
-    final static String INVALID_INPUT_TITLE_TEXT = "Invalid input!";
-    final static String INVALID_INPUT_CONTENT_TEXT = "Fix this!";
+    final static String INVALID_INPUT_TITLE_TEXT = "Intrare greșită!"; // invalid input
+    final static String INVALID_INPUT_CONTENT_TEXT = "Fără corectarea celulelor greșite, datele introduse se vor pierde!";//fix this
 
     //.......................creare mijloc fix
-    final static String NR_INVENTAR_EXISTS_HEADER_TEXT = "Nr.inventar exista!";
-    final static String NR_INVENTAR_DOSENT_EXISTS_HEADER_TEXT = "Nr.inventar nu exista!";
-    final static String SELECTED_NR_INVENTAR_DOSENT_EXISTS_HEADER_TEXT = "Nr.inventar seletata nu exista!";
-    final static String NR_INVENTAR_EMPTY_HEADER_TEXT = "Nr.inventar nu poate ramane gol!";
-    final static String DATE_EMPTY_HEADER_TEXT = "Date nu pot raman gol!";
-    final static String MI_FIX_SI_CAR_EMPTY_HEADER_TEXT = "Mijloc fix si caracteristice technice nu poate ramane gol!";
-    final static String DURATA_AMORTIZARII_EMPTY_HEADER_TEXT = "Durata amortizarii nu poate ramane gol!";
-    final static String MI_FIX_SI_CAR_TOO_LONG_HEADER_TEXT = "Mijloc fix si caracteristice technice cant be longer than 500 chars!";
-    final static String COD_DE_CLASIFICARE_EMPTY_HEADER_TEXT = "Cod de clasificare nu poate ramane gol!";
+
+    final static String NR_INVENTAR_EXISTS_HEADER_TEXT = "Nr.inventar există!";
+    final static String NR_INVENTAR_DOSENT_EXISTS_HEADER_TEXT = "Nr.inventar nu există!";
+    final static String SELECTED_NR_INVENTAR_DOSENT_EXISTS_HEADER_TEXT = "Nr.inventar seletată nu există!";
+    final static String NR_INVENTAR_EMPTY_HEADER_TEXT = "Nr.inventar nu poate ramâne gol!";
+    final static String DATE_EMPTY_HEADER_TEXT = "Date nu pot ramân gol!";
+    final static String MI_FIX_SI_CAR_EMPTY_HEADER_TEXT = "Mijloc fix și caracteristice technice nu poate ramâne gol!";
+    final static String DURATA_AMORTIZARII_EMPTY_HEADER_TEXT = "Durata amortizării nu poate ramâne gol!";
+    final static String MI_FIX_SI_CAR_TOO_LONG_HEADER_TEXT = "Mijloc fix și caracteristice technice nu poate depăsi 500 de caractere!";
+    final static String COD_DE_CLASIFICARE_EMPTY_HEADER_TEXT = "Cod de clasificare nu poate ramâne gol!";
+    final static String COD_DE_CLASIFICARE_INCORECT_HEADER_TEXT = "Cod de clasificare incorectă!";
     final static String INCEPUTUL_AMORTIZARII_EMPTY_HEADER_TEXT = "Inceputul amortizarii nu poate ramane gol!";
-    final static String COD_DE_CLASIFICARE_INCORECT_HEADER_TEXT = "Incorect cod de clasificare!";
-    final static String INEXISTENT_CONT_DEBITOR_HEADER_TEXT = "Cont debitor nu exista!";
-    final static String INEXISTENT_CONT_CREDITOR_HEADER_TEXT = "Cont creditor nu exista!";
     final static String STARTING_DATE_CANT_BE_BEFORE_START_OF_AMORTIZARE_HEADER = "Starting date cant be before inceputul amortizarii of mifix!";
 
-    final static String NR_INVENTAR_NU_EXISTS_HEADER_TEXT = "Nr.inventar nu exista!";
-    final static String VALOARE_FARA_TVA_EMPTY_HEADER_TEXT = "Valoare fara TVA nu poate ramane gol!";
-    final static String PROCENT_TVA_EMPTY_HEADER_TEXT = "Procent TVA nu poate ramane gol!";
+    final static String INEXISTENT_CONT_DEBITOR_HEADER_TEXT = "Cont debitor nu există!";
+    final static String INEXISTENT_CONT_CREDITOR_HEADER_TEXT = "Cont creditor nu există!";
+
+    final static String NR_INVENTAR_NU_EXISTS_HEADER_TEXT = "Nr.inventar nu există!";
+    final static String VALOARE_FARA_TVA_EMPTY_HEADER_TEXT = "Valoare fără TVA nu poate ramâne gol!";
+    final static String PROCENT_TVA_EMPTY_HEADER_TEXT = "Procent TVA nu poate ramâne gol!";
 
     final static String MIFIX_NOt_SELECtED_TEXT = "Mijloc fix nu a fost selectat!";
 
@@ -94,13 +96,13 @@ public class Finals {
     final static String MODIFICARE_MIJLOC_FIX_TITLE_TEXT = "Modificare mijloc fix!";
 
     //.........................basic operation
-    final static String NR_DOCUMENT_EMPTY_HEADER_TEXT = "Nr. document nu poate ramane gol!";
-    final static String NR_RECEPTIE_EMPTY_HEADER_TEXT = "Nr. receptie nu poate ramane gol!";
-    final static String FEL_DOCUMNENT_EMPTY_HEADER_TEXT = "Fel document nu poate ramane gol!";
+    final static String NR_DOCUMENT_EMPTY_HEADER_TEXT = "Nr. document nu poate ramâne gol!";
+    final static String NR_RECEPTIE_EMPTY_HEADER_TEXT = "Nr. receptie nu poate ramâne gol!";
+    final static String FEL_DOCUMNENT_EMPTY_HEADER_TEXT = "Fel document nu poate ramâne gol!";
 
     //...........modificare/stergere operatie
 
-    final static String OPERATIE_NOT_SELECTED_HEADER = "Operatie nu a fost selectata!";
+    final static String OPERATIE_NOT_SELECTED_HEADER = "Operație nu a fost selectată!";
 
     //....amortizare
 
