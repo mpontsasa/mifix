@@ -213,7 +213,7 @@ public class MijlocFixController {
                         numarInventarTextField.getText() + "', '"+
                         mijlocFixSiCaracteristiciTextArea.getText() + "', '"+
                         codDeClasificareComboBox.getValue().toString() + "', '"+
-                        startingYearTextField.toString() + "-" + startingMonthTextField + "-" + "1" + "', '"+
+                        startingYearTextField.getText() + "-" + startingMonthTextField.getText() + "-" + "1" + "', '"+
                         durataAmortizariiTextField.getText() + "', '" +
                         regimDeAmortizareComboBox.getValue().toString() + "', ";
 
@@ -274,6 +274,7 @@ public class MijlocFixController {
                             numarInventarTextField.getText(),
                             mijlocFixSiCaracteristiciTextArea.getText(),
                             codDeClasificareComboBox.getValue().toString(),
+                            startingYearTextField.toString() + "-" + startingMonthTextField + "-" + "1",
                             Integer.parseInt(durataAmortizariiTextField.getText()),
                             regimDeAmortizareComboBox.getValue().toString(),
                             termenDeGarantieDatePicker.getValue(),
@@ -304,6 +305,7 @@ public class MijlocFixController {
                             numarInventarTextField.getText(),
                             mijlocFixSiCaracteristiciTextArea.getText(),
                             codDeClasificareComboBox.getValue().toString(),
+                            startingYearTextField.toString() + "-" + startingMonthTextField + "-" + "1",
                             Integer.parseInt(durataAmortizariiTextField.getText()),
                             regimDeAmortizareComboBox.getValue().toString(),
                             termenDeGarantieDatePicker.getValue(),
@@ -314,8 +316,6 @@ public class MijlocFixController {
                     Alerts.informationAlert(Finals.SUCCESSFUL_OPERATION_TITLE_TEXT, Finals.SUCCESSFUL_OPERATION_HEADER_TEXT, Finals.SUCCESSFUL_OPERATION_CONTENT_TEXT);
 
                 }
-
-
             }
         }
         catch(SQLException e)
@@ -567,6 +567,14 @@ public class MijlocFixController {
             return false;
         }
 
+        //validation incepu amortizare
+
+        if (startingMonthTextField.getText()== null || startingMonthTextField.getText().isEmpty() || startingYearTextField.getText() == null || startingYearTextField.getText().isEmpty())
+        {
+            Alerts.errorAlert(Finals.INVALID_INPUT_TITLE_TEXT, Finals.INCEPUTUL_AMORTIZARII_EMPTY_HEADER_TEXT, Finals.INVALID_INPUT_CONTENT_TEXT);
+            return false;
+        }
+
         //validation of durata amortizarii
 
         if (durataAmortizariiTextField.getText()== null || durataAmortizariiTextField.getText().equals(""))
@@ -681,4 +689,5 @@ public class MijlocFixController {
     {
         codDeClasificareComboBox.setValue(ClasificariTableInitializer.getTd().getTable().getSelectionModel().getSelectedItem().getCod());
     }
+
 }

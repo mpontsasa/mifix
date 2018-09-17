@@ -105,7 +105,7 @@ public class TableDisplayer<T> {
         stage.setY(Main.getGlobalPrimaryStage().getHeight());
         stage.setX(0);
 
-        stage.setHeight(Main.getPrimaryScreenBounds().getHeight() - Main.getGlobalPrimaryStage().getHeight() - 200);
+        stage.setHeight(Main.getPrimaryScreenBounds().getHeight() - Main.getGlobalPrimaryStage().getHeight());
     }
 
     public TableView<T> getTable() {

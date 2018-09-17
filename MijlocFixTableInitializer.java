@@ -16,7 +16,7 @@ public class MijlocFixTableInitializer {
     private static ListenerCallbeck lc = null;
 
     public static void initializeTable() throws SQLException
-    {
+{
 
         td = new TableDisplayer<>();
 
@@ -33,6 +33,8 @@ public class MijlocFixTableInitializer {
         td.getStage().setHeight(700);
         td.getTable().setPrefHeight(600);
         td.getTable().setPrefWidth(1350);
+
+        td.placeAndSize();
         td.getLabel().setText("Mijloc fix");
 
         TableColumn nrInventar = new TableColumn("Nr. Inventar");
@@ -74,6 +76,10 @@ public class MijlocFixTableInitializer {
         clasificare.setCellValueFactory(
                 new PropertyValueFactory<MijlocFixData, String>("clasificare"));
 
+        TableColumn inceputulAmortizarii = new TableColumn("Inceputul amortizarii");
+        inceputulAmortizarii.setMinWidth(150);
+        inceputulAmortizarii.setCellValueFactory(
+                new PropertyValueFactory<MijlocFixData, Integer>("inceputulAmortizarii"));
 
         TableColumn durataAmortizarii = new TableColumn("Durata");
         durataAmortizarii.setMinWidth(70);
@@ -82,13 +88,13 @@ public class MijlocFixTableInitializer {
 
 
         TableColumn regimDeAmortizare = new TableColumn("Regim de amortizare");
-        regimDeAmortizare.setMinWidth(120);
+        regimDeAmortizare.setMinWidth(150);
         regimDeAmortizare.setCellValueFactory(
                 new PropertyValueFactory<MijlocFixData, String>("regimDeAmortizare"));
 
 
         TableColumn termenDeGarantie = new TableColumn("termen de garantie");
-        termenDeGarantie.setMinWidth(50);
+        termenDeGarantie.setMinWidth(90);
         termenDeGarantie.setCellValueFactory(
                 new PropertyValueFactory<MijlocFixData, String>("termenDeGarantie"));
 
@@ -103,7 +109,7 @@ public class MijlocFixTableInitializer {
         contCreditor.setCellValueFactory(
                 new PropertyValueFactory<MijlocFixData, String>("contCreditor"));
 
-        td.getTable().getColumns().addAll(nrInventar, mifixSiCar, clasificare, durataAmortizarii, regimDeAmortizare, termenDeGarantie, contDebitor, contCreditor);
+        td.getTable().getColumns().addAll(nrInventar, mifixSiCar, clasificare, inceputulAmortizarii, durataAmortizarii, regimDeAmortizare, termenDeGarantie, contDebitor, contCreditor);
 
         setUpSearchField();
     }
@@ -149,6 +155,7 @@ public class MijlocFixTableInitializer {
             td.getData().add(new MijlocFixData( rs.getString("nrInventar"),
                                                 rs.getString("mifixSiCaracteristiceTechnice"),
                                                 rs.getString("clasificare"),
+                                                rs.getString("inceputulAmortizarii"),
                                                 rs.getInt("durataAmortizarii"),
                                                 rs.getString("regimDeAmortizare"),
                                                 rs.getString("termenDeGarantie"),
@@ -165,6 +172,7 @@ public class MijlocFixTableInitializer {
         private final SimpleStringProperty nrInventar;
         private final SimpleStringProperty mifixSiCar;
         private final SimpleStringProperty clasificare;
+        private final SimpleStringProperty inceputulAmortizarii;
         private final SimpleIntegerProperty durataAmortizarii;
         private final SimpleStringProperty regimDeAmortizare;
         private final SimpleStringProperty termenDeGarantie;
@@ -182,24 +190,27 @@ public class MijlocFixTableInitializer {
                 case 2:
                     return getClasificare();
                 case 3:
-                    return "" + getDurataAmortizarii();
+                    return "" + getInceputulAmortizarii();
                 case 4:
-                    return getRegimDeAmortizare();
+                    return "" + getDurataAmortizarii();
                 case 5:
-                    return getTermenDeGarantie();
+                    return getRegimDeAmortizare();
                 case 6:
-                    return getContDebitor();
+                    return getTermenDeGarantie();
                 case 7:
+                    return getContDebitor();
+                case 8:
                     return getContCreditor();
             }
 
             return null;
         }
 
-        public MijlocFixData(String nrInventar, String mifixSiCar, String clasificare, Integer durataAmortizarii, String regimDeAmortizare, String termenDeGarantie, String contDebitor, String contCreditor) {
+        public MijlocFixData(String nrInventar, String mifixSiCar, String clasificare, String inceputulAmortizarii, Integer durataAmortizarii, String regimDeAmortizare, String termenDeGarantie, String contDebitor, String contCreditor) {
             this.nrInventar = new SimpleStringProperty(nrInventar);
             this.mifixSiCar = new SimpleStringProperty(mifixSiCar);
             this.clasificare = new SimpleStringProperty(clasificare);
+            this.inceputulAmortizarii = new SimpleStringProperty(inceputulAmortizarii);
             this.durataAmortizarii = new SimpleIntegerProperty(durataAmortizarii);
             this.regimDeAmortizare = new SimpleStringProperty(regimDeAmortizare);
             this.termenDeGarantie = new SimpleStringProperty(termenDeGarantie);
@@ -303,6 +314,17 @@ public class MijlocFixTableInitializer {
             this.contDebitor.set(contDebitor);
         }
 
+        public String getInceputulAmortizarii() {
+            return inceputulAmortizarii.get();
+        }
+
+        public SimpleStringProperty inceputulAmortizariiProperty() {
+            return inceputulAmortizarii;
+        }
+
+        public void setInceputulAmortizarii(String inceputulAmortizarii) {
+            this.inceputulAmortizarii.set(inceputulAmortizarii);
+        }
     }
 
     public static TableDisplayer<MijlocFixData> getTd() {

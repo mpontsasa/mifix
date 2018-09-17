@@ -50,13 +50,12 @@ public class MySQLJDBCUtil {
         return conn;
     }
 
-    public static boolean databaseExists(String databaseName) throws Exception
-    {
-        String sql = "SHOW DATABASES LIKE '" + databaseName +"'";
+    public static boolean databaseExists(String databaseName) throws Exception {
+        String sql = "SHOW DATABASES LIKE '" + databaseName + "'";
         Connection conn = MySQLJDBCUtil.getConnection();
-        Statement stmt  = conn.createStatement();
+        Statement stmt = conn.createStatement();
 
-        ResultSet rs    = stmt.executeQuery(sql);
+        ResultSet rs = stmt.executeQuery(sql);
 
         rs.last();
         int nrOfRows = rs.getRow();
@@ -69,14 +68,13 @@ public class MySQLJDBCUtil {
         return nrOfRows != 0;
     }
 
-    public static boolean recordExists(String database, String table, String column, String value) throws SQLException
-    {
+    public static boolean recordExists(String database, String table, String column, String value) throws SQLException {
         Connection c = getConnection();
         Statement s = c.createStatement();
         s.executeUpdate(Finals.SET_QUOTES_SQL);
         s.executeUpdate("use \"" + database + "\";");
 
-        String sqlQuery = "SELECT "+column+" from "+ table +" where " +column+" = '"+ value +"';";
+        String sqlQuery = "SELECT " + column + " from " + table + " where " + column + " = '" + value + "';";
 
         System.out.println(sqlQuery);
 
@@ -93,76 +91,62 @@ public class MySQLJDBCUtil {
         return nrOfRows != 0;
     }
 
-    public static boolean setUpSocietateDB(String selectedSocietate) throws Exception
-    {
-        if (MySQLJDBCUtil.databaseExists(selectedSocietate.trim()))
-        {
+    public static boolean setUpSocietateDB(String selectedSocietate) throws Exception {
+        if (MySQLJDBCUtil.databaseExists(selectedSocietate.trim())) {
             return true;
         }
 
-        if(Alerts.confirmationAlert(Finals.SOCIETATE_DATABASE_NOT_SET_UP_TITLE_TEXT, selectedSocietate, Finals.SOCIETATE_DATABASE_NOT_SET_UP_CONTENT_TEXT))
-        {
+        if (Alerts.confirmationAlert(Finals.SOCIETATE_DATABASE_NOT_SET_UP_TITLE_TEXT, selectedSocietate, Finals.SOCIETATE_DATABASE_NOT_SET_UP_CONTENT_TEXT)) {
             Connection c = MySQLJDBCUtil.getConnection();
             Statement s = c.createStatement();
             s.executeUpdate(Finals.SET_QUOTES_SQL);
             s.executeUpdate("create database \"" + selectedSocietate.trim() + "\";");
             s.executeUpdate("use \"" + selectedSocietate.trim() + "\";");
-            SQLExecuter.executeFile(Finals.SQL_QUERIES+"setUpSocietateDB.sql", c);
+            SQLExecuter.executeFile(Finals.SQL_QUERIES + "setUpSocietateDB.sql", c);
 
             s.close();
             //ps.close();
             c.close();
 
             return true;
-        }
-        else
-        {
+        } else {
             return false;
         }
     }
 
-    public static void updateMifix(String nrInvOld, String  nrInv, String  mifixSiCharTech, String clasificare, int durataAmortizarii, String regimDeAmortizare, LocalDate termenDeGarantie, String contDebitor, String contCreditor) throws SQLException
-    {
+    public static void updateMifix(String nrInvOld, String nrInv, String mifixSiCharTech, String clasificare, String inceputulAmortizarii, int durataAmortizarii, String regimDeAmortizare, LocalDate termenDeGarantie, String contDebitor, String contCreditor) throws SQLException {
         Connection c = MySQLJDBCUtil.getConnection();
         Statement s = c.createStatement();
         s.executeUpdate(Finals.SET_QUOTES_SQL);
-        s.executeUpdate("use \"" + Main.getSocietateActuala() +"\";");
+        s.executeUpdate("use \"" + Main.getSocietateActuala() + "\";");
 
-        String updSql = "update mijlocFix set "+
-                " nrInventar = '"+ nrInv+"'," +
-                "mifixSiCaracteristiceTechnice = '"+mifixSiCharTech+"', " +
-                "clasificare = '"+clasificare+"', " +
-                "durataAmortizarii = "+durataAmortizarii+", " +
-                "regimDeAmortizare = '"+regimDeAmortizare+"', ";
+        String updSql = "update mijlocFix set " +
+                " nrInventar = '" + nrInv + "'," +
+                "mifixSiCaracteristiceTechnice = '" + mifixSiCharTech + "', " +
+                "clasificare = '" + clasificare + "', " +
+                "inceputulAmortizarii = '" + inceputulAmortizarii + "', " +
+                "durataAmortizarii = " + durataAmortizarii + ", " +
+                "regimDeAmortizare = '" + regimDeAmortizare + "', ";
 
-        if (termenDeGarantie == null)
-        {
+        if (termenDeGarantie == null) {
             updSql += "termenDeGarantie = null, ";
-        }
-        else
-        {
-            updSql += "termenDeGarantie = '"+termenDeGarantie.toString()+"', ";
+        } else {
+            updSql += "termenDeGarantie = '" + termenDeGarantie.toString() + "', ";
         }
 
-        if (contDebitor == null || contDebitor.equals(""))
-        {
+        if (contDebitor == null || contDebitor.equals("")) {
             updSql += "contDebitor = null, ";
-        }
-        else
-        {
-            updSql += "contDebitor = '"+contDebitor+"', ";
+        } else {
+            updSql += "contDebitor = '" + contDebitor + "', ";
         }
 
-        if (contCreditor == null || contCreditor.equals(""))
-        {
+        if (contCreditor == null || contCreditor.equals("")) {
             updSql += "contCreditor = null ";
-        }
-        else
-        {
-            updSql += "contCreditor = '"+contCreditor+"'";
+        } else {
+            updSql += "contCreditor = '" + contCreditor + "'";
         }
 
-        updSql += "where nrInventar = '"+nrInvOld+"';";
+        updSql += "where nrInventar = '" + nrInvOld + "';";
 
         System.out.println(updSql);
         s.executeUpdate(updSql);
@@ -171,8 +155,7 @@ public class MySQLJDBCUtil {
         c.close();
     }
 
-    public static ArrayList<String> getfeluriOperati() throws SQLException
-    {
+    public static ArrayList<String> getfeluriOperati() throws SQLException {
         Connection c = MySQLJDBCUtil.getConnection(Main.getSocietateActuala());    //get the connection
         Statement st = c.createStatement();                                         //make a statement
 
@@ -180,52 +163,43 @@ public class MySQLJDBCUtil {
 
         ArrayList<String> result = new ArrayList<>();
 
-        while(rs.next())
-        {
+        while (rs.next()) {
             result.add(rs.getString("denumire"));
         }
         return result;
     }
 
     public static Float valueOfMifixAtADate(String nrInv, LocalDate date, Connection c) throws SQLException   // Operations on the day date dont count
-                                                                            // Returns null if mifix is alredy sold or casat, or doesent exists yet
+    // Returns null if mifix is alredy sold or casat, or doesent exists yet
     {
         Float value = 0f;
         try (PreparedStatement getOpsPstm = c.prepareStatement(Finals.GET_ALL_OPERATIE_OF_MIFIX_SQL);
-                Statement s = c.createStatement())
-        {
+             Statement s = c.createStatement()) {
             s.executeUpdate(Finals.SET_QUOTES_SQL);
-            s.executeUpdate("use \"" + Main.getSocietateActuala() +"\";");
+            s.executeUpdate("use \"" + Main.getSocietateActuala() + "\";");
 
-            getOpsPstm.setString(1,nrInv);
+            getOpsPstm.setString(1, nrInv);
             ResultSet operations = getOpsPstm.executeQuery();
 
-            while(operations.next())
-            {
+            while (operations.next()) {
                 LocalDate dateOfOp = LocalDate.parse(operations.getString("dataOperatiei"));
-                if (dateOfOp.isAfter(date) || dateOfOp.equals(date))
-                {
+                if (dateOfOp.isAfter(date) || dateOfOp.equals(date)) {
                     if (value.equals(0f))
                         return null;
                     return value;
                 }
 
                 if (operations.getString("felOperatieidenumire").equals(Finals.VANZARE_OP) ||
-                        operations.getString("felOperatieidenumire").equals(Finals.CASARE_OP))
-                {
+                        operations.getString("felOperatieidenumire").equals(Finals.CASARE_OP)) {
                     return null;
-                }
-                else if (operations.getString("felOperatieidenumire").equals(Finals.REEVALUARE_OP))
-                {
+                } else if (operations.getString("felOperatieidenumire").equals(Finals.REEVALUARE_OP)) {
                     PreparedStatement reevValuePstm = c.prepareStatement(Finals.REEVALUARE_VALUE_SQL);
                     reevValuePstm.setInt(1, operations.getInt("opID"));
                     ResultSet reevValue = reevValuePstm.executeQuery();
 
                     reevValue.next();
                     value = reevValue.getFloat("newValue");
-                }
-                else
-                {
+                } else {
                     value += operations.getFloat("valoareFaraTVASum");
                 }
             }
@@ -235,7 +209,7 @@ public class MySQLJDBCUtil {
     }
 
     public static Float valueAmortizata(String nrInv, LocalDate date, Connection c) throws SQLException   // Operations on the day date dont count
-                                                                                                        // Returns null if mifix is alredy sold or casat, or doesent exists yet
+    // Returns null if mifix is alredy sold or casat, or doesent exists yet
     {
         Float res;
         try (PreparedStatement getOpsPstm = c.prepareStatement(Finals.AMORTIZAT_VALUE_UNTIL_SQL);
@@ -265,8 +239,7 @@ public class MySQLJDBCUtil {
 
             ResultSet rs = pstm.executeQuery();
 
-            if (rs.next())
-            {
+            if (rs.next()) {
                 return true;
             }
 
@@ -288,13 +261,32 @@ public class MySQLJDBCUtil {
 
             ResultSet rs = pstm.executeQuery();
 
-            if (rs.next())
-            {
+            if (rs.next()) {
                 return true;
             }
 
             return false;
         }
 
+    }
+
+    public static String getAmortizationStartingDate(String nrInv) throws SQLException
+    {
+        try(Connection c = getConnection();
+            Statement s = c.createStatement();
+            PreparedStatement pstm = c.prepareStatement(Finals.GET_AMORTIZATION_START_DATE_SQL))
+        {
+            s.executeUpdate(Finals.SET_QUOTES_SQL);
+            s.executeUpdate("use \"" + Main.getSocietateActuala() + "\";");
+
+            pstm.setString(1, nrInv);
+
+            ResultSet rs = pstm.executeQuery();
+
+            rs.next();
+
+            return rs.getString("inceputulAmortizarii");
+
+        }
     }
 }

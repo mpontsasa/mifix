@@ -3,10 +3,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.time.LocalDate;
 
 public class AmortizareController {
@@ -21,12 +18,6 @@ public class AmortizareController {
 
     @FXML
     TextField nrInventarTextField;
-
-    @FXML
-    TextField startYearTextField;
-
-    @FXML
-    TextField startMonthTextField;
 
     @FXML
     TextField endYearTextField;
@@ -141,19 +132,10 @@ public class AmortizareController {
             }
         }
 
-        if (startYearTextField.getText() == null || startYearTextField.getText().isEmpty() ||
-                endYearTextField.getText() == null || endYearTextField.getText().isEmpty() ||
-                startMonthTextField.getText() == null || startMonthTextField.getText().isEmpty() ||
-                endMonthTextField.getText() == null || endMonthTextField.getText().isEmpty()) {
-            Alerts.errorAlert(Finals.INVALID_INPUT_TITLE_TEXT, Finals.DATE_EMPTY_HEADER_TEXT, Finals.INVALID_INPUT_CONTENT_TEXT);
-            return false;
-        }
-
-        if (Integer.parseInt(startYearTextField.getText()) < Integer.parseInt(endYearTextField.getText()) ||
-                (Integer.parseInt(startYearTextField.getText()) == Integer.parseInt(endYearTextField.getText()) &&
-                        Integer.parseInt(startMonthTextField.getText()) < Integer.parseInt(endMonthTextField.getText())))
+        if (endYearTextField.getText() == null || endYearTextField.getText().isEmpty() ||
+                endMonthTextField.getText() == null || endMonthTextField.getText().isEmpty())
         {
-            Alerts.errorAlert(Finals.INVALID_INPUT_TITLE_TEXT, Finals.START_DATE_AFTER_END_HEADER, Finals.INVALID_INPUT_CONTENT_TEXT);
+            Alerts.errorAlert(Finals.INVALID_INPUT_TITLE_TEXT, Finals.DATE_EMPTY_HEADER_TEXT, Finals.INVALID_INPUT_CONTENT_TEXT);
             return false;
         }
 
@@ -174,16 +156,23 @@ public class AmortizareController {
 
     public void calculateInDatabaseForOne(String nrInv, Connection c) throws SQLException
     {
-        LocalDate dateOfAmort = LocalDate.parse(startYearTextField.getText() + "-" + startMonthTextField.getText() + "-" +  "01");
+
         LocalDate endDate = LocalDate.parse(endYearTextField.getText() + "-" + endMonthTextField.getText() + "-" +  "01");
 
-
-        try (PreparedStatement pstm = c.prepareStatement(Finals.INSERT_INTO_AMORTIZARE_SQL);
+        try (PreparedStatement insertPstm = c.prepareStatement(Finals.INSERT_INTO_AMORTIZARE_SQL);
+             PreparedStatement getNrOfAmortizatMonthsPstm = c.prepareStatement(Finals.NR_OF_AMORTIZAT_MONTHS_SQL);
+             PreparedStatement lastAmortizatMonthPstm = c.prepareStatement(Finals.LAST_AMORTIZATION_DATE_SQL);
              Statement s = c.createStatement())
         {
-            for (;!dateOfAmort.isAfter(endDate); dateOfAmort = dateOfAmort.plusMonths(1))
+
+            lastAmortizatMonthPstm.setString(1,nrInv);
+            ResultSet lastAmDateRS = lastAmortizatMonthPstm.executeQuery();
+            lastAmDateRS.next();
+            LocalDate lastAmortizatDate = LocalDate.parse(lastAmDateRS.getString("lastMonth"));     // I get the last mont that was amortizat
+
+            for (LocalDate dateOfAmort = LocalDate.parse(lastAmDateRS.getString("lastMonth"));!dateOfAmort.isAfter(endDate); dateOfAmort = dateOfAmort.plusMonths(1))   //loop ower the months to amirtiza with dateOfAmort
             {
-                if (!MySQLJDBCUtil.isSuspended(nrInv, dateOfAmort, c) && !MySQLJDBCUtil.isAmortizat(nrInv, dateOfAmort, c))
+                if (!MySQLJDBCUtil.isSuspended(nrInv, dateOfAmort, c) && !MySQLJDBCUtil.isAmortizat(nrInv, dateOfAmort, c)) //
                 {
                     Float valueOfMifix = MySQLJDBCUtil.valueOfMifixAtADate(nrInv, dateOfAmort, c);
 
@@ -192,14 +181,20 @@ public class AmortizareController {
                         return;
                     }
 
+                    getNrOfAmortizatMonthsPstm.setString(1, nrInv);
+
+                    ResultSet rs = getNrOfAmortizatMonthsPstm.executeQuery();
+                    rs.next();
+                    int monthsAmortizat = rs.getInt("monthCount");
+
                     Float amortizareValue = valueOfMifix - MySQLJDBCUtil.valueAmortizata(nrInv, dateOfAmort, c);
 
-                    pstm.setString(1, nrInv);
-                    pstm.setString(2, dateOfAmort.toString());
-                    pstm.setFloat(3, amortizareValue);
-                    pstm.setFloat(4, 0f);
+                    insertPstm.setString(1, nrInv);
+                    insertPstm.setString(2, dateOfAmort.toString());
+                    insertPstm.setFloat(3, amortizareValue);
+                    insertPstm.setFloat(4, 0f);
 
-                    pstm.executeUpdate();
+                    insertPstm.executeUpdate();
 
                 }
             }
@@ -229,8 +224,6 @@ public class AmortizareController {
 
     public void initialize()
     {
-        startYearTextField.addEventFilter(KeyEvent.KEY_TYPED , Util.numeric_Validation(4));
-        startMonthTextField.addEventFilter(KeyEvent.KEY_TYPED , Util.numeric_Validation(2));
         endYearTextField.addEventFilter(KeyEvent.KEY_TYPED , Util.numeric_Validation(4));
         endMonthTextField.addEventFilter(KeyEvent.KEY_TYPED , Util.numeric_Validation(2));
     }

@@ -120,6 +120,19 @@ public class SuspendareController {
             Alerts.errorAlert(Finals.INVALID_INPUT_TITLE_TEXT, Finals.DATE_EMPTY_HEADER_TEXT, Finals.INVALID_INPUT_CONTENT_TEXT);
             return false;
         }
+
+        if (startDatePicker.getValue().isAfter(endDatePicker.getValue()))
+        {
+            Alerts.errorAlert(Finals.INVALID_INPUT_TITLE_TEXT, Finals.START_DATE_AFTER_END_HEADER, Finals.INVALID_INPUT_CONTENT_TEXT);
+            return false;
+        }
+
+        if (startDatePicker.getValue().isBefore(LocalDate.parse(MySQLJDBCUtil.getAmortizationStartingDate(nrInventarTextField.getText()))))
+        {
+            Alerts.errorAlert(Finals.INVALID_INPUT_TITLE_TEXT, Finals.STARTING_DATE_CANT_BE_BEFORE_START_OF_AMORTIZARE_HEADER, Finals.INVALID_INPUT_CONTENT_TEXT);
+            return false;
+        }
+
         return true;
     }
 
@@ -130,7 +143,7 @@ public class SuspendareController {
             Alerts.errorAlert(Finals.INVALID_INPUT_TITLE_TEXT, Finals.OPERATIE_NOT_SELECTED_HEADER, Finals.INVALID_INPUT_CONTENT_TEXT);
             return false;
         }
-        return true;
+        return validateInputForAdaugare();
     }
 
     public void adaugareInDatabase(Connection c) throws SQLException
