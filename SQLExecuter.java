@@ -43,7 +43,6 @@ public class SQLExecuter {
 
     }
 
-
     public static void execute(String sqlCommands) throws SQLException
     {
         Connection c = SQLExecuter.getConnection();

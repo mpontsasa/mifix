@@ -69,7 +69,14 @@ public class AmortizareController {
                     Statement s = c.createStatement();
                     s.execute(Finals.START_TRANSACTION);
 
-                    calculareInDatabase(c);
+                    if (!pentruToateCheckBox.isSelected())
+                    {
+                        calculateInDatabaseForOne(nrInventarTextField.getText(), c);
+                    }
+                    else
+                    {
+                        calculareInDatabase(c);
+                    }
 
                     s.execute(Finals.COMMIT_TRANSACTION);
                     s.close();
@@ -157,26 +164,43 @@ public class AmortizareController {
     public void calculateInDatabaseForOne(String nrInv, Connection c) throws SQLException
     {
 
-        LocalDate endDate = LocalDate.parse(endYearTextField.getText() + "-" + endMonthTextField.getText() + "-" +  "01");
+        LocalDate endDate = LocalDate.parse(endYearTextField.getText() + "-" + ((endMonthTextField.getText().length() < 2) ? "0" : "") + endMonthTextField.getText() + "-" +  "01");
 
         try (PreparedStatement insertPstm = c.prepareStatement(Finals.INSERT_INTO_AMORTIZARE_SQL);
              PreparedStatement getNrOfAmortizatMonthsPstm = c.prepareStatement(Finals.NR_OF_AMORTIZAT_MONTHS_SQL);
              PreparedStatement lastAmortizatMonthPstm = c.prepareStatement(Finals.LAST_AMORTIZATION_DATE_SQL);
+             PreparedStatement amortizareStartingdatePstm = c.prepareStatement(Finals.GET_AMORTIZATION_START_DATE_SQL);
              Statement s = c.createStatement())
         {
 
+            s.executeUpdate(Finals.SET_QUOTES_SQL);
+            s.executeUpdate("use \"" + Main.getSocietateActuala() + "\";");
+
+            LocalDate lastAmortizatDate;
+
             lastAmortizatMonthPstm.setString(1,nrInv);
             ResultSet lastAmDateRS = lastAmortizatMonthPstm.executeQuery();
-            lastAmDateRS.next();
-            LocalDate lastAmortizatDate = LocalDate.parse(lastAmDateRS.getString("lastMonth"));     // I get the last mont that was amortizat
-
-            for (LocalDate dateOfAmort = LocalDate.parse(lastAmDateRS.getString("lastMonth"));!dateOfAmort.isAfter(endDate); dateOfAmort = dateOfAmort.plusMonths(1))   //loop ower the months to amirtiza with dateOfAmort
+            if (lastAmDateRS.next() && lastAmDateRS.getString("lastMonth") != null)    //if it was amortizat before
             {
-                if (!MySQLJDBCUtil.isSuspended(nrInv, dateOfAmort, c) && !MySQLJDBCUtil.isAmortizat(nrInv, dateOfAmort, c)) //
+                lastAmortizatDate = LocalDate.parse(lastAmDateRS.getString("lastMonth"));     // I get the last mont that was amortizat
+                lastAmortizatDate = lastAmortizatDate.plusMonths(1);
+            }
+            else    // if it wasnt amortizat yet, we set the inceputul amortizarii to start from
+            {
+                amortizareStartingdatePstm.setString(1,nrInv);
+                ResultSet rs = amortizareStartingdatePstm.executeQuery();
+
+                rs.next();
+                lastAmortizatDate = LocalDate.parse(rs.getString("inceputulAmortizarii"));
+            }
+
+            for (LocalDate dateOfAmort = LocalDate.parse(lastAmortizatDate.toString());!dateOfAmort.isAfter(endDate); dateOfAmort = dateOfAmort.plusMonths(1))   //loop ower the months to amirtiza with dateOfAmort
+            {
+                if (!MySQLJDBCUtil.isSuspended(nrInv, dateOfAmort, c)) //if not suspended
                 {
                     Float valueOfMifix = MySQLJDBCUtil.valueOfMifixAtADate(nrInv, dateOfAmort, c);
 
-                    if (valueOfMifix == null)   // has no operations yet or alredy sold/casat
+                    if (valueOfMifix == null || valueOfMifix.equals(0))   // has no operations yet or alredy sold/casat
                     {
                         return;
                     }
@@ -186,16 +210,18 @@ public class AmortizareController {
                     ResultSet rs = getNrOfAmortizatMonthsPstm.executeQuery();
                     rs.next();
                     int monthsAmortizat = rs.getInt("monthCount");
+                    int monthsLeft = rs.getInt("durataAmortizarii") * 12 - monthsAmortizat;
 
-                    Float amortizareValue = valueOfMifix - MySQLJDBCUtil.valueAmortizata(nrInv, dateOfAmort, c);
+                    Float amortizareValue = (valueOfMifix - MySQLJDBCUtil.valueAmortizata(nrInv, dateOfAmort, c))/monthsLeft;
 
                     insertPstm.setString(1, nrInv);
                     insertPstm.setString(2, dateOfAmort.toString());
                     insertPstm.setFloat(3, amortizareValue);
                     insertPstm.setFloat(4, 0f);
 
-                    insertPstm.executeUpdate();
+                    System.out.println(insertPstm.toString());
 
+                    insertPstm.executeUpdate();
                 }
             }
         }
@@ -209,11 +235,15 @@ public class AmortizareController {
             s.executeUpdate(Finals.SET_QUOTES_SQL);
             s.executeUpdate("use \"" + Main.getSocietateActuala() + "\";");
 
+            ResultSet rs = s.executeQuery(Finals.SELECT_FROM_MIJLOC_FIX_SQL);
 
-
-
+            while (rs.next())
+            {
+                calculateInDatabaseForOne(rs.getString("nrInventar"), c);
+            }
         }
     }
+
     public void recalculareInDatabase(Connection c) throws SQLException {
 
     }

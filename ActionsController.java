@@ -195,6 +195,64 @@ public class ActionsController {
     @FXML
     public void vizualizareOperatiuniButtonAction()
     {
+
+
+        try
+        {
+            if( selectedNrInventarTextBox.getText() != null && !selectedNrInventarTextBox.getText().isEmpty() &&    //if its empty, I can still vizualize for all mifix!!
+                    !MySQLJDBCUtil.recordExists(Main.getSocietateActuala(), "mijlocFix", "nrInventar", selectedNrInventarTextBox.getText()))
+            {
+                Alerts.errorAlert(Finals.INVALID_INPUT_TITLE_TEXT, Finals.NR_INVENTAR_DOSENT_EXISTS_HEADER_TEXT, Finals.INVALID_INPUT_CONTENT_TEXT);
+                return;
+            }
+            else
+            {
+                if (vizualizareOptionsComboBox.getValue() == Finals.OPERATIUNI_VIZ_OP)
+                {
+                    TableDisplayer td = OperatiuniTableInitializer.initializeTable(selectedNrInventarTextBox.getText(), vizualizareOperatiiStartDatePicker.getValue(), vizualizareOperatiiEndDatePicker.getValue());
+                    td.getTable().getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+                        if (newSelection != null) {
+                            for (OperatiuniTableDisplayer<OperatiuniTableInitializer.OperatieData> otd : OperatiuniTableInitializer.getTds()) //we are looking for  the TableDisplayer
+                            {
+                                if (otd.getTable().getSelectionModel().getSelectedItem() == newSelection)   //If we found it
+                                {
+                                    operatieSelectedFromTable(otd); //we use it to call the operatieselected function
+                                    return; // thats all we need
+                                }
+                            }
+                        }
+                    });
+
+                }
+                else if (vizualizareOptionsComboBox.getValue() == Finals.SUSPENDARI_VIZ_OP)
+                {
+                    TableDisplayer td = SuspendariTableInitializer.initializeTable(selectedNrInventarTextBox.getText(), vizualizareOperatiiStartDatePicker.getValue(), vizualizareOperatiiEndDatePicker.getValue());
+                    td.getTable().getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+                        if (newSelection != null) {
+                            for (OperatiuniTableDisplayer<SuspendariTableInitializer.SuspendareData> otd : SuspendariTableInitializer.getTds()) //we are looking for  the TableDisplayer
+                            {
+                                if (otd.getTable().getSelectionModel().getSelectedItem() == newSelection)   //If we found it
+                                {
+                                    suspendareSelectedFromTable(otd); //we use it to call the operatieselected function
+                                    return; // thats all we need
+                                }
+                            }
+                        }
+                    });
+
+                }
+                else if (vizualizareOptionsComboBox.getValue() == Finals.AMORTIZARE_VIZ_OP)
+                {
+                    TableDisplayer td = AmortizareTableInitializer.initializeTable(selectedNrInventarTextBox.getText(), vizualizareOperatiiStartDatePicker.getValue(), vizualizareOperatiiEndDatePicker.getValue());
+                }
+            }
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+
+/*
         if (vizualizareOptionsComboBox.getValue() == Finals.OPERATIUNI_VIZ_OP)
         {
             try
@@ -260,6 +318,38 @@ public class ActionsController {
                 e.printStackTrace();
             }
         }
+        else if (vizualizareOptionsComboBox.getValue() == Finals.AMORTIZARE_VIZ_OP)
+        {
+            try
+            {
+                if( selectedNrInventarTextBox.getText() != null && !selectedNrInventarTextBox.getText().isEmpty() &&    //if its empty, I can still vizualize for all mifix!!
+                        !MySQLJDBCUtil.recordExists(Main.getSocietateActuala(), "mijlocFix", "nrInventar", selectedNrInventarTextBox.getText()))
+                {
+                    Alerts.errorAlert(Finals.INVALID_INPUT_TITLE_TEXT, Finals.NR_INVENTAR_DOSENT_EXISTS_HEADER_TEXT, Finals.INVALID_INPUT_CONTENT_TEXT);
+                    return;
+                }
+                else
+                {
+                    TableDisplayer td = SuspendariTableInitializer.initializeTable(selectedNrInventarTextBox.getText(), vizualizareOperatiiStartDatePicker.getValue(), vizualizareOperatiiEndDatePicker.getValue());
+                    td.getTable().getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+                        if (newSelection != null) {
+                            for (OperatiuniTableDisplayer<SuspendariTableInitializer.SuspendareData> otd : SuspendariTableInitializer.getTds()) //we are looking for  the TableDisplayer
+                            {
+                                if (otd.getTable().getSelectionModel().getSelectedItem() == newSelection)   //If we found it
+                                {
+                                    suspendareSelectedFromTable(otd); //we use it to call the operatieselected function
+                                    return; // thats all we need
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+            catch (SQLException e)
+            {
+                e.printStackTrace();
+            }
+        }*/
     }
 
     public void initialize(Main main) {
@@ -343,7 +433,8 @@ public class ActionsController {
 
         vizualizareOptionsComboBox.getItems().addAll(
                 Finals.OPERATIUNI_VIZ_OP,
-                Finals.SUSPENDARI_VIZ_OP
+                Finals.SUSPENDARI_VIZ_OP,
+                Finals.AMORTIZARE_VIZ_OP
         );
 
         vizualizareOptionsComboBox.setValue(Finals.OPERATIUNI_VIZ_OP);

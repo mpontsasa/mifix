@@ -25,6 +25,7 @@ public class AmortizareTableInitializer {
         td.getStage().setHeight(700);
         td.getTable().setPrefHeight(600);
         td.getTable().setPrefWidth(650);
+        td.placeAndSize();
 
         String title = "Amortizari ";
 
@@ -68,20 +69,19 @@ public class AmortizareTableInitializer {
         TableColumn date = new TableColumn("Data");
         date.setMinWidth(32);
         date.setCellValueFactory(
-                new PropertyValueFactory<AmortizareData, String>("Data"));
+                new PropertyValueFactory<AmortizareData, String>("date"));
 
 
         TableColumn valoareaAmortizari = new TableColumn("Valoarea amortizării");
         valoareaAmortizari.setMinWidth(32);
         valoareaAmortizari.setCellValueFactory(
-                new PropertyValueFactory<AmortizareData, String>("valoareaAmortizari"));
+                new PropertyValueFactory<AmortizareData, String>("valoareAmortizari"));
 
         TableColumn diferenta = new TableColumn("Diferență");
         diferenta.setMinWidth(32);
         diferenta.setCellValueFactory(
                 new PropertyValueFactory<AmortizareData, String>("diferenta"));
-
-
+        
 
         td.getTable().getColumns().addAll(date, valoareaAmortizari, diferenta);
 
@@ -135,8 +135,8 @@ public class AmortizareTableInitializer {
         Connection c = MySQLJDBCUtil.getConnection(Main.getSocietateActuala());    //get the connection
         Statement st = c.createStatement();                                         //make a statement
 
-        String sqlQuery = "select amortizareID, nrInventar, date, valoareaAmortizari, diferenta from amortizari, mijlocFix " +
-                "where mijlocFix.mifixID = amortizari.mifixID ";
+        String sqlQuery = "select amortizareID, nrInventar, monthOfAmortizare, calculatedValue, diferenta from amortizare, mijlocFix " +
+                "where mijlocFix.mifixID = amortizare.mifixID ";
 
         if (nrInventar != null && !nrInventar.isEmpty())
         {
@@ -144,17 +144,18 @@ public class AmortizareTableInitializer {
 
         }
 
+
         if (start != null)
         {
-            sqlQuery += "and endDate >= '" + start.toString() + "' ";
+            sqlQuery += "and monthOfAmortizare >= '" + start.toString() + "' ";
         }
 
         if (end != null)
         {
-            sqlQuery += "and startDate <= '" + end.toString() + "' ";
+            sqlQuery += "and monthOfAmortizare <= '" + end.toString() + "';";
         }
 
-        sqlQuery += "group by startDate;";
+
 
         System.out.println(sqlQuery);
         ResultSet rs = st.executeQuery(sqlQuery);
@@ -164,8 +165,8 @@ public class AmortizareTableInitializer {
             td.getData().add(new AmortizareData(
                     rs.getInt("amortizareID"),
                     rs.getString("nrInventar"),
-                    rs.getString("data"),
-                    rs.getFloat("valoareAmortizari"),
+                    rs.getString("monthOfAmortizare"),
+                    rs.getFloat("calculatedValue"),
                     rs.getFloat("diferenta"))
             );
         }
