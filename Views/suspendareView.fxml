@@ -30,7 +30,7 @@
                   </TextField>
                </children>
             </HBox>
-            <Label prefHeight="20.0" prefWidth="121.0" text="Suspedare inte:">
+            <Label prefHeight="20.0" prefWidth="121.0" text="Suspendare între:">
                <font>
                   <Font size="14.0" />
                </font>

@@ -24,7 +24,7 @@
       <RowConstraints maxHeight="140.79998779296875" minHeight="10.0" prefHeight="35.99998779296875" vgrow="SOMETIMES" />
    </rowConstraints>
    <children>
-      <Label prefHeight="20.0" prefWidth="108.0" text="Valoare fara TVA:">
+      <Label prefHeight="20.0" prefWidth="108.0" text="Valoare fără TVA:">
          <font>
             <Font size="14.0" />
          </font>
@@ -78,7 +78,7 @@
             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
          </GridPane.margin>
       </TextField>
-      <Label prefHeight="20.0" prefWidth="89.0" text="Diferenta TVA" GridPane.columnIndex="2" GridPane.rowIndex="1">
+      <Label prefHeight="20.0" prefWidth="89.0" text="Diferență TVA" GridPane.columnIndex="2" GridPane.rowIndex="1">
          <font>
             <Font size="14.0" />
          </font>

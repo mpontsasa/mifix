@@ -78,7 +78,7 @@
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                      </GridPane.margin>
                   </Label>
-                  <Label prefHeight="20.0" prefWidth="116.0" text="Durata amortizarii:" GridPane.rowIndex="5">
+                  <Label prefHeight="20.0" prefWidth="116.0" text="Durata amortizării:" GridPane.rowIndex="5">
                      <font>
                         <Font size="14.0" />
                      </font>
@@ -137,7 +137,7 @@
                            </children>
                         </HBox>
                      </children></HBox>
-                  <Label text="Inceputul amortizarii:" GridPane.rowIndex="4">
+                  <Label text="Începutul amortizării:" GridPane.rowIndex="4">
                      <GridPane.margin>
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                      </GridPane.margin>
@@ -150,7 +150,7 @@
             <Region prefHeight="443.0" prefWidth="16.0" />
             <VBox prefHeight="443.0" prefWidth="283.0">
                <children>
-                  <Label prefHeight="24.0" prefWidth="229.0" text="Mijlocul fix si caracteristici technice:">
+                  <Label prefHeight="24.0" prefWidth="229.0" text="Mijlocul fix și caracteristici technice:">
                      <font>
                         <Font size="14.0" />
                      </font>
@@ -194,7 +194,7 @@
                   <RowConstraints maxHeight="373.999983215332" minHeight="10.0" prefHeight="31.199975585937494" vgrow="SOMETIMES" />
               </rowConstraints>
                <children>
-                  <Label prefHeight="24.0" prefWidth="229.0" text="Termen de garantie:">
+                  <Label prefHeight="24.0" prefWidth="229.0" text="Termen de garanție:">
                      <font>
                         <Font size="14.0" />
                      </font>

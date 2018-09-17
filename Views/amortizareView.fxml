@@ -38,7 +38,7 @@
                   </TextField>
                </children>
             </HBox>
-            <Label prefHeight="20.0" prefWidth="121.0" text="Amortizare pana:">
+            <Label prefHeight="20.0" prefWidth="121.0" text="Amortizare până:">
                <font>
                   <Font size="14.0" />
                </font>

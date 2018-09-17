@@ -44,7 +44,7 @@
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                </GridPane.margin>
             </TextField>
-            <Label text="Nr. receptie" GridPane.rowIndex="1">
+            <Label text="Nr. recepție" GridPane.rowIndex="1">
                <font>
                   <Font size="14.0" />
                </font>
@@ -83,7 +83,7 @@
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                </GridPane.margin>
             </TextField>
-            <Label text="Data operatiei" GridPane.rowIndex="4">
+            <Label text="Data operației" GridPane.rowIndex="4">
                <font>
                   <Font size="14.0" />
                </font>

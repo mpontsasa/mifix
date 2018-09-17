@@ -61,7 +61,7 @@
                   <Font size="17.0" />
                </font>
             </Label>
-            <Button fx:id="selecteazaButton" layoutX="104.0" layoutY="115.0" mnemonicParsing="false" onAction="#selecteazaButtonAction" text="Selecteaza" />
+            <Button fx:id="selecteazaButton" layoutX="104.0" layoutY="115.0" mnemonicParsing="false" onAction="#selecteazaButtonAction" text="Selectează" />
          </children>
     </AnchorPane>
       <Accordion />
