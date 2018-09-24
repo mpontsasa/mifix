@@ -4,6 +4,7 @@ public class Finals {
     final static String CONTDIC_PATH = "CONTDIC.DBF";
     final static String TVA_PATH = "TVA.DBF";
     final static String SQL_QUERIES = "sqlqueries\\";
+    final static String EXPORT_PATH = "Exports\\";
 
 
     final static String MAIN_STAGE_CAPTION = "Mijloc Fix";
@@ -34,8 +35,9 @@ public class Finals {
     final static String MODIFICARE_OP = "Modificare";
     final static String STERGERE_OP = "Stergere";
 
-    final static String CALCULARE_OP = "Calculare amortizare";
-    final static String RECALCULARE_OP = "Recalculare total";
+    final static String CALCULARE_OP = "Calculare";
+    final static String RECALCULARE_OP = "Recalculare";
+    final static String INCHEIERE_OP = "Incheiere";
 
 //..................................non numeric TVA procentage
 
@@ -101,6 +103,12 @@ public class Finals {
     final static String NR_RECEPTIE_EMPTY_HEADER_TEXT = "Nr. receptie nu poate ramâne gol!";
     final static String FEL_DOCUMNENT_EMPTY_HEADER_TEXT = "Fel document nu poate ramâne gol!";
 
+    //...........porting
+
+    final static String DATA_MIGHT_BE_LOST_TITLE_TEXT = "Data might be lost";
+    final static String DATA_MIGHT_BE_LOST_HEADER_TEXT = "All data in the database will be lost.";
+    final static String DATA_MIGHT_BE_LOST_CONTENT_TEXT = "Are you sure u want to overwrite local data with imported data?";
+
     //...........modificare/stergere operatie
 
     final static String OPERATIE_NOT_SELECTED_HEADER = "Operație nu a fost selectată!";
@@ -108,6 +116,10 @@ public class Finals {
     //....amortizare
 
     final static String START_DATE_AFTER_END_HEADER = "Date of start cant be befor end date";
+
+    final static String WHAT_MONTHS_MEAN_CALC = "Amortizare până:";
+    final static String WHAT_MONTHS_MEAN_RECALC = "Recalculă de la:";
+    final static String WHAT_MONTHS_MEAN_INCH = "Încheiere între:";
 
 //.....................................SQL commands
 
@@ -159,5 +171,16 @@ public class Finals {
     final static String NR_OF_AMORTIZAT_MONTHS_SQL = "select count(amortizareID) as monthCount, mijlocFix.durataAmortizarii\n" +
             "\tfrom mijlocFix left join amortizare on amortizare.mifixID = mijlocFix.mifixID \n" +
             "\tgroup by mijlocFix.nrInventar having mijlocFix.nrInventar = ?;";
-    final static String LAST_AMORTIZATION_DATE_SQL = "select MAX(monthOfAmortizare) as lastMonth from amortizare where mifixID = (select mifixID from mijlocFix where nrInventar = ?);";
+    final static String LAST_AMORTIZATION_DATE_BY_NR_INV_SQL = "select MAX(monthOfAmortizare) as lastMonth from amortizare where mifixID = (select mifixID from mijlocFix where nrInventar = ?);";
+    final static String LAST_AMORTIZATION_DATE_SQL = "select MAX(monthOfAmortizare) as lastMonth from amortizare;";
+    final static String SET_DIFF_BY_MFID_AND_MONTH_SQL = "update amortizare set diferenta = ? where mifixID = ? and monthOfAmortizare = ?;";
+
+    final static String INCHEIERE_1_MONTH_SQL = "insert into incheiereMonth (monthIncheiat) VALUES (?);";
+    final static String DESCHIDERE_SQL = "delete from incheiereMonth where monthIncheiat between DATE(?) and DATE(?);";
+
+    //..........databaseParser
+
+    final static String SELECT_EWERYTHING_SQL = "select * from ?";
+    final static String ShOW_TABLES_SQL = "show tables;";
+
 }

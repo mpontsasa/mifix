@@ -99,6 +99,14 @@ public class SuspendareController {
         this.actionsController = actionsController;
     }
 
+    public void initialize()
+    {
+        if (actionsController.getSelectedMifixData() != null)   //set nr inventar, if selected from table
+        {
+            nrInventarTextField.setText(actionsController.getSelectedMifixData().getNrInventar());
+        }
+    }
+
     public boolean validateInputForAdaugare() throws SQLException
     {
         //...........................validate nrInventar

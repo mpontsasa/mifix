@@ -190,6 +190,11 @@ public class ReevaluareController extends OperationController {
     {
         initializeBase(sublayerHBox);
         getOperationBaseController().baseOperationLayerHBox.getChildren().remove(getOperationBaseController().getValueInputVBox());
+
+        if (actionsController.getSelectedMifixData() != null)   //set nr inventar, if selected from table
+        {
+            getOperationBaseController().nrInventarTextField.setText(actionsController.getSelectedMifixData().getNrInventar());
+        }
     }
 
 }

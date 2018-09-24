@@ -81,7 +81,7 @@ public class AmortizareTableInitializer {
         diferenta.setMinWidth(32);
         diferenta.setCellValueFactory(
                 new PropertyValueFactory<AmortizareData, String>("diferenta"));
-        
+
 
         td.getTable().getColumns().addAll(date, valoareaAmortizari, diferenta);
 

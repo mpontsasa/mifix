@@ -1,10 +1,22 @@
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
 
+import java.awt.*;
+import java.io.File;
+import java.io.IOException;
+import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.time.LocalDate;
 
 public class ActionsController {
 
@@ -17,6 +29,12 @@ public class ActionsController {
     private MijlocFixTableInitializer.MijlocFixData selectedMifixData = null;
     private OperatiuniTableInitializer.OperatieData selectedOperatieData = null;
     private SuspendariTableInitializer.SuspendareData selectedSuspendareData = null;
+
+    @FXML
+    MenuItem exportMenuItem;
+
+    @FXML
+    MenuItem importMenuItem;
 
     @FXML
     Label societateActivaLabel;
@@ -53,6 +71,72 @@ public class ActionsController {
 
     @FXML
     ComboBox vizualizareOptionsComboBox;
+
+    @FXML
+    public void exportMenuItemAction()
+    {
+        try
+        {
+            DatabasePorter.exportDatabase(Main.getSocietateActuala());
+
+            Runtime.getRuntime().exec("explorer.exe /select," + Finals.EXPORT_PATH + Main.getSocietateActuala() + "_" + LocalDate.now().toString() + ".sql");
+
+        }
+        catch(IOException e)
+        {
+            e.printStackTrace();
+        }
+        catch(SQLException e)
+        {
+            e.printStackTrace();
+        }
+
+    }
+
+    @FXML
+    public void importMenuItemAction()
+    {
+        try
+        {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Import sql file");
+            fileChooser.getExtensionFilters().addAll(
+                    new FileChooser.ExtensionFilter("SQL File", "*.sql"));
+            File selectedFile = fileChooser.showOpenDialog(Main.getGlobalPrimaryStage());
+            if (selectedFile != null) {
+                if (Alerts.confirmationAlert(Finals.DATA_MIGHT_BE_LOST_TITLE_TEXT, Finals.DATA_MIGHT_BE_LOST_HEADER_TEXT, Finals.DATA_MIGHT_BE_LOST_CONTENT_TEXT))
+                {
+                    Connection c = MySQLJDBCUtil.getConnection();
+                    Statement s = c.createStatement();
+                    s.execute(Finals.START_TRANSACTION);
+
+                    s.executeUpdate(Finals.SET_QUOTES_SQL);
+
+                    MySQLJDBCUtil.dropDatabase(Main.getSocietateActuala(), c);
+
+                    ///------------------------------------ this part should be alredy written in MySQLJDBCUtil, it should be reordered
+                    s.executeUpdate("create database \"" + Main.getSocietateActuala() + "\";");
+                    s.executeUpdate("use \"" + Main.getSocietateActuala() + "\";");
+                    SQLExecuter.executeFile(Finals.SQL_QUERIES + "setUpSocietateDB.sql", c);
+                    ///-------------------------------------
+
+                    SQLExecuter.executeFile(selectedFile.getPath(), c);
+
+                    s.execute(Finals.COMMIT_TRANSACTION);
+                    s.close();
+                    c.close();
+
+
+
+
+                }
+            }
+        }
+        catch(SQLException e)
+        {
+            e.printStackTrace();
+        }
+    }
 
     @FXML
     public void schimbareSocietateButtonClicked()
@@ -103,7 +187,7 @@ public class ActionsController {
             selectareActionComboBox.getItems().addAll(
                     Finals.CALCULARE_OP,
                     Finals.RECALCULARE_OP,
-                    Finals.STERGERE_OP);
+                    Finals.INCHEIERE_OP);
             selectareActionComboBox.setValue(Finals.CALCULARE_OP);
 
         }
@@ -135,7 +219,10 @@ public class ActionsController {
     @FXML
     public void selectareActionComboBoxAction()
     {
-
+        if (selectareOperatieComboBox.getValue() == Finals.AMORTIZARE_OP)
+        {
+            amortizareController.actionSelected();
+        }
     }
 
     @FXML
@@ -251,105 +338,6 @@ public class ActionsController {
         {
             e.printStackTrace();
         }
-
-/*
-        if (vizualizareOptionsComboBox.getValue() == Finals.OPERATIUNI_VIZ_OP)
-        {
-            try
-            {
-                if( selectedNrInventarTextBox.getText() != null && !selectedNrInventarTextBox.getText().isEmpty() &&    //if its empty, I can still vizualize for all mifix!!
-                        !MySQLJDBCUtil.recordExists(Main.getSocietateActuala(), "mijlocFix", "nrInventar", selectedNrInventarTextBox.getText()))
-                {
-                    Alerts.errorAlert(Finals.INVALID_INPUT_TITLE_TEXT, Finals.NR_INVENTAR_DOSENT_EXISTS_HEADER_TEXT, Finals.INVALID_INPUT_CONTENT_TEXT);
-                    return;
-                }
-                else
-                {
-                    TableDisplayer td = OperatiuniTableInitializer.initializeTable(selectedNrInventarTextBox.getText(), vizualizareOperatiiStartDatePicker.getValue(), vizualizareOperatiiEndDatePicker.getValue());
-                    td.getTable().getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-                        if (newSelection != null) {
-                            for (OperatiuniTableDisplayer<OperatiuniTableInitializer.OperatieData> otd : OperatiuniTableInitializer.getTds()) //we are looking for  the TableDisplayer
-                            {
-                                if (otd.getTable().getSelectionModel().getSelectedItem() == newSelection)   //If we found it
-                                {
-                                    operatieSelectedFromTable(otd); //we use it to call the operatieselected function
-                                    return; // thats all we need
-                                }
-                            }
-                        }
-                    });
-                }
-            }
-            catch (SQLException e)
-            {
-                e.printStackTrace();
-            }
-
-        }
-        else if (vizualizareOptionsComboBox.getValue() == Finals.SUSPENDARI_VIZ_OP)
-        {
-            try
-            {
-                if( selectedNrInventarTextBox.getText() != null && !selectedNrInventarTextBox.getText().isEmpty() &&    //if its empty, I can still vizualize for all mifix!!
-                        !MySQLJDBCUtil.recordExists(Main.getSocietateActuala(), "mijlocFix", "nrInventar", selectedNrInventarTextBox.getText()))
-                {
-                    Alerts.errorAlert(Finals.INVALID_INPUT_TITLE_TEXT, Finals.NR_INVENTAR_DOSENT_EXISTS_HEADER_TEXT, Finals.INVALID_INPUT_CONTENT_TEXT);
-                    return;
-                }
-                else
-                {
-                    TableDisplayer td = SuspendariTableInitializer.initializeTable(selectedNrInventarTextBox.getText(), vizualizareOperatiiStartDatePicker.getValue(), vizualizareOperatiiEndDatePicker.getValue());
-                    td.getTable().getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-                        if (newSelection != null) {
-                            for (OperatiuniTableDisplayer<SuspendariTableInitializer.SuspendareData> otd : SuspendariTableInitializer.getTds()) //we are looking for  the TableDisplayer
-                            {
-                                if (otd.getTable().getSelectionModel().getSelectedItem() == newSelection)   //If we found it
-                                {
-                                    suspendareSelectedFromTable(otd); //we use it to call the operatieselected function
-                                    return; // thats all we need
-                                }
-                            }
-                        }
-                    });
-                }
-            }
-            catch (SQLException e)
-            {
-                e.printStackTrace();
-            }
-        }
-        else if (vizualizareOptionsComboBox.getValue() == Finals.AMORTIZARE_VIZ_OP)
-        {
-            try
-            {
-                if( selectedNrInventarTextBox.getText() != null && !selectedNrInventarTextBox.getText().isEmpty() &&    //if its empty, I can still vizualize for all mifix!!
-                        !MySQLJDBCUtil.recordExists(Main.getSocietateActuala(), "mijlocFix", "nrInventar", selectedNrInventarTextBox.getText()))
-                {
-                    Alerts.errorAlert(Finals.INVALID_INPUT_TITLE_TEXT, Finals.NR_INVENTAR_DOSENT_EXISTS_HEADER_TEXT, Finals.INVALID_INPUT_CONTENT_TEXT);
-                    return;
-                }
-                else
-                {
-                    TableDisplayer td = SuspendariTableInitializer.initializeTable(selectedNrInventarTextBox.getText(), vizualizareOperatiiStartDatePicker.getValue(), vizualizareOperatiiEndDatePicker.getValue());
-                    td.getTable().getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-                        if (newSelection != null) {
-                            for (OperatiuniTableDisplayer<SuspendariTableInitializer.SuspendareData> otd : SuspendariTableInitializer.getTds()) //we are looking for  the TableDisplayer
-                            {
-                                if (otd.getTable().getSelectionModel().getSelectedItem() == newSelection)   //If we found it
-                                {
-                                    suspendareSelectedFromTable(otd); //we use it to call the operatieselected function
-                                    return; // thats all we need
-                                }
-                            }
-                        }
-                    });
-                }
-            }
-            catch (SQLException e)
-            {
-                e.printStackTrace();
-            }
-        }*/
     }
 
     public void initialize(Main main) {
@@ -613,24 +601,24 @@ public class ActionsController {
         {
             if (selectareOperatieComboBox.getValue().toString().equals(Finals.MIFIX_OP)) //mifix option selected
             {
-                if (!selectareActionComboBox.getValue().toString().equals(Finals.ADAUGARE_OP))    //but not adaugare action
-                {
+                //if (!selectareActionComboBox.getValue().toString().equals(Finals.ADAUGARE_OP))    //but not adaugare action
+
                     mijlocFixController.mijlocFixSelectedInTable();
-                }
+
             }
             else if (selectareOperatieComboBox.getValue().toString().equals(Finals.SUSPENDARE_OP))    //suspendare option selected
             {
-                if (selectareActionComboBox.getValue().toString().equals(Finals.ADAUGARE_OP))  //and adaugare action
-                {
+                //if (selectareActionComboBox.getValue().toString().equals(Finals.ADAUGARE_OP))  //and adaugare action
+
                     suspendareController.mijlocFixSelectedInTable();
-                }
+
             }
             else if(!selectareOperatieComboBox.getValue().toString().equals(Finals.MIFIX_OP))    //operatie option selected
             {
-                if(selectareActionComboBox.getValue().toString().equals(Finals.ADAUGARE_OP))    //and adaugare action
-                {
+                //if(selectareActionComboBox.getValue().toString().equals(Finals.ADAUGARE_OP))    //and adaugare action
+
                     operationController.mijlocFixSelectedInTable();
-                }
+
             }
         }
     }
@@ -675,5 +663,9 @@ public class ActionsController {
 
     public SuspendariTableInitializer.SuspendareData getSelectedSuspendareData() {
         return selectedSuspendareData;
+    }
+
+    public MijlocFixTableInitializer.MijlocFixData getSelectedMifixData() {
+        return selectedMifixData;
     }
 }

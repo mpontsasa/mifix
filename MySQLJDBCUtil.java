@@ -105,13 +105,22 @@ public class MySQLJDBCUtil {
             SQLExecuter.executeFile(Finals.SQL_QUERIES + "setUpSocietateDB.sql", c);
 
             s.close();
-            //ps.close();
             c.close();
 
             return true;
         } else {
             return false;
         }
+    }
+
+    public static void dropDatabase(String societateName, Connection c) throws SQLException
+    {
+
+        String sqlCommand = "drop database \"" + societateName + "\"";
+        Statement s = c.createStatement();
+        s.executeUpdate(Finals.SET_QUOTES_SQL);
+        s.executeUpdate(sqlCommand);
+        s.close();
     }
 
     public static void updateMifix(String nrInvOld, String nrInv, String mifixSiCharTech, String clasificare, String inceputulAmortizarii, int durataAmortizarii, String regimDeAmortizare, LocalDate termenDeGarantie, String contDebitor, String contCreditor) throws SQLException {

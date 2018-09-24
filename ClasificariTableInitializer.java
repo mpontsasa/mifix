@@ -39,6 +39,7 @@ public class ClasificariTableInitializer {
         td.getStage().setWidth(1400);
         td.getStage().setHeight(700);
         td.getTable().setPrefHeight(600);
+        td.placeAndSize();
 
         td.getLabel().setText("Clasificari de mijloc fix");
 

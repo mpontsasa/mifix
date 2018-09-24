@@ -28,7 +28,8 @@
                     <menus>
                       <Menu mnemonicParsing="false" text="File">
                         <items>
-                          <MenuItem mnemonicParsing="false" text="Close" />
+                          <MenuItem fx:id="exportMenuItem" mnemonicParsing="false" onAction="#exportMenuItemAction" text="Export baza de data" />
+                              <MenuItem fx:id="importMenuItem" mnemonicParsing="false" onAction="#importMenuItemAction" text="Import  baza de date" />
                         </items>
                       </Menu>
                       <Menu mnemonicParsing="false" text="Edit">

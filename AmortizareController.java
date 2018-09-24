@@ -1,4 +1,3 @@
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
@@ -8,7 +7,7 @@ import java.time.LocalDate;
 
 public class AmortizareController {
 
-    ActionsController actionsController;
+    private ActionsController actionsController;
 
     @FXML
     CheckBox pentruToateCheckBox;
@@ -20,10 +19,22 @@ public class AmortizareController {
     TextField nrInventarTextField;
 
     @FXML
+    Label monthsTitleLable;
+
+    @FXML
     TextField endYearTextField;
 
     @FXML
     TextField endMonthTextField;
+
+    @FXML
+    TextField startYearTextField;
+
+    @FXML
+    TextField startMonthTextField;
+
+    @FXML
+    Label intervalumLabel;
 
     @FXML
     Button executareButton;
@@ -63,7 +74,8 @@ public class AmortizareController {
     @FXML
     public void executareButtonAction() {
         try {
-            if (actionsController.selectareActionComboBox.getValue().toString().equals(Finals.CALCULARE_OP)) {
+            if (actionsController.selectareActionComboBox.getValue().toString().equals(Finals.CALCULARE_OP))
+            {
                 if (validateInputForCalculare()) {
                     Connection c = MySQLJDBCUtil.getConnection();
                     Statement s = c.createStatement();
@@ -71,11 +83,13 @@ public class AmortizareController {
 
                     if (!pentruToateCheckBox.isSelected())
                     {
-                        calculateInDatabaseForOne(nrInventarTextField.getText(), c);
+                        LocalDate endDate = LocalDate.parse(startYearTextField.getText() + "-" + ((startMonthTextField.getText().length() < 2) ? "0" : "") + startMonthTextField.getText() + "-" +  "01");
+                        calculateInDatabaseForOne(nrInventarTextField.getText(), endDate, c);
                     }
                     else
                     {
-                        calculareInDatabase(c);
+                        LocalDate endDate = LocalDate.parse(startYearTextField.getText() + "-" + ((startMonthTextField.getText().length() < 2) ? "0" : "") + startMonthTextField.getText() + "-" +  "01");
+                        calculareInDatabase(c, endDate);
                     }
 
                     s.execute(Finals.COMMIT_TRANSACTION);
@@ -85,7 +99,9 @@ public class AmortizareController {
                     //SuspendariTableInitializer.reload(nrInventarTextField.getText());
                     Alerts.informationAlert(Finals.SUCCESSFUL_OPERATION_TITLE_TEXT, Finals.SUCCESSFUL_OPERATION_HEADER_TEXT, Finals.SUCCESSFUL_OPERATION_CONTENT_TEXT);
                 }
-            } else if (actionsController.selectareActionComboBox.getValue().toString().equals(Finals.MODIFICARE_OP)) {
+            }
+            else if (actionsController.selectareActionComboBox.getValue().toString().equals(Finals.RECALCULARE_OP))
+            {
                 if (validateInputForRecalculare()) {
                     Connection c = MySQLJDBCUtil.getConnection();
                     Statement s = c.createStatement();
@@ -100,13 +116,15 @@ public class AmortizareController {
                     //SuspendariTableInitializer.reload(nrInventarTextField.getText());
                     Alerts.informationAlert(Finals.SUCCESSFUL_OPERATION_TITLE_TEXT, Finals.SUCCESSFUL_OPERATION_HEADER_TEXT, Finals.SUCCESSFUL_OPERATION_CONTENT_TEXT);
                 }
-            } else if (actionsController.selectareActionComboBox.getValue().toString().equals(Finals.STERGERE_OP)) {
-                if (validateInputForStergere()) {
+            }
+            else if (actionsController.selectareActionComboBox.getValue().toString().equals(Finals.INCHEIERE_OP))
+            {
+                if (validateInputForRecalculare()) {
                     Connection c = MySQLJDBCUtil.getConnection();
                     Statement s = c.createStatement();
                     s.execute(Finals.START_TRANSACTION);
 
-                    stergereInDatabase(c);
+                    recalculareInDatabase(c);
 
                     s.execute(Finals.COMMIT_TRANSACTION);
                     s.close();
@@ -116,7 +134,8 @@ public class AmortizareController {
                     Alerts.informationAlert(Finals.SUCCESSFUL_OPERATION_TITLE_TEXT, Finals.SUCCESSFUL_OPERATION_HEADER_TEXT, Finals.SUCCESSFUL_OPERATION_CONTENT_TEXT);
                 }
             }
-        } catch (SQLException e) {
+        }
+        catch (SQLException e) {
             e.printStackTrace();
         }
 
@@ -139,6 +158,13 @@ public class AmortizareController {
             }
         }
 
+        if (startYearTextField.getText() == null || startYearTextField.getText().isEmpty() ||
+                startMonthTextField.getText() == null || startMonthTextField.getText().isEmpty())
+        {
+            Alerts.errorAlert(Finals.INVALID_INPUT_TITLE_TEXT, Finals.DATE_EMPTY_HEADER_TEXT, Finals.INVALID_INPUT_CONTENT_TEXT);
+            return false;
+        }
+
         if (endYearTextField.getText() == null || endYearTextField.getText().isEmpty() ||
                 endMonthTextField.getText() == null || endMonthTextField.getText().isEmpty())
         {
@@ -149,27 +175,34 @@ public class AmortizareController {
         return true;
     }
 
-    public boolean validateInputForStergere() throws SQLException {
-        //return validateInputForCalculare();
-        return false;
-        // check if is selected...
-    }
-
     public boolean validateInputForRecalculare() throws SQLException
     {
         return validateInputForCalculare();
         // NEEDS TO BE ASKED< IF ITS FOR SURE (confirmation alert)
     }
 
-    public void calculateInDatabaseForOne(String nrInv, Connection c) throws SQLException
-    {
+    public boolean validateInputForIncheiere() throws SQLException {
 
-        LocalDate endDate = LocalDate.parse(endYearTextField.getText() + "-" + ((endMonthTextField.getText().length() < 2) ? "0" : "") + endMonthTextField.getText() + "-" +  "01");
+        if (startYearTextField.getText() == null || startYearTextField.getText().isEmpty() ||
+                startMonthTextField.getText() == null || startMonthTextField.getText().isEmpty() ||
+                endYearTextField.getText() == null || endYearTextField.getText().isEmpty() ||
+                endMonthTextField.getText() == null || endMonthTextField.getText().isEmpty())
+        {
+            Alerts.errorAlert(Finals.INVALID_INPUT_TITLE_TEXT, Finals.DATE_EMPTY_HEADER_TEXT, Finals.INVALID_INPUT_CONTENT_TEXT);
+            return false;
+        }
+
+
+        return true;
+    }
+
+    public void calculateInDatabaseForOne(String nrInv, LocalDate endDate, Connection c) throws SQLException
+    {
 
         try (PreparedStatement insertPstm = c.prepareStatement(Finals.INSERT_INTO_AMORTIZARE_SQL);
              PreparedStatement getNrOfAmortizatMonthsPstm = c.prepareStatement(Finals.NR_OF_AMORTIZAT_MONTHS_SQL);
-             PreparedStatement lastAmortizatMonthPstm = c.prepareStatement(Finals.LAST_AMORTIZATION_DATE_SQL);
-             PreparedStatement amortizareStartingdatePstm = c.prepareStatement(Finals.GET_AMORTIZATION_START_DATE_SQL);
+             PreparedStatement lastAmortizatMonthPstm = c.prepareStatement(Finals.LAST_AMORTIZATION_DATE_BY_NR_INV_SQL);
+             PreparedStatement amortizareStartingDatePstm = c.prepareStatement(Finals.GET_AMORTIZATION_START_DATE_SQL);
              Statement s = c.createStatement())
         {
 
@@ -180,6 +213,7 @@ public class AmortizareController {
 
             lastAmortizatMonthPstm.setString(1,nrInv);
             ResultSet lastAmDateRS = lastAmortizatMonthPstm.executeQuery();
+
             if (lastAmDateRS.next() && lastAmDateRS.getString("lastMonth") != null)    //if it was amortizat before
             {
                 lastAmortizatDate = LocalDate.parse(lastAmDateRS.getString("lastMonth"));     // I get the last mont that was amortizat
@@ -187,8 +221,8 @@ public class AmortizareController {
             }
             else    // if it wasnt amortizat yet, we set the inceputul amortizarii to start from
             {
-                amortizareStartingdatePstm.setString(1,nrInv);
-                ResultSet rs = amortizareStartingdatePstm.executeQuery();
+                amortizareStartingDatePstm.setString(1,nrInv);
+                ResultSet rs = amortizareStartingDatePstm.executeQuery();
 
                 rs.next();
                 lastAmortizatDate = LocalDate.parse(rs.getString("inceputulAmortizarii"));
@@ -227,7 +261,7 @@ public class AmortizareController {
         }
     }
 
-    public void calculareInDatabase(Connection c) throws SQLException {
+    public void calculareInDatabase(Connection c, LocalDate endDate) throws SQLException {
 
         try (PreparedStatement getMifixsPstm = c.prepareStatement(Finals.GET_ALL_OPERATIE_OF_MIFIX_SQL);
              Statement s = c.createStatement()) {
@@ -239,22 +273,150 @@ public class AmortizareController {
 
             while (rs.next())
             {
-                calculateInDatabaseForOne(rs.getString("nrInventar"), c);
+                calculateInDatabaseForOne(rs.getString("nrInventar"), endDate, c);
             }
         }
     }
 
-    public void recalculareInDatabase(Connection c) throws SQLException {
+    public void recalculareInDatabase(Connection c) throws SQLException
+    {
+        if (validateInputForCalculare())
+        {
+            try (Statement s = c.createStatement();
+                 Statement s2 = c.createStatement();
+                PreparedStatement setDiffsPstm = c.prepareStatement(Finals.SET_DIFF_BY_MFID_AND_MONTH_SQL))
+            {
+                s.executeUpdate(Finals.SET_QUOTES_SQL);
+                s.executeUpdate("use \"" + Main.getSocietateActuala() + "\";");
 
+                //.............................get the old differentes
+                LocalDate startDate = LocalDate.parse(startYearTextField.getText() + "-" + ((startMonthTextField.getText().length() < 2) ? "0" : "") + startMonthTextField.getText() + "-" +  "01");
+
+                String getOldDifSql = "Select mifixID, monthOfAmortizare, diferenta from amortizare " +
+                        "where monthOfAmortizare >= DATE('"+ startDate.toString() +"') ";
+
+                if (!pentruToateCheckBox.isSelected())
+                {
+                    getOldDifSql += "and mifixID = (select mifixID from mijlocFix where nrInventar = '" + nrInventarTextField.getText() + "')";
+                }
+
+                ResultSet oldDiffsRS = s2.executeQuery(getOldDifSql);
+
+                //.......................................get the latest date
+
+                ResultSet rs = s.executeQuery(Finals.LAST_AMORTIZATION_DATE_SQL);
+                rs.next();
+
+                LocalDate lastDate = LocalDate.parse(rs.getString("lastMonth"));
+
+                //........................................delete the old values
+
+                String deleteOldSql = "delete from amortizare " +
+                        "where monthOfAmortizare >= DATE('"+ startDate.toString() +"') ";
+
+                if (!pentruToateCheckBox.isSelected())
+                {
+                    getOldDifSql += "and mifixID = (select mifixID from mijlocFix where nrInventar = '" + nrInventarTextField.getText() + "')";
+                }
+
+                s.executeUpdate(deleteOldSql);
+
+                //....................set up the old differentes
+
+                while(oldDiffsRS.next())
+                {
+                    setDiffsPstm.setString(1, oldDiffsRS.getString("diferenta"));
+                    setDiffsPstm.setString(2, oldDiffsRS.getString("mifixID"));
+                    setDiffsPstm.setString(3, oldDiffsRS.getString("monthOfAmortizare"));
+
+                    setDiffsPstm.executeUpdate();
+                }
+
+                oldDiffsRS.close();
+                rs.close();
+
+            }
+        }
     }
 
-    public void stergereInDatabase(Connection c) throws SQLException {
+    public void incheiereInDB1Month(LocalDate month, Connection c) throws SQLException
+    {
+        try (PreparedStatement pstm = c.prepareStatement(Finals.INCHEIERE_1_MONTH_SQL))
+        {
+            if (!MySQLJDBCUtil.recordExists(Main.getSocietateActuala(), "incheiereMonth", "monthIncheiat", month.toString()))   //if alredyn incheiat, we dont bother
+            {
+                pstm.setString(1, month.toString());
+            }
+        }
+    }
 
+    public void incheiereInDB(LocalDate month, Connection c) throws SQLException
+    {
+
+        LocalDate startDate = LocalDate.parse(startYearTextField.getText() + "-" + ((startMonthTextField.getText().length() < 2) ? "0" : "") + startMonthTextField.getText() + "-" +  "01");
+        LocalDate endDate = LocalDate.parse(endYearTextField.getText() + "-" + ((endMonthTextField.getText().length() < 2) ? "0" : "") + endMonthTextField.getText() + "-" +  "01");
+
+        for (;!startDate.isAfter(endDate); startDate = startDate.plusMonths(1))   //loop ower the months to
+        {
+            incheiereInDB1Month(startDate, c);
+        }
+    }
+
+    public void deschidereInDB(Connection c) throws SQLException
+    {
+        LocalDate startDate = LocalDate.parse(startYearTextField.getText() + "-" + ((startMonthTextField.getText().length() < 2) ? "0" : "") + startMonthTextField.getText() + "-" +  "01");
+        LocalDate endDate = LocalDate.parse(endYearTextField.getText() + "-" + ((endMonthTextField.getText().length() < 2) ? "0" : "") + endMonthTextField.getText() + "-" +  "01");
+
+        try (PreparedStatement pstm = c.prepareStatement(Finals.DESCHIDERE_SQL))
+        {
+            pstm.setString(1,startDate.toString());
+            pstm.setString(2,endDate.toString());
+
+            pstm.executeUpdate();
+        }
     }
 
     public void initialize()
     {
-        endYearTextField.addEventFilter(KeyEvent.KEY_TYPED , Util.numeric_Validation(4));
-        endMonthTextField.addEventFilter(KeyEvent.KEY_TYPED , Util.numeric_Validation(2));
+        startYearTextField.addEventFilter(KeyEvent.KEY_TYPED , Util.numeric_Validation(4));
+        startMonthTextField.addEventFilter(KeyEvent.KEY_TYPED , Util.numeric_Validation(2));
+    }
+
+    public void actionSelected()
+    {
+        if (actionsController.selectareActionComboBox.getValue().toString().equals(Finals.CALCULARE_OP))
+        {
+            monthsTitleLable.setText(Finals.WHAT_MONTHS_MEAN_CALC);
+            intervalumLabel.setVisible(false);
+            //endMonthTextField.setVisible(false);
+            //endYearTextField.setVisible(false);
+            //pentruToateCheckBox.setSelected(false);
+            pentruToateCheckBox.setVisible(false);
+            nrInventarTextField.setVisible(false);
+            nrInventarLabel.setVisible(false);
+        }
+        else if (actionsController.selectareActionComboBox.getValue().toString().equals(Finals.RECALCULARE_OP))
+        {
+            monthsTitleLable.setText(Finals.WHAT_MONTHS_MEAN_RECALC);
+            intervalumLabel.setVisible(false);
+            //endMonthTextField.setVisible(false);
+            //endYearTextField.setVisible(false);
+            nrInventarTextField.setVisible(false);
+            nrInventarLabel.setVisible(false);
+            pentruToateCheckBox.setSelected(true);
+            pentruToateCheckBox.setVisible(true);
+        }
+        else if (actionsController.selectareActionComboBox.getValue().toString().equals(Finals.INCHEIERE_OP))
+        {
+            monthsTitleLable.setText(Finals.WHAT_MONTHS_MEAN_INCH);
+            intervalumLabel.setVisible(true);
+            endMonthTextField.setVisible(true);
+            endYearTextField.setVisible(true);
+            nrInventarLabel.setVisible(false);
+            nrInventarTextField.setVisible(false);
+            nrInventarLabel.setVisible(false);
+            pentruToateCheckBox.setSelected(true);
+            pentruToateCheckBox.setVisible(false);
+        }
     }
 }

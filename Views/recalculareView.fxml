@@ -38,7 +38,7 @@
                   </TextField>
                </children>
             </HBox>
-            <Label fx:id="monthsTitleLable" prefHeight="20.0" prefWidth="121.0" text="Amortizare până:">
+            <Label prefHeight="20.0" prefWidth="121.0" text="Recalculare de la:">
                <font>
                   <Font size="14.0" />
                </font>
@@ -48,24 +48,6 @@
             </Label>
             <HBox>
                <children>
-                  <TextField fx:id="startYearTextField" editable="true" onAction="#startYearTextFieldAction" prefHeight="26.0" prefWidth="81.0" promptText="An">
-                     <HBox.margin>
-                        <Insets bottom="5.0" left="3.0" right="3.0" top="5.0" />
-                     </HBox.margin>
-                  </TextField>
-                  <TextField fx:id="startMonthTextField" editable="true" onAction="#startMonthTextFieldAction" prefHeight="26.0" prefWidth="64.0" promptText="Luna">
-                     <HBox.margin>
-                        <Insets bottom="5.0" left="3.0" right="3.0" top="5.0" />
-                     </HBox.margin>
-                  </TextField>
-                  <Label fx:id="intervalumLabel" prefHeight="18.0" prefWidth="16.0" text="-">
-                     <font>
-                        <Font size="16.0" />
-                     </font>
-                     <HBox.margin>
-                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                     </HBox.margin>
-                  </Label>
                   <TextField fx:id="endYearTextField" editable="true" onAction="#endYearTextFieldAction" prefHeight="26.0" prefWidth="81.0" promptText="An">
                      <HBox.margin>
                         <Insets bottom="5.0" left="3.0" right="3.0" top="5.0" />

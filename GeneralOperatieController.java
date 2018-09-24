@@ -50,5 +50,10 @@ public class GeneralOperatieController extends OperationController {
     public void initialize()
     {
         initializeBase(sublayerHBox);
+
+        if (actionsController.getSelectedMifixData() != null)   //set nr inventar, if selected from table
+        {
+            getOperationBaseController().nrInventarTextField.setText(actionsController.getSelectedMifixData().getNrInventar());
+        }
     }
 }

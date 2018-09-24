@@ -157,6 +157,8 @@ public class OperationBaseController {
 
         vbc.getDiferentaTVATextField().setText("" + diferentaTVA);
 
+        vbc.getValoareTVATextField().setText("" + Util.round(valoareFaraTVA * TVA / 100, 2));
+
         return ret;
     }
 
