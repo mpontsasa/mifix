@@ -298,4 +298,43 @@ public class MySQLJDBCUtil {
 
         }
     }
+
+    public static LocalDate getEndOfAmortizare(String nrInv, LocalDate startingDate, int durataAmortizarii ,Connection c) throws SQLException
+    {
+
+        LocalDate endOfAmortizare = startingDate.plusMonths(durataAmortizarii * 12);
+        LocalDate endOfSuspenare = startingDate.plusMonths(0);  //end of tha last ended suspendae so far
+
+        try (PreparedStatement pstm = c.prepareStatement("Select startDate, endDate from suspendari where suspendareID = (select mifixID from mijlocFix where nrInventar = ?) order by startDate"))
+        {
+            pstm.setString(1, nrInv);
+            ResultSet rs = pstm.executeQuery();
+
+            while(rs.next())
+            {
+                LocalDate startDate = LocalDate.parse(rs.getString("startDate"));
+                LocalDate endDate = LocalDate.parse(rs.getString("endDate"));
+
+                if (endDate.isBefore(endOfSuspenare) || (endDate.getYear() == endOfSuspenare.getYear() && endDate.getMonth().equals(endOfSuspenare.getMonth()))) //if suspendare is completley inside the other suspendares, it doesnt do a thing
+                {
+                    continue;
+                }
+                else if (startDate.isAfter(endOfAmortizare) || (startDate.getYear() == endOfAmortizare.getYear() && startDate.getMonth().equals(endOfAmortizare.getMonth()))) //if suspendare is after the end of the amortizare, we re done (no more relevant amortizare)
+                {
+                    break;
+                }
+
+                if (startDate.isBefore(endOfSuspenare) || (startDate.getYear() == endOfSuspenare.getYear() && startDate.getMonth().equals(endOfSuspenare.getMonth()))) //if suspendari overlea, we have to adjust
+                {
+                    startDate = endDate.plusMonths(1);
+                }
+
+                endOfAmortizare = endDate;
+                endOfAmortizare = endOfAmortizare.plusMonths((endDate.getYear() - startDate.getYear()) * 12  + (endDate.getMonth().getValue() - startDate.getMonth().getValue()) + 1);
+
+            }
+        }
+
+        return endOfAmortizare;
+    }
 }

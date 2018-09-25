@@ -167,7 +167,7 @@ public class Finals {
     final static String AMORTIZAT_VALUE_UNTIL_SQL = "select sum(calculatedValue) as calcSum, sum(diferenta) as diffSum from amortizare " +
             "where mifixID = (select mifixID from mijlocFix where nrInventar = ?) and monthOfAmortizare < DATE(?);";
     final static String INSERT_INTO_AMORTIZARE_SQL = "insert into amortizare (mifixID, monthOfAmortizare, calculatedValue, diferenta) VALUES ((select mifixID from mijlocFix where nrInventar = ?),?,?,?);";
-    final static String GET_AMORTIZATION_START_DATE_SQL = "select inceputulAmortizarii from mijlocFix where nrInventar = ?;";
+    final static String GET_AMORTIZATION_START_DATE_SQL = "select inceputulAmortizarii, durataAmortizarii from mijlocFix where nrInventar = ?;";
     final static String NR_OF_AMORTIZAT_MONTHS_SQL = "select count(amortizareID) as monthCount, mijlocFix.durataAmortizarii\n" +
             "\tfrom mijlocFix left join amortizare on amortizare.mifixID = mijlocFix.mifixID \n" +
             "\tgroup by mijlocFix.nrInventar having mijlocFix.nrInventar = ?;";

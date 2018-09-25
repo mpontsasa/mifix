@@ -83,8 +83,9 @@ public class AmortizareController {
 
                     if (!pentruToateCheckBox.isSelected())
                     {
-                        LocalDate endDate = LocalDate.parse(startYearTextField.getText() + "-" + ((startMonthTextField.getText().length() < 2) ? "0" : "") + startMonthTextField.getText() + "-" +  "01");
-                        calculateInDatabaseForOne(nrInventarTextField.getText(), endDate, c);
+                        LocalDate startDate = LocalDate.parse(startYearTextField.getText() + "-" + ((startMonthTextField.getText().length() < 2) ? "0" : "") + startMonthTextField.getText() + "-" +  "01");
+                        LocalDate endDate = LocalDate.parse(endYearTextField.getText() + "-" + ((endMonthTextField.getText().length() < 2) ? "0" : "") + endMonthTextField.getText() + "-" +  "01");
+                        calculateInDatabaseForOne(nrInventarTextField.getText(), startDate, endDate, c);
                     }
                     else
                     {
@@ -196,39 +197,106 @@ public class AmortizareController {
         return true;
     }
 
-    public void calculateInDatabaseForOne(String nrInv, LocalDate endDate, Connection c) throws SQLException
+    public void calculateInDatabaseForOne(String nrInv, LocalDate startDate, LocalDate endDate, Connection c) throws SQLException
     {
 
         try (PreparedStatement insertPstm = c.prepareStatement(Finals.INSERT_INTO_AMORTIZARE_SQL);
              PreparedStatement getNrOfAmortizatMonthsPstm = c.prepareStatement(Finals.NR_OF_AMORTIZAT_MONTHS_SQL);
-             PreparedStatement lastAmortizatMonthPstm = c.prepareStatement(Finals.LAST_AMORTIZATION_DATE_BY_NR_INV_SQL);
              PreparedStatement amortizareStartingDatePstm = c.prepareStatement(Finals.GET_AMORTIZATION_START_DATE_SQL);
+             PreparedStatement suspendariPstm = c.prepareStatement("Select from suspendari startDate, endDate where mifixID = (select mifixID from mijlocFix where nrInventar = ?) order by startDate;");
+             PreparedStatement operatiiPstm = c.prepareStatement(Finals.GET_ALL_OPERATIE_OF_MIFIX_SQL);
              Statement s = c.createStatement())
         {
 
             s.executeUpdate(Finals.SET_QUOTES_SQL);
             s.executeUpdate("use \"" + Main.getSocietateActuala() + "\";");
 
-            LocalDate lastAmortizatDate;
 
-            lastAmortizatMonthPstm.setString(1,nrInv);
-            ResultSet lastAmDateRS = lastAmortizatMonthPstm.executeQuery();
+            //.........................get inceputul amortizarii
+            LocalDate inceputulAmotizariiDate;
 
-            if (lastAmDateRS.next() && lastAmDateRS.getString("lastMonth") != null)    //if it was amortizat before
+
+            amortizareStartingDatePstm.setString(1,nrInv);
+            ResultSet amortizareStartRS = amortizareStartingDatePstm.executeQuery();
+            amortizareStartRS.next();
+            inceputulAmotizariiDate = LocalDate.parse(amortizareStartRS.getString("inceputulAmortizarii"));
+
+            int durata = amortizareStartRS.getInt("durataAmortizarii");
+            //........................get end of amoertizare
+            LocalDate endOfAmortizationDate = MySQLJDBCUtil.getEndOfAmortizare(nrInv, LocalDate.parse(amortizareStartRS.getString("inceputulAmortizarii")), amortizareStartRS.getInt("durataAmortizarii"), c);
+
+            //...........................set start of amortizacie
+
+            LocalDate dateOfAmort;
+
+            if (inceputulAmotizariiDate.isAfter(startDate))
             {
-                lastAmortizatDate = LocalDate.parse(lastAmDateRS.getString("lastMonth"));     // I get the last mont that was amortizat
-                lastAmortizatDate = lastAmortizatDate.plusMonths(1);
+                dateOfAmort = LocalDate.parse(inceputulAmotizariiDate.toString());
             }
-            else    // if it wasnt amortizat yet, we set the inceputul amortizarii to start from
+            else
             {
-                amortizareStartingDatePstm.setString(1,nrInv);
-                ResultSet rs = amortizareStartingDatePstm.executeQuery();
-
-                rs.next();
-                lastAmortizatDate = LocalDate.parse(rs.getString("inceputulAmortizarii"));
+                dateOfAmort = LocalDate.parse(startDate.toString());
             }
 
-            for (LocalDate dateOfAmort = LocalDate.parse(lastAmortizatDate.toString());!dateOfAmort.isAfter(endDate); dateOfAmort = dateOfAmort.plusMonths(1))   //loop ower the months to amirtiza with dateOfAmort
+            //...............................get amortizari
+
+            suspendariPstm.setString(1,nrInv);
+            ResultSet suspendariRs = suspendariPstm.executeQuery();
+
+            operatiiPstm.setString(1, nrInv);
+            ResultSet operatiiRS = operatiiPstm.executeQuery();
+
+            float[] amortValueAfter = new float[operatiiRS.getMetaData().getColumnCount()];
+            amortValueAfter[0] = 0;
+
+
+            int operatieIndex = 0;  //first operations index is 1. in 0 index value is 0 (before the first operation, amortization is 0)
+
+            while (operatiiRS.next())
+            {
+                suspendariRs.beforeFirst();
+
+                LocalDate operatieDate = LocalDate.parse(operatiiRS.getString("dataOperatiei"));
+
+                if (!operatieDate.isBefore(endDate))  //if the operation date is not before the end date, its not relevant for this amort
+                {
+                    break;
+                }
+
+                int suspendatMonths = 0;
+
+                while(suspendariRs.next())
+                {
+                    LocalDate suspEnd = LocalDate.parse(suspendariRs.getString("endDate"));
+                    LocalDate suspStart = LocalDate.parse(suspendariRs.getString("startDate"));
+
+                    if (suspEnd.isBefore(operatieDate) || (operatieDate.getYear() == suspEnd.getYear() && operatieDate.getMonth().getValue() == suspEnd.getMonth().getValue())) // if suspendare ends before the month after operatie
+                    {
+                        suspendatMonths += suspEnd.getYear() - suspStart.getYear() * 12 + (suspEnd.getMonth().getValue() - suspStart.getMonth().getValue() + 1);
+                    }
+                    else if (suspStart.isBefore(operatieDate) || (operatieDate.getYear() == suspStart.getYear() && operatieDate.getMonth().getValue() == suspStart.getMonth().getValue()))
+                    {
+                        suspendatMonths += operatieDate.getYear() - suspEnd.getYear() * 12 + (operatieDate.getMonth().getValue() - suspEnd.getMonth().getValue() + 1);
+                    }
+                    else
+                    {
+                        break;  // if suspendare starts after the month of the operation, we finished the operation
+                    }
+
+                }
+
+                //
+                ide meg jon az, hogy ha reevaluare
+                //
+
+
+                amortValueAfter[operatieIndex] = amortValueAfter[operatieIndex - 1] + operatiiRS.getFloat("valoareFaraTVASum")/(durata + suspendatMonths);
+                operatieIndex ++;
+            }
+
+            //................................get the value of
+
+            for (;!dateOfAmort.isAfter(endDate) && !dateOfAmort.isAfter(endOfAmortizationDate); dateOfAmort = dateOfAmort.plusMonths(1))   //loop ower the months to amirtiza with dateOfAmort
             {
                 if (!MySQLJDBCUtil.isSuspended(nrInv, dateOfAmort, c)) //if not suspended
                 {
