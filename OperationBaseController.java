@@ -146,6 +146,10 @@ public class OperationBaseController {
     public boolean addValueBar(float valoareFaraTVA, int TVAIndex, int TVA, float diferentaTVA)
     {
         boolean ret = addEmptyValueBar();
+
+        if (!ret)
+            return false;
+
         ValueBarController vbc = valueBarControllers.get(valueBarControllers.size() - 1);
 
         vbc.getValoareFaraTVATextField().setText("" + valoareFaraTVA);
@@ -165,7 +169,10 @@ public class OperationBaseController {
     public void removeAllValueBars()
     {
         for (int i = 1; i < valueInputVBox.getChildren().size(); i++)   // We must not remoove the + button at index 0
+        {
+            valueBarControllers.remove(i - 1);
             valueInputVBox.getChildren().remove(i);
+        }
     }
 
     public VBox getValueInputVBox() {

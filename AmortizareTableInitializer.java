@@ -152,10 +152,10 @@ public class AmortizareTableInitializer {
 
         if (end != null)
         {
-            sqlQuery += "and monthOfAmortizare <= '" + end.toString() + "';";
+            sqlQuery += "and monthOfAmortizare <= '" + end.toString() + "' ";
         }
 
-
+        sqlQuery += " order by nrInventar, monthOfAmortizare;";
 
         System.out.println(sqlQuery);
         ResultSet rs = st.executeQuery(sqlQuery);

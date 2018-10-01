@@ -38,6 +38,7 @@ public class Finals {
     final static String CALCULARE_OP = "Calculare";
     final static String RECALCULARE_OP = "Recalculare";
     final static String INCHEIERE_OP = "Incheiere";
+    final static String DESCHIDERE_OP = "Deschidere";
 
 //..................................non numeric TVA procentage
 
@@ -117,9 +118,10 @@ public class Finals {
 
     final static String START_DATE_AFTER_END_HEADER = "Date of start cant be befor end date";
 
-    final static String WHAT_MONTHS_MEAN_CALC = "Amortizare până:";
-    final static String WHAT_MONTHS_MEAN_RECALC = "Recalculă de la:";
+    final static String WHAT_MONTHS_MEAN_CALC = "Calculare până:";
+    final static String WHAT_MONTHS_MEAN_RECALC = "Recalculare între:";
     final static String WHAT_MONTHS_MEAN_INCH = "Încheiere între:";
+    final static String WHAT_MONTHS_MEAN_DESC = "Deschidere între:";
 
 //.....................................SQL commands
 
@@ -161,9 +163,11 @@ public class Finals {
     final static String NOT_CALCULATED_IN_A_MONTH_SQL = "select mifixID from mijlocFix where mifixID NOT IN (select mifixID from amortizare where monthOfAmortizare = ?);";
     final static String REEVALUARE_VALUE_SQL = "select newValue from reevaluari where operatieID = ?;";
     final static String IS_SUSPENDED_SQL = "select suspendareID from suspendari " +
-            "where mifixID = (select mifixID from mijlocFix where nrInventar = ?) and DATE(?) between startDate and endDate;";
+            "where mifixID = (select mifixID from mijlocFix where nrInventar = ?) and " +
+            "(YEAR(startDate) < YEAR(?) or (YEAR(startDate) = YEAR(?) and MONTH(startDate) <= MONTH(?))) and " +
+            "(YEAR(endDate) > YEAR(?) or (YEAR(endDate) = YEAR(?) and MONTH(endDate) >= MONTH(?)));"; //1 = nrInv, 2-3-4-5-6 = Data;
     final static String IS_AMORTIZAT_SQL = "select amortizareID from amortizare " +
-            "where mifixID = (select mifixID from mijlocFix where nrInventar = ?) and monthOfAmortizare.MONTH() = Date(?).MONTH() and monthOfAmortizare.YEAR() = Date(?).YEAR();";
+            "where mifixID = (select mifixID from mijlocFix where nrInventar = ?) and MONTH(monthOfAmortizare) = MONTH(?) and YEAR(monthOfAmortizare) = YEAR(?);";
     final static String AMORTIZAT_VALUE_UNTIL_SQL = "select sum(calculatedValue) as calcSum, sum(diferenta) as diffSum from amortizare " +
             "where mifixID = (select mifixID from mijlocFix where nrInventar = ?) and monthOfAmortizare < DATE(?);";
     final static String INSERT_INTO_AMORTIZARE_SQL = "insert into amortizare (mifixID, monthOfAmortizare, calculatedValue, diferenta) VALUES ((select mifixID from mijlocFix where nrInventar = ?),?,?,?);";

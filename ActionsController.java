@@ -187,7 +187,8 @@ public class ActionsController {
             selectareActionComboBox.getItems().addAll(
                     Finals.CALCULARE_OP,
                     Finals.RECALCULARE_OP,
-                    Finals.INCHEIERE_OP);
+                    Finals.INCHEIERE_OP,
+                    Finals.DESCHIDERE_OP);
             selectareActionComboBox.setValue(Finals.CALCULARE_OP);
 
         }
@@ -332,6 +333,10 @@ public class ActionsController {
                 {
                     TableDisplayer td = AmortizareTableInitializer.initializeTable(selectedNrInventarTextBox.getText(), vizualizareOperatiiStartDatePicker.getValue(), vizualizareOperatiiEndDatePicker.getValue());
                 }
+                else if (vizualizareOptionsComboBox.getValue() == Finals.INCHEIERE_OP)
+                {
+                    TableDisplayer td = AmortizareTableInitializer.initializeTable(selectedNrInventarTextBox.getText(), vizualizareOperatiiStartDatePicker.getValue(), vizualizareOperatiiEndDatePicker.getValue());
+                }
             }
         }
         catch (SQLException e)
@@ -422,7 +427,8 @@ public class ActionsController {
         vizualizareOptionsComboBox.getItems().addAll(
                 Finals.OPERATIUNI_VIZ_OP,
                 Finals.SUSPENDARI_VIZ_OP,
-                Finals.AMORTIZARE_VIZ_OP
+                Finals.AMORTIZARE_VIZ_OP,
+                Finals.INCHEIERE_OP
         );
 
         vizualizareOptionsComboBox.setValue(Finals.OPERATIUNI_VIZ_OP);

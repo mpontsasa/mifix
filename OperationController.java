@@ -76,6 +76,7 @@ public class OperationController {
                                                     rs.getFloat("diferentaTVA"));
             }
 
+            rs.close();
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
         }
@@ -248,8 +249,9 @@ public class OperationController {
             pstmtUpdate.executeUpdate();
 
             pstmtDeleteValues.setInt(1, actionsController.getSelectedOperatieData().getOperatieID());
+
+            System.out.println(pstmtDeleteValues.toString());
             pstmtDeleteValues.executeUpdate();
-            System.out.println(pstmtUpdate.toString());
 
             ///.................... insert values
 
