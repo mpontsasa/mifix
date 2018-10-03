@@ -33,16 +33,7 @@ public class Util {
 
     public static String noSpace(String input)
     {
-        String[] words = input.split(" ");
-
-        String res = "";
-
-        for (String word : words)
-        {
-            res += word;
-        }
-
-        return res;
+        return input.replace(" ", "");
     }
 
     public static double round(double value, int scale) {

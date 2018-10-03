@@ -70,6 +70,10 @@ public class Finals {
     final static String INVALID_INPUT_TITLE_TEXT = "Intrare greșită!"; // invalid input
     final static String INVALID_INPUT_CONTENT_TEXT = "Fără corectarea celulelor greșite, datele introduse se vor pierde!";//fix this
 
+    final static String MONTH_INCHEIAT_TITLE = "Luna încheiată";//fix this
+    final static String MONTH_INCHEIAT_HEADER = "Operția nu poate fie executat în luna încheiată";//fix this
+    final static String MONTH_INCHEIAT_CONTENT = "Deschideți luna pentru executarea operației!";//fix this
+
     //.......................creare mijloc fix
 
     final static String NR_INVENTAR_EXISTS_HEADER_TEXT = "Nr.inventar există!";
@@ -181,6 +185,9 @@ public class Finals {
 
     final static String INCHEIERE_1_MONTH_SQL = "insert into incheiereMonth (monthIncheiat) VALUES (?);";
     final static String DESCHIDERE_SQL = "delete from incheiereMonth where monthIncheiat between DATE(?) and DATE(?);";
+
+
+    final static String CHECK_IF_INCHEIAT = "SELECT monthIncheiat from incheiereMonth where monthIncheiat = ?;";
 
     //..........databaseParser
 

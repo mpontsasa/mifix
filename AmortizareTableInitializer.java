@@ -1,12 +1,13 @@
 import javafx.beans.property.SimpleFloatProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.event.EventHandler;
+import javafx.scene.control.Alert;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.util.converter.FloatStringConverter;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
@@ -15,9 +16,9 @@ public class AmortizareTableInitializer {
 
     public static TableDisplayer initializeTable(String nrInv, LocalDate start, LocalDate end) throws SQLException
     {
-
         OperatiuniTableDisplayer<AmortizareData> td = new OperatiuniTableDisplayer<>(nrInv, start, end);
         tds.add(td);
+
 
         setData(td, nrInv, start, end);
 
@@ -26,6 +27,8 @@ public class AmortizareTableInitializer {
         td.getTable().setPrefHeight(600);
         td.getTable().setPrefWidth(650);
         td.placeAndSize();
+
+
 
         String title = "Amortizari ";
 
@@ -51,9 +54,9 @@ public class AmortizareTableInitializer {
             td.getLabel().setText(title);
         }
 
-        td.getStage().setOnCloseRequest(event -> {
-            tds.remove(td);
-        });
+        td.getTable().setEditable(true);
+
+        td.getStage().setOnCloseRequest(event -> tds.remove(td));
 
 
         if (nrInv == null || nrInv.isEmpty())
@@ -61,7 +64,7 @@ public class AmortizareTableInitializer {
             TableColumn nrInventar = new TableColumn("Nr. Inventar");
             nrInventar.setMinWidth(100);
             nrInventar.setCellValueFactory(
-                    new PropertyValueFactory<MijlocFixTableInitializer.MijlocFixData, String>("nrInventar"));
+                    new PropertyValueFactory<AmortizareData, String>("nrInventar"));
 
             td.getTable().getColumns().add(nrInventar);
         }
@@ -72,18 +75,80 @@ public class AmortizareTableInitializer {
                 new PropertyValueFactory<AmortizareData, String>("date"));
 
 
-        TableColumn valoareaAmortizari = new TableColumn("Valoarea amortizării");
-        valoareaAmortizari.setMinWidth(32);
-        valoareaAmortizari.setCellValueFactory(
-                new PropertyValueFactory<AmortizareData, String>("valoareAmortizari"));
+        TableColumn valoareaCalculata = new TableColumn("Valoarea calculata");
+        valoareaCalculata.setMinWidth(150);
+        valoareaCalculata.setCellValueFactory(
+                new PropertyValueFactory<AmortizareData, String>("valoareCalculata"));
 
         TableColumn diferenta = new TableColumn("Diferență");
         diferenta.setMinWidth(32);
         diferenta.setCellValueFactory(
                 new PropertyValueFactory<AmortizareData, String>("diferenta"));
 
+        diferenta.setCellFactory(TextFieldTableCell.forTableColumn(new MyFloatStringConverter()));
 
-        td.getTable().getColumns().addAll(date, valoareaAmortizari, diferenta);
+        diferenta.setOnEditCommit(
+                new EventHandler<TableColumn.CellEditEvent<AmortizareData, Float>>() {
+                    @Override
+                    public void handle(TableColumn.CellEditEvent<AmortizareData, Float> t) {
+
+                        ((AmortizareData) t.getTableView().getItems().get(
+                                t.getTablePosition().getRow())
+                        ).setDiferenta(t.getNewValue());
+
+                        try(Connection c = MySQLJDBCUtil.getConnection();
+                            PreparedStatement checkIfIncheiat = c.prepareStatement(Finals.CHECK_IF_INCHEIAT);
+                            PreparedStatement updatePstm = c.prepareStatement("update amortizare set diferenta = ? where amortizareID = ?;");
+                            Statement s = c.createStatement())
+                        {
+                            s.executeUpdate(Finals.SET_QUOTES_SQL);
+                            s.executeUpdate("use \"" + Main.getSocietateActuala() + "\";");
+
+                            checkIfIncheiat.setString(1, ((AmortizareData) t.getTableView().getItems().get(t.getTablePosition().getRow())).getDate());
+                            ResultSet rs =  checkIfIncheiat.executeQuery();
+
+                            if (rs.next())
+                            {
+                                updatePstm.setFloat(1, t.getNewValue());
+                                updatePstm.setFloat(2, ((AmortizareData) t.getTableView().getItems().get(t.getTablePosition().getRow())).getAmortizareID());
+
+                                updatePstm.executeUpdate();
+                            }
+                            else
+                            {
+                                Alerts.errorAlert(Finals.MONTH_INCHEIAT_TITLE, Finals.MONTH_INCHEIAT_HEADER, Finals.MONTH_INCHEIAT_CONTENT);
+                            }
+                        }
+                        catch (SQLException e)
+                        {
+                            e.printStackTrace();
+                        }
+
+                    }
+                }
+        );
+
+        /*diferenta.setEditable(true);
+        diferenta.setOnEditCommit(
+                new EventHandler<TableColumn.CellEditEvent<AmortizareData, String>>() {
+                    @Override
+                    public void handle(TableColumn.CellEditEvent<AmortizareData, String> t) {
+                        ((AmortizareData) t.getTableView().getItems().get(
+                                t.getTablePosition().getRow())
+                        ).setDiferenta(Float.parseFloat(t.getNewValue()));
+
+                        System.out.println("Yeeee");
+
+                    }
+                }
+        );*/
+
+        TableColumn valoareAmortizare= new TableColumn("Valoare amortizare");
+        valoareAmortizare.setMinWidth(150);
+        valoareAmortizare.setCellValueFactory(
+                new PropertyValueFactory<AmortizareData, String>("valoareAmortizare"));
+
+        td.getTable().getColumns().addAll(date, valoareaCalculata, diferenta, valoareAmortizare);
 
         td.show();
 
@@ -167,7 +232,9 @@ public class AmortizareTableInitializer {
                     rs.getString("nrInventar"),
                     rs.getString("monthOfAmortizare"),
                     rs.getFloat("calculatedValue"),
-                    rs.getFloat("diferenta"))
+                    rs.getFloat("diferenta"),
+                    rs.getFloat("calculatedValue") + rs.getFloat("diferenta")
+                    )
             );
         }
 
@@ -177,11 +244,13 @@ public class AmortizareTableInitializer {
     }
 
     public static class AmortizareData {
+
         private int amortizareID;
         private final SimpleStringProperty nrInventar;
         private final SimpleStringProperty date;
-        private final SimpleFloatProperty valoareAmortizari;
+        private final SimpleFloatProperty valoareCalculata;
         private final SimpleFloatProperty diferenta;
+        private final SimpleFloatProperty valoareAmortizare;
 
         public String getProperty(int index) {
             switch(index)
@@ -191,20 +260,23 @@ public class AmortizareTableInitializer {
                 case 1:
                     return getDate();
                 case 2:
-                    return ""+getValoareAmortizari();
+                    return "" + getValoareCalculata();
                 case 3:
-                    return ""+getDiferenta();
+                    return "" + getDiferenta();
+                case 4:
+                    return  "" + getValoareAmortizare();
             }
 
             return null;
         }
 
-        public AmortizareData(int amortizareID, String nrInventar, String date, Float valoareAmortizari, Float diferenta) {
+        public AmortizareData(int amortizareID, String nrInventar, String date, Float valoareCalculata, Float diferenta, Float valoareAmortizare) {
             this.amortizareID = amortizareID;
             this.nrInventar = new SimpleStringProperty(nrInventar);
             this.date = new SimpleStringProperty(date);
-            this.valoareAmortizari = new SimpleFloatProperty(valoareAmortizari);
+            this.valoareCalculata = new SimpleFloatProperty(valoareCalculata);
             this.diferenta = new SimpleFloatProperty(diferenta);
+            this.valoareAmortizare = new SimpleFloatProperty(valoareAmortizare);
         }
 
         public int getAmortizareID() {
@@ -239,16 +311,16 @@ public class AmortizareTableInitializer {
             this.date.set(date);
         }
 
-        public float getValoareAmortizari() {
-            return valoareAmortizari.get();
+        public float getValoareCalculata() {
+            return valoareCalculata.get();
         }
 
-        public SimpleFloatProperty valoareAmortizariProperty() {
-            return valoareAmortizari;
+        public SimpleFloatProperty valoareCalculataProperty() {
+            return valoareCalculata;
         }
 
-        public void setValoareAmortizari(float valoareAmortizari) {
-            this.valoareAmortizari.set(valoareAmortizari);
+        public void setValoareCalculata(float valoareCalculata) {
+            this.valoareCalculata.set(valoareCalculata);
         }
 
         public float getDiferenta() {
@@ -262,6 +334,18 @@ public class AmortizareTableInitializer {
         public void setDiferenta(float diferenta) {
             this.diferenta.set(diferenta);
         }
+
+        public float getValoareAmortizare() {
+            return valoareAmortizare.get();
+        }
+
+        public SimpleFloatProperty valoareAmortizareProperty() {
+            return valoareAmortizare;
+        }
+
+        public void setValoareAmortizare(float valoareAmortizare) {
+            this.valoareAmortizare.set(valoareAmortizare);
+        }
     }
 
     public static ArrayList<OperatiuniTableDisplayer<AmortizareData>> getTds() {
@@ -272,7 +356,7 @@ public class AmortizareTableInitializer {
     {
         for (OperatiuniTableDisplayer<AmortizareData> td : tds)
         {
-            if (td.getNrInventar().equals(nrInv) || td.getNrInventar() == null || td.getNrInventar().isEmpty())
+            if (nrInv == null || nrInv.isEmpty() || td.getNrInventar().equals(nrInv) || td.getNrInventar() == null || td.getNrInventar().isEmpty())
             {
                 td.getData().clear();
                 setData(td, nrInv, td.getStart(), td.getEnd());

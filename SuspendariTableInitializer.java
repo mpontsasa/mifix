@@ -60,7 +60,7 @@ public class SuspendariTableInitializer {
             TableColumn nrInventar = new TableColumn("Nr. Inventar");
             nrInventar.setMinWidth(100);
             nrInventar.setCellValueFactory(
-                    new PropertyValueFactory<MijlocFixTableInitializer.MijlocFixData, String>("nrInventar"));
+                    new PropertyValueFactory<SuspendareData, String>("nrInventar"));
 
             td.getTable().getColumns().add(nrInventar);
         }

@@ -7,10 +7,7 @@ import javafx.collections.transformation.SortedList;
 import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -55,9 +52,8 @@ public class TableDisplayer<T> {
         stage.setWidth(450);
         stage.setHeight(500);
 
-        table.setEditable(false);
+        table.setEditable(true);
 
-        //table.setItems(data);
 
         final VBox vbox = new VBox();
         vbox.setSpacing(5);
@@ -65,6 +61,7 @@ public class TableDisplayer<T> {
         vbox.getChildren().addAll(label, searchFields, table);
 
         ((Group) scene.getRoot()).getChildren().addAll(vbox);
+
         stage.setScene(scene);
     }
 

@@ -1,11 +1,14 @@
 
 import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -68,6 +71,22 @@ public class Main extends Application {
             e.printStackTrace();
             Alerts.exceptionAlert(e);
         }
+
+
+        globalPrimaryStage.setOnHiding(new EventHandler<WindowEvent>() {
+
+            @Override
+            public void handle(WindowEvent event) {
+                Platform.runLater(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        System.exit(0);
+                    }
+                });
+            }
+        });
+
         globalPrimaryStage.show();
 
     }

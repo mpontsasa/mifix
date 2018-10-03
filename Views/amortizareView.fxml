@@ -78,6 +78,14 @@
                   </TextField>
                </children>
             </HBox>
+            <CheckBox fx:id="cuRecalculareCheckBox" mnemonicParsing="false" text="Cu recalculare" visible="false">
+               <font>
+                  <Font size="14.0" />
+               </font>
+               <VBox.margin>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </VBox.margin>
+            </CheckBox>
             <Button fx:id="executareButton" mnemonicParsing="false" onAction="#executareButtonAction" text="Executare">
                <VBox.margin>
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />

@@ -283,8 +283,6 @@ public class ActionsController {
     @FXML
     public void vizualizareOperatiuniButtonAction()
     {
-
-
         try
         {
             if( selectedNrInventarTextBox.getText() != null && !selectedNrInventarTextBox.getText().isEmpty() &&    //if its empty, I can still vizualize for all mifix!!

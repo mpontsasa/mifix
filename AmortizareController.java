@@ -37,6 +37,9 @@ public class AmortizareController {
     Label intervalumLabel;
 
     @FXML
+    CheckBox cuRecalculareCheckBox;
+
+    @FXML
     Button executareButton;
 
     @FXML
@@ -97,7 +100,7 @@ public class AmortizareController {
                     s.execute(Finals.COMMIT_TRANSACTION);
                     s.close();
                     c.close();
-
+                    AmortizareTableInitializer.reload(null);
                     //SuspendariTableInitializer.reload(nrInventarTextField.getText());
                     Alerts.informationAlert(Finals.SUCCESSFUL_OPERATION_TITLE_TEXT, Finals.SUCCESSFUL_OPERATION_HEADER_TEXT, Finals.SUCCESSFUL_OPERATION_CONTENT_TEXT);
                 }
@@ -117,7 +120,7 @@ public class AmortizareController {
                     s.execute(Finals.COMMIT_TRANSACTION);
                     s.close();
                     c.close();
-
+                    AmortizareTableInitializer.reload(null);
                     //SuspendariTableInitializer.reload(nrInventarTextField.getText());
                     Alerts.informationAlert(Finals.SUCCESSFUL_OPERATION_TITLE_TEXT, Finals.SUCCESSFUL_OPERATION_HEADER_TEXT, Finals.SUCCESSFUL_OPERATION_CONTENT_TEXT);
                 }
@@ -129,6 +132,13 @@ public class AmortizareController {
                     Statement s = c.createStatement();
                     s.execute(Finals.START_TRANSACTION);
 
+                    if (cuRecalculareCheckBox.isSelected())
+                    {
+                        LocalDate startDate = LocalDate.parse(startYearTextField.getText() + "-" + ((startMonthTextField.getText().length() < 2) ? "0" : "") + startMonthTextField.getText() + "-" +  "01");
+                        LocalDate endDate = LocalDate.parse(endYearTextField.getText() + "-" + ((endMonthTextField.getText().length() < 2) ? "0" : "") + endMonthTextField.getText() + "-" +  "01");
+
+                        recalculareInDatabase(c, startDate, endDate);
+                    }
                     incheiereInDB(c);
 
                     s.execute(Finals.COMMIT_TRANSACTION);
@@ -522,6 +532,7 @@ public class AmortizareController {
             pentruToateCheckBox.setVisible(false);
             nrInventarTextField.setVisible(false);
             nrInventarLabel.setVisible(false);
+            cuRecalculareCheckBox.setVisible(false);
         }
         else if (actionsController.selectareActionComboBox.getValue().toString().equals(Finals.RECALCULARE_OP))
         {
@@ -533,6 +544,7 @@ public class AmortizareController {
             nrInventarLabel.setVisible(false);
             pentruToateCheckBox.setSelected(true);
             pentruToateCheckBox.setVisible(true);
+            cuRecalculareCheckBox.setVisible(false);
         }
         else if (actionsController.selectareActionComboBox.getValue().toString().equals(Finals.INCHEIERE_OP))
         {
@@ -545,6 +557,8 @@ public class AmortizareController {
             nrInventarLabel.setVisible(false);
             pentruToateCheckBox.setSelected(true);
             pentruToateCheckBox.setVisible(false);
+            cuRecalculareCheckBox.setVisible(true);
+            cuRecalculareCheckBox.setSelected(false);
         }
         else if (actionsController.selectareActionComboBox.getValue().toString().equals(Finals.DESCHIDERE_OP))
         {
@@ -557,6 +571,7 @@ public class AmortizareController {
             nrInventarLabel.setVisible(false);
             pentruToateCheckBox.setSelected(true);
             pentruToateCheckBox.setVisible(false);
+            cuRecalculareCheckBox.setVisible(false);
         }
     }
 }
