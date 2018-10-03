@@ -246,10 +246,10 @@ public class SuspendariTableInitializer {
     {
         for (OperatiuniTableDisplayer<SuspendareData> td : tds)
         {
-            if (td.getNrInventar().equals(nrInv) || td.getNrInventar() == null || td.getNrInventar().isEmpty())
+            if (nrInv == null || nrInv.isEmpty() || td.getNrInventar() == null || td.getNrInventar().isEmpty() || td.getNrInventar().equals(nrInv))
             {
                 td.getData().clear();
-                setData(td, nrInv, td.getStart(), td.getEnd());
+                setData(td, td.getNrInventar(), td.getStart(), td.getEnd());
             }
         }
     }

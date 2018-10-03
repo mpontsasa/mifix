@@ -105,9 +105,10 @@ public class AmortizareTableInitializer {
                             s.executeUpdate("use \"" + Main.getSocietateActuala() + "\";");
 
                             checkIfIncheiat.setString(1, ((AmortizareData) t.getTableView().getItems().get(t.getTablePosition().getRow())).getDate());
+                            System.out.println(checkIfIncheiat);
                             ResultSet rs =  checkIfIncheiat.executeQuery();
 
-                            if (rs.next())
+                            if (!rs.next() || rs.getString("monthIncheiat") == null)    //if not incheiat
                             {
                                 updatePstm.setFloat(1, t.getNewValue());
                                 updatePstm.setFloat(2, ((AmortizareData) t.getTableView().getItems().get(t.getTablePosition().getRow())).getAmortizareID());
@@ -118,6 +119,8 @@ public class AmortizareTableInitializer {
                             {
                                 Alerts.errorAlert(Finals.MONTH_INCHEIAT_TITLE, Finals.MONTH_INCHEIAT_HEADER, Finals.MONTH_INCHEIAT_CONTENT);
                             }
+
+                            reload(td.getNrInventar());
                         }
                         catch (SQLException e)
                         {
@@ -356,10 +359,10 @@ public class AmortizareTableInitializer {
     {
         for (OperatiuniTableDisplayer<AmortizareData> td : tds)
         {
-            if (nrInv == null || nrInv.isEmpty() || td.getNrInventar().equals(nrInv) || td.getNrInventar() == null || td.getNrInventar().isEmpty())
+            if (nrInv == null || nrInv.isEmpty() || td.getNrInventar() == null || td.getNrInventar().isEmpty() || td.getNrInventar().equals(nrInv))
             {
                 td.getData().clear();
-                setData(td, nrInv, td.getStart(), td.getEnd());
+                setData(td, td.getNrInventar(), td.getStart(), td.getEnd());
             }
         }
     }

@@ -333,7 +333,7 @@ public class ActionsController {
                 }
                 else if (vizualizareOptionsComboBox.getValue() == Finals.INCHEIERE_OP)
                 {
-                    TableDisplayer td = AmortizareTableInitializer.initializeTable(selectedNrInventarTextBox.getText(), vizualizareOperatiiStartDatePicker.getValue(), vizualizareOperatiiEndDatePicker.getValue());
+                    TableDisplayer td = IncheiereTableInitializer.initializeTable(selectedNrInventarTextBox.getText(), vizualizareOperatiiStartDatePicker.getValue(), vizualizareOperatiiEndDatePicker.getValue());
                 }
             }
         }

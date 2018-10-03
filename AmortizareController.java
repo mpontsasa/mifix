@@ -145,6 +145,7 @@ public class AmortizareController {
                     s.close();
                     c.close();
 
+                    IncheiereTableInitializer.reload();
                     //SuspendariTableInitializer.reload(nrInventarTextField.getText());
                     Alerts.informationAlert(Finals.SUCCESSFUL_OPERATION_TITLE_TEXT, Finals.SUCCESSFUL_OPERATION_HEADER_TEXT, Finals.SUCCESSFUL_OPERATION_CONTENT_TEXT);
                 }
@@ -162,6 +163,8 @@ public class AmortizareController {
                     s.close();
                     c.close();
 
+
+                    IncheiereTableInitializer.reload();
                     //SuspendariTableInitializer.reload(nrInventarTextField.getText());
                     Alerts.informationAlert(Finals.SUCCESSFUL_OPERATION_TITLE_TEXT, Finals.SUCCESSFUL_OPERATION_HEADER_TEXT, Finals.SUCCESSFUL_OPERATION_CONTENT_TEXT);
                 }
@@ -469,11 +472,16 @@ public class AmortizareController {
 
     public void incheiereInDB1Month(LocalDate month, Connection c) throws SQLException
     {
-        try (PreparedStatement pstm = c.prepareStatement(Finals.INCHEIERE_1_MONTH_SQL))
+        try (PreparedStatement pstm = c.prepareStatement(Finals.INCHEIERE_1_MONTH_SQL);
+             Statement s = c.createStatement())
         {
             if (!MySQLJDBCUtil.recordExists(Main.getSocietateActuala(), "incheiereMonth", "monthIncheiat", month.toString()))   //if alredyn incheiat, we dont bother
             {
+                s.executeUpdate(Finals.SET_QUOTES_SQL);
+                s.executeUpdate("use \"" + Main.getSocietateActuala() + "\";");
+
                 pstm.setString(1, month.toString());
+                pstm.executeUpdate();
             }
         }
     }
@@ -495,8 +503,12 @@ public class AmortizareController {
         LocalDate startDate = LocalDate.parse(startYearTextField.getText() + "-" + ((startMonthTextField.getText().length() < 2) ? "0" : "") + startMonthTextField.getText() + "-" +  "01");
         LocalDate endDate = LocalDate.parse(endYearTextField.getText() + "-" + ((endMonthTextField.getText().length() < 2) ? "0" : "") + endMonthTextField.getText() + "-" +  "01");
 
-        try (PreparedStatement pstm = c.prepareStatement(Finals.DESCHIDERE_SQL))
+        try (PreparedStatement pstm = c.prepareStatement(Finals.DESCHIDERE_SQL);
+             Statement s = c.createStatement())
         {
+            s.executeUpdate(Finals.SET_QUOTES_SQL);
+            s.executeUpdate("use \"" + Main.getSocietateActuala() + "\";");
+
             pstm.setString(1,startDate.toString());
             pstm.setString(2,endDate.toString());
 
